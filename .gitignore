@@ -1,3 +1,6 @@
+# Operating System files
+.DS_Store
+
 # Prerequisites
 *.d
 
@@ -50,3 +53,22 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Build directories
+build/
+
+# Library directories
+lib/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Backup files
+*.bak
+
+# Editor backup files
+*~
+
+# Logs
+*.log
