@@ -1,74 +1,60 @@
-# Operating System files
+# OS-specific files
 .DS_Store
+Thumbs.db
 
-# Prerequisites
-*.d
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+*~
 
-# Object files
+# Build artifacts
 *.o
-*.ko
 *.obj
 *.elf
-
-# Linker output
-*.ilk
-*.map
-*.exp
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Libraries
-*.lib
+*.out
 *.a
-*.la
-*.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
 *.so
 *.so.*
 *.dylib
-
-# Executables
 *.exe
-*.out
 *.app
-*.i*86
-*.x86_64
 *.hex
+*.map
+*.gch
+*.pch
 
-# Debug files
+# Dependency and intermediate files
+*.d
+*.mod*
+*.cmd
+*.tmp
+*.temp
+
+# Debug and profiling files
 *.dSYM/
 *.su
 *.idb
 *.pdb
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
+# Kernel module files (if applicable)
+*.ko
 .tmp_versions/
 modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
 
-# Build directories
+# Build and library directories
 build/
-
-# Library directories
 lib/
 
-# Temporary files
-*.tmp
-*.temp
-
-# Backup files
+# Logs and backups
+*.log
 *.bak
 
-# Editor backup files
-*~
-
-# Logs
-*.log
+# Miscellaneous
+*.la
+*.lo
+*.ilk
+*.exp

@@ -1,10 +1,11 @@
 # Variables
-CC      := gcc
-CFLAGS  := -Wall -Wextra -Werror
 NAME    := streamshot
 SRCS    := $(wildcard src/*.c)
 BUILD   := build
+CC      := gcc
 OBJS    := $(patsubst src/%.c,$(BUILD)/%.o,$(SRCS))
+HDRS  := include
+CFLAGS  := -Wall -Wextra -Werror -I$(HDRS)
 
 # Rules
 .PHONY: all build clean fclean re

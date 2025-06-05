@@ -5,8 +5,8 @@
         ::::::::::::::        | Email  | dredfort.42@gmail.com |
       ::::  ::::::  ::::      +--------+-----------------------+
     ::::::::::::::::::::::
-    ::  ::::::::::::::  ::    File     | main.c
-    ::  ::          ::  ::    Created  | 2025-06-04
+    ::  ::::::::::::::  ::    File     | writer_to_fd.h
+    ::  ::          ::  ::    Created  | 2025-06-05
           ::::  ::::          Modified | 2025-06-05
 
     GitHub:   https://github.com/dredfort42
@@ -14,24 +14,10 @@
 
 *******************************************************************/
 
-#include "options_reader.h"
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 
-int main(int argc, char* argv[])
-{
-    if (argc < 2)
-    {
-        print_help(argv[0]);
-        return MAIN_ERROR_CODE;
-    }
+#include "errors.h"
 
-    options_t options;
-    short error_code = 0;
-
-    error_code = parse_args(argc, argv, &options);
-    if (error_code)
-        return error_code < 0 ? MAIN_ERROR_CODE : MAIN_SUCCESS_CODE;
-
-    print_options(&options);
-
-    return MAIN_SUCCESS_CODE;
-}
+ssize_t write_to_fd(int fd, const void* buf, size_t* count);
