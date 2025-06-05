@@ -1,3 +1,19 @@
+/*******************************************************************
+
+		::          ::        +--------+-----------------------+
+		  ::      ::          | Author | Dmitry Novikov        |
+		::::::::::::::        | Email  | dredfort.42@gmail.com |
+	  ::::  ::::::  ::::      +--------+-----------------------+
+	::::::::::::::::::::::
+	::  ::::::::::::::  ::    File     | Makefile
+	::  ::          ::  ::    Created  | 2025-06-05
+		  ::::  ::::          Modified | 2025-06-05
+
+	GitHub:   https://github.com/dredfort42
+	LinkedIn: https://linkedin.com/in/novikov-da
+
+*******************************************************************/
+
 # Variables
 NAME    := streamshot
 SRCS    := $(wildcard src/*.c)
