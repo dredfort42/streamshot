@@ -49,6 +49,7 @@ dkms.conf
 build/
 lib/
 
+
 # Logs and backups
 *.log
 *.bak

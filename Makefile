@@ -32,9 +32,10 @@ $(BUILD)/%.o: src/%.c | $(BUILD)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -rf $(BUILD)
+	@rm -rf $(BUILD)
 
 fclean: clean
-	rm -f $(NAME)
+	@rm -rf debug_files
+	@rm -f $(NAME)
 
 re: fclean all

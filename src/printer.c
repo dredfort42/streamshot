@@ -39,7 +39,6 @@ void print_help(const char* prog_name)
     printf("      --debug-dir       <string>   Directory for debug files (default: %s)\n", DEFAULT_DEBUG_DIR);
     printf("  -h, --help                       Show this help message\n");
     printf("  -v, --version                    Show version information\n");
-    printf("  -c, --config          <string>   Path to configuration file (default: no config file used)\n");
 }
 
 void print_version()
@@ -60,17 +59,16 @@ void print_options(const options_t* options)
     }
 
     printf("RTSP url: %s\n", options->rtsp_url ? options->rtsp_url : "NULL");
-    printf("Timeout: %u seconds\n", options->timeout_sec);
+    printf("Timeout: %d seconds\n", options->timeout_sec);
     printf("Output File Path: %s\n", options->output_file_path ? options->output_file_path : "NULL");
     printf("Output File Descriptor: %d\n", options->output_file_fd);
-    printf("Exposure Time: %u seconds\n", options->exposure_sec);
+    printf("Exposure Time: %d seconds\n", options->exposure_sec);
     printf("Output Format: %s\n", image_format_to_string(options->output_format));
     printf("Scale Factor: %.1f\n", options->scale_factor);
-    printf("Resize Height: %u pixels\n", options->resize_height);
-    printf("Resize Width: %u pixels\n", options->resize_width);
-    printf("Image Quality: %u\n", options->image_quality);
+    printf("Resize Height: %d pixels\n", options->resize_height);
+    printf("Resize Width: %d pixels\n", options->resize_width);
+    printf("Image Quality: %d\n", options->image_quality);
     printf("Debug Mode: %s\n", options->debug ? "Enabled" : "Disabled");
-    printf("Debug Step Interval: %u steps\n", options->debug_step);
+    printf("Debug Step Interval: %d steps\n", options->debug_step);
     printf("Debug Directory: %s\n", options->debug_dir ? options->debug_dir : "NULL");
-    printf("Config file: %s\n", options->config_file_path ? options->config_file_path : "NULL");
 }

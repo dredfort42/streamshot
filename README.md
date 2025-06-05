@@ -8,7 +8,7 @@ Capture snapshots from RTSP streams with flexible output and processing options.
 -   Output to file or file descriptor.
 -   Support for multiple image formats and resizing options.
 -   Adjustable image quality and scaling.
--   Verbose and debug modes for troubleshooting.
+-   Debug modes for troubleshooting.
 
 ## Building
 
@@ -42,7 +42,6 @@ make build
 | `    --debug-dir <string>`     | Directory for debug files (default: `./debug_files`, requires debug mode).                                                        |
 | `-h, --help`                   | Show help message and exit.                                                                                                       |
 | `-v, --version`                | Show version information and exit.                                                                                                |
-| `-c, --config <string>`        | Path to configuration file. If specified, overrides default settings.                                                             |
 
 ### Notes
 

@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 #include "writer_to_fd.h"
 
@@ -39,11 +40,6 @@
 #define MAX_RESIZE_WIDTH 19200                  // Maximum resize width (19200 pixels).
 #define DEFAULT_DEBUG_STEP 100                  // Default debug interval for saving debug files (requires debug mode).
 #define DEFAULT_DEBUG_DIR "./debug_files"       // Default directory for debug files (requires debug mode).
-#define DEFAULT_VERBOSE 0                       // Default verbose mode (0: off, 1: on).
-#define DEFAULT_DEBUG 0                         // Default debug mode (0: off, 1: on).
-#define DEFAULT_SHOW_HELP 0                     // Default show help option (0: no, 1: yes).
-#define DEFAULT_SHOW_VERSION 0                  // Default show version option (0: no, 1: yes).
-#define DEFAULT_CONFIG_FILE_PATH NULL           // Default configuration file path (no config file used).
 
 typedef enum e_image_format
 {
@@ -100,19 +96,18 @@ static inline image_format_t string_to_image_format(const char* str)
 typedef struct s_options
 {
     char* rtsp_url;                // RTSP URL to connect to.
-    unsigned int timeout_sec;      // RTSP stream connection timeout in seconds.
+    int timeout_sec;               // RTSP stream connection timeout in seconds.
     char* output_file_path;        // Output file path. If omitted, no file is saved.
-    unsigned int output_file_fd;   // Output file descriptor. Takes precedence over output_file_path if both are specified.
-    unsigned int exposure_sec;     // Exposure time in seconds.
+    int output_file_fd;            // Output file descriptor. Takes precedence over output_file_path if both are specified.
+    int exposure_sec;              // Exposure time in seconds.
     image_format_t output_format;  // Image format for output file.
     float scale_factor;            // Image scale factor.
-    unsigned short resize_height;  // Resize to fit specified height, maintaining aspect ratio (min: 108, max: 10800).
-    unsigned short resize_width;   // Resize to fit specified width, maintaining aspect ratio (min: 192, max: 19200).
-    unsigned short image_quality;  // Image quality (0 to 100).
+    int resize_height;             // Resize to fit specified height, maintaining aspect ratio (min: 108, max: 10800).
+    int resize_width;              // Resize to fit specified width, maintaining aspect ratio (min: 192, max: 19200).
+    int image_quality;             // Image quality (0 to 100).
     char debug;                    // Debug mode: print debug information (0: off, 1: on).
-    unsigned short debug_step;     // Save debug file every N steps.
+    int debug_step;                // Save debug file every N steps.
     char* debug_dir;               // Directory for debug files (default: ./debug_files).
-    char* config_file_path;        // Path to configuration file (optional).
 } options_t;
 
 #define MATCH(opt, longopt) (strcmp(arg, opt) == 0 || strcmp(arg, longopt) == 0)
@@ -122,5 +117,6 @@ short parse_args(int argc, char* argv[], options_t* options);
 void print_help(const char* program_name);
 void print_version();
 void print_options(const options_t* options);
+void free_options(options_t* options);
 
 #endif  // OPTIONS_READER_H
