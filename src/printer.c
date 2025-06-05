@@ -14,7 +14,7 @@
 
 *******************************************************************/
 
-#include "options_reader.h"
+#include "options.h"
 
 void print_help(const char* prog_name)
 {

@@ -5,7 +5,7 @@
         ::::::::::::::        | Email  | dredfort.42@gmail.com |
       ::::  ::::::  ::::      +--------+-----------------------+
     ::::::::::::::::::::::
-    ::  ::::::::::::::  ::    File     | writer_to_fd.c
+    ::  ::::::::::::::  ::    File     | writer.c
     ::  ::          ::  ::    Created  | 2025-06-05
           ::::  ::::          Modified | 2025-06-05
 
@@ -14,7 +14,7 @@
 
 *******************************************************************/
 
-#include "writer_to_fd.h"
+#include "writer.h"
 
 ssize_t write_to_fd(int fd, const void* buf, size_t* count)
 {

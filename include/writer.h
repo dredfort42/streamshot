@@ -5,7 +5,7 @@
         ::::::::::::::        | Email  | dredfort.42@gmail.com |
       ::::  ::::::  ::::      +--------+-----------------------+
     ::::::::::::::::::::::
-    ::  ::::::::::::::  ::    File     | writer_to_fd.h
+    ::  ::::::::::::::  ::    File     | writer.h
     ::  ::          ::  ::    Created  | 2025-06-05
           ::::  ::::          Modified | 2025-06-05
 
@@ -14,6 +14,9 @@
 
 *******************************************************************/
 
+#ifndef WRITER_H
+#define WRITER_H
+
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -21,3 +24,5 @@
 #include "errors.h"
 
 ssize_t write_to_fd(int fd, const void* buf, size_t* count);
+
+#endif  // WRITER_H

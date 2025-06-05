@@ -5,7 +5,7 @@
         ::::::::::::::        | Email  | dredfort.42@gmail.com |
       ::::  ::::::  ::::      +--------+-----------------------+
     ::::::::::::::::::::::
-    ::  ::::::::::::::  ::    File     | options_reader.c
+    ::  ::::::::::::::  ::    File     | options.c
     ::  ::          ::  ::    Created  | 2025-06-05
           ::::  ::::          Modified | 2025-06-05
 
@@ -14,7 +14,7 @@
 
 *******************************************************************/
 
-#include "options_reader.h"
+#include "options.h"
 
 void _options_init(options_t* options)
 {
@@ -35,7 +35,7 @@ void _options_init(options_t* options)
 
 short _starts_with(const char* str, const char* prefix) { return str && prefix && strncmp(str, prefix, strlen(prefix)) == 0; }
 
-char* _trim_string(const char* str)
+char* _trim_flag_value(const char* str)
 {
     if (!str || strlen(str) == 0)
         return NULL;
@@ -45,12 +45,12 @@ char* _trim_string(const char* str)
         return NULL;
 
     char* end = result + strlen(result) - 1;
-    while (end > result && (*end == ' ' || *end == '\"' || *end == '\'' || *end == '`' || *end == '\n' || *end == '\r' || *end == '\t')) end--;
+    while (end > result && (*end == ' ' || *end == '\"' || *end == '\'' || *end == '`')) end--;
 
     *(end + 1) = '\0';
 
     char* start = result;
-    while (*start && (*start == ' ' || *start == '\"' || *start == '\'' || *start == '`' || *start == '\n' || *start == '\r' || *start == '\t')) start++;
+    while (*start && (*start == ' ' || *start == '\"' || *start == '\'' || *start == '`')) start++;
 
     if (start != result)
         memmove(result, start, end - start + 2);
@@ -176,17 +176,17 @@ short parse_args(int argc, char* argv[], options_t* options)
             return RTN_COMPLETE;
         }
         else if (MATCH("-i", "--input"))
-            options->rtsp_url = _trim_string(argv[++i]);
+            options->rtsp_url = _trim_flag_value(argv[++i]);
         else if (MATCH_PREFIX("--input"))
-            options->rtsp_url = _trim_string(strchr(arg, '=') + 1);
+            options->rtsp_url = _trim_flag_value(strchr(arg, '=') + 1);
         else if (MATCH("-t", "--timeout"))
             options->timeout_sec = atoi(argv[++i]);
         else if (MATCH_PREFIX("--timeout"))
             options->timeout_sec = atoi(strchr(arg, '=') + 1);
         else if (MATCH("-o", "--output-file"))
-            options->output_file_path = _trim_string(argv[++i]);
+            options->output_file_path = _trim_flag_value(argv[++i]);
         else if (MATCH_PREFIX("--output-file"))
-            options->output_file_path = _trim_string(strchr(arg, '=') + 1);
+            options->output_file_path = _trim_flag_value(strchr(arg, '=') + 1);
         else if (MATCH("-O", "--output-fd"))
             options->output_file_fd = atoi(argv[++i]);
         else if (MATCH_PREFIX("--output-fd"))
@@ -197,13 +197,13 @@ short parse_args(int argc, char* argv[], options_t* options)
             options->exposure_sec = atoi(strchr(arg, '=') + 1);
         else if (MATCH("-f", "--output-format"))
         {
-            char* format_arg = _trim_string(argv[++i]);
+            char* format_arg = _trim_flag_value(argv[++i]);
             options->output_format = string_to_image_format(format_arg);
             free(format_arg);
         }
         else if (MATCH_PREFIX("--output-format"))
         {
-            char* format_arg = _trim_string(strchr(arg, '=') + 1);
+            char* format_arg = _trim_flag_value(strchr(arg, '=') + 1);
             options->output_format = string_to_image_format(format_arg);
             free(format_arg);
         }
@@ -230,9 +230,9 @@ short parse_args(int argc, char* argv[], options_t* options)
         else if (MATCH_PREFIX("--debug-step"))
             options->debug_step = atoi(strchr(arg, '=') + 1);
         else if (MATCH("--debug-dir", "--debug-dir"))
-            options->debug_dir = _trim_string(argv[++i]);
+            options->debug_dir = _trim_flag_value(argv[++i]);
         else if (MATCH_PREFIX("--debug-dir"))
-            options->debug_dir = _trim_string(strchr(arg, '=') + 1);
+            options->debug_dir = _trim_flag_value(strchr(arg, '=') + 1);
         else
         {
             write_to_fd(STDERR_FILENO, ERROR_INVALID_ARGUMENTS, NULL);

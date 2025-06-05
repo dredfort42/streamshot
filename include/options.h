@@ -14,14 +14,14 @@
 
 *******************************************************************/
 
-#ifndef OPTIONS_READER_H
-#define OPTIONS_READER_H
+#ifndef OPTIONS_H
+#define OPTIONS_H
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 
-#include "writer_to_fd.h"
+#include "writer.h"
 
 #define DEFAULT_TIMEOUT_SEC 10                  // Default timeout for RTSP stream connection in seconds.
 #define MAX_TIMEOUT_SEC 300                     // Maximum timeout for RTSP stream connection in seconds.
@@ -119,4 +119,4 @@ void print_version();
 void print_options(const options_t* options);
 void free_options(options_t* options);
 
-#endif  // OPTIONS_READER_H
+#endif  // OPTIONS_H
