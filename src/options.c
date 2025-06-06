@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | options.c
     ::  ::          ::  ::    Created  | 2025-06-05
-          ::::  ::::          Modified | 2025-06-05
+          ::::  ::::          Modified | 2025-06-06
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -28,7 +28,7 @@ void _options_init(options_t* options)
     options->debug_dir = strdup(DEFAULT_DEBUG_DIR);
     if (!options->debug_dir)
     {
-        write_to_fd(STDERR_FILENO, ERROR_FAILED_TO_ALLOCATE_MEMORY, NULL);
+        write_msg_to_fd(STDERR_FILENO, "(f) _options_init | " ERROR_FAILED_TO_ALLOCATE_MEMORY);
         exit(RTN_ERROR);
     }
 }
@@ -65,49 +65,49 @@ short _validate_options(const options_t* options)
 
     if (!options->rtsp_url || strlen(options->rtsp_url) < 8 || !_starts_with(options->rtsp_url, "rtsp://"))
     {
-        write_to_fd(STDERR_FILENO, ERROR_INVALID_RTSP_URL, NULL);
+        write_msg_to_fd(STDERR_FILENO, "(f) _validate_options | " ERROR_INVALID_RTSP_URL);
         return RTN_ERROR;
     }
 
     if (options->timeout_sec < 1 || options->timeout_sec > MAX_TIMEOUT_SEC)
     {
-        write_to_fd(STDERR_FILENO, ERROR_INVALID_TIMEOUT, NULL);
+        write_msg_to_fd(STDERR_FILENO, "(f) _validate_options | " ERROR_INVALID_TIMEOUT);
         return RTN_ERROR;
     }
 
     if (options->exposure_sec < 0 || options->exposure_sec > MAX_EXPOSURE_SEC)
     {
-        write_to_fd(STDERR_FILENO, ERROR_INVALID_EXPOSURE, NULL);
+        write_msg_to_fd(STDERR_FILENO, "(f) _validate_options | " ERROR_INVALID_EXPOSURE);
         return RTN_ERROR;
     }
 
     if (options->output_format == IMAGE_FORMAT_UNKNOWN)
     {
-        write_to_fd(STDERR_FILENO, ERROR_INVALID_OUTPUT_FORMAT, NULL);
+        write_msg_to_fd(STDERR_FILENO, "(f) _validate_options | " ERROR_INVALID_OUTPUT_FORMAT);
         return RTN_ERROR;
     }
 
     if (options->scale_factor < MIN_SCALE_FACTOR || options->scale_factor > MAX_SCALE_FACTOR)
     {
-        write_to_fd(STDERR_FILENO, ERROR_INVALID_SCALE_FACTOR, NULL);
+        write_msg_to_fd(STDERR_FILENO, "(f) _validate_options | " ERROR_INVALID_SCALE_FACTOR);
         return RTN_ERROR;
     }
 
     if (options->resize_height && (options->resize_height < MIN_RESIZE_HEIGHT || options->resize_height > MAX_RESIZE_HEIGHT))
     {
-        write_to_fd(STDERR_FILENO, ERROR_INVALID_RESIZE_HEIGHT, NULL);
+        write_msg_to_fd(STDERR_FILENO, "(f) _validate_options | " ERROR_INVALID_RESIZE_HEIGHT);
         return RTN_ERROR;
     }
 
     if (options->resize_width && (options->resize_width < MIN_RESIZE_WIDTH || options->resize_width > MAX_RESIZE_WIDTH))
     {
-        write_to_fd(STDERR_FILENO, ERROR_INVALID_RESIZE_WIDTH, NULL);
+        write_msg_to_fd(STDERR_FILENO, "(f) _validate_options | " ERROR_INVALID_RESIZE_WIDTH);
         return RTN_ERROR;
     }
 
     if (options->image_quality < MIN_IMAGE_QUALITY || options->image_quality > MAX_IMAGE_QUALITY)
     {
-        write_to_fd(STDERR_FILENO, ERROR_INVALID_IMAGE_QUALITY, NULL);
+        write_msg_to_fd(STDERR_FILENO, "(f) _validate_options | " ERROR_INVALID_IMAGE_QUALITY);
         return RTN_ERROR;
     }
 
@@ -115,13 +115,13 @@ short _validate_options(const options_t* options)
     {
         if (options->debug_step < 1)
         {
-            write_to_fd(STDERR_FILENO, ERROR_INVALID_DEBUG_STEP, NULL);
+            write_msg_to_fd(STDERR_FILENO, "(f) _validate_options | " ERROR_INVALID_DEBUG_STEP);
             return RTN_ERROR;
         }
 
         if (!options->debug_dir || strlen(options->debug_dir) < 3)
         {
-            write_to_fd(STDERR_FILENO, ERROR_INVALID_DEBUG_DIR, NULL);
+            write_msg_to_fd(STDERR_FILENO, "(f) _validate_options | " ERROR_INVALID_DEBUG_DIR);
             return RTN_ERROR;
         }
 
@@ -132,7 +132,7 @@ short _validate_options(const options_t* options)
             {
                 if (mkdir(options->debug_dir, 0755) == -1)
                 {
-                    write_to_fd(STDERR_FILENO, ERROR_FAILED_TO_CREATE_DEBUG_DIR, NULL);
+                    write_msg_to_fd(STDERR_FILENO, "(f) _validate_options | " ERROR_FAILED_TO_CREATE_DEBUG_DIR);
                     return RTN_ERROR;
                 }
             }
@@ -142,7 +142,7 @@ short _validate_options(const options_t* options)
             struct stat st = {0};
             if (stat(options->debug_dir, &st) == -1)
             {
-                write_to_fd(STDERR_FILENO, ERROR_INVALID_DEBUG_DIR, NULL);
+                write_msg_to_fd(STDERR_FILENO, "(f) _validate_options | " ERROR_INVALID_DEBUG_DIR);
                 return RTN_ERROR;
             }
         }
@@ -235,12 +235,19 @@ short parse_args(int argc, char* argv[], options_t* options)
             options->debug_dir = _trim_flag_value(strchr(arg, '=') + 1);
         else
         {
-            write_to_fd(STDERR_FILENO, ERROR_INVALID_ARGUMENTS, NULL);
+            write_msg_to_fd(STDERR_FILENO, "(f) parse_args | " ERROR_INVALID_ARGUMENTS);
             return RTN_ERROR;
         }
     }
 
-    return _validate_options(options);
+    short result = _validate_options(options);
+    if (result == RTN_SUCCESS && options->debug)
+    {
+        printf(ANSI_BLUE "Debug:" ANSI_RESET " Parsed Options:\n");
+        print_options(options);
+    }
+
+    return result;
 }
 
 void free_options(options_t* options)

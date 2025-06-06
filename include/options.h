@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
+#include "errors.h"
 #include "writer.h"
 
 #define DEFAULT_TIMEOUT_SEC 10                  // Default timeout for RTSP stream connection in seconds.
@@ -93,7 +94,7 @@ static inline image_format_t string_to_image_format(const char* str)
         return IMAGE_FORMAT_UNKNOWN;
 }
 
-typedef struct s_options
+typedef struct options_s
 {
     char* rtsp_url;                // RTSP URL to connect to.
     int timeout_sec;               // RTSP stream connection timeout in seconds.

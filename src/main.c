@@ -15,6 +15,7 @@
 *******************************************************************/
 
 #include "options.h"
+#include "reader.h"
 
 int main(int argc, char* argv[])
 {
@@ -29,14 +30,11 @@ int main(int argc, char* argv[])
 
     error_code = parse_args(argc, argv, &options);
     if (error_code)
-    {
-        free_options(&options);
-        return error_code < 0 ? MAIN_ERROR_CODE : MAIN_SUCCESS_CODE;
-    }
+        goto end;
 
-    if (options.debug)
-        print_options(&options);
+    get_streamshot(&options);
 
+end:
     free_options(&options);
-    return MAIN_SUCCESS_CODE;
+    return error_code < 0 ? MAIN_ERROR_CODE : MAIN_SUCCESS_CODE;
 }

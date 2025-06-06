@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | printer.c
     ::  ::          ::  ::    Created  | 2025-06-05
-          ::::  ::::          Modified | 2025-06-05
+          ::::  ::::          Modified | 2025-06-06
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -54,7 +54,7 @@ void print_options(const options_t* options)
 {
     if (!options)
     {
-        write_to_fd(STDERR_FILENO, ERROR_INVALID_ARGUMENTS, NULL);
+        write_msg_to_fd(STDERR_FILENO, "(f) print_options | " ERROR_INVALID_ARGUMENTS);
         return;
     }
 

@@ -17,9 +17,17 @@
 #ifndef ERRORS_H
 #define ERRORS_H
 
+#define ANSI_RED "\033[31m"
+#define ANSI_GREEN "\033[32m"
+#define ANSI_YELLOW "\033[33m"
+#define ANSI_BLUE "\033[34m"
+#define ANSI_RESET "\033[0m"
+
 #define ERROR_FAILED_TO_ALLOCATE_MEMORY "Error: Failed to allocate memory.\n"
 #define ERROR_FAILED_TO_CREATE_DEBUG_DIR "Error: Failed to create debug directory.\n"
-#define ERROR_FAILED_TO_WRITE "Error: Failed to write to file descriptor.\n"
+#define ERROR_FAILED_TO_OPEN_FILE "Error: Failed to open file.\n"
+#define ERROR_FAILED_TO_WRITE_FILE "Error: Failed to write to file.\n"
+#define ERROR_FAILED_TO_WRITE_FD "Error: Failed to write to file descriptor.\n"
 #define ERROR_NO_DATA_TO_WRITE "Error: No data to write to file descriptor.\n"
 
 #define ERROR_INVALID_RTSP_URL "Error: Invalid RTSP URL provided.\n"
@@ -33,6 +41,8 @@
 #define ERROR_INVALID_IMAGE_QUALITY "Error: Invalid image quality specified.\n"
 #define ERROR_INVALID_DEBUG_STEP "Error: Invalid debug step specified.\n"
 #define ERROR_INVALID_DEBUG_DIR "Error: Invalid debug directory specified.\n"
+
+#define ERROR_FAILED_TO_SET_STREAM_OPTIONS "Error: Failed to set stream options.\n"
 
 #define RTN_ERROR -1
 #define RTN_SUCCESS 0
