@@ -26,6 +26,7 @@
 
 #define DEFAULT_TIMEOUT_SEC 10                  // Default timeout for RTSP stream connection in seconds.
 #define MAX_TIMEOUT_SEC 300                     // Maximum timeout for RTSP stream connection in seconds.
+#define MIN_OUTPUT_FD 3                         // Minimum output file descriptor
 #define DEFAULT_EXPOSURE_SEC 0                  // Default exposure time in seconds (0 means snapshot from the first I-frame).
 #define MAX_EXPOSURE_SEC 86400                  // Maximum exposure time in seconds (24 hours).
 #define DEFAULT_OUTPUT_FORMAT IMAGE_FORMAT_JPG  // Default output image format.

@@ -31,7 +31,7 @@ OBJS        := $(patsubst src/%.c,$(BUILD_DIR)/%.o,$(SRCS))
 
 HDRS        := include
 INCLUDES    := -I$(HDRS) -I$(FFMPEG_DIR)/libavformat -I$(FFMPEG_DIR)/libavutil -I$(FFMPEG_DIR)/libavcodec -I$(FFMPEG_DIR)/libswscale
-CFLAGS      := -Wall -Wextra -Werror $(INCLUDES)
+CFLAGS      := -g -O0 -fsanitize=address -Wall -Wextra -Werror $(INCLUDES)
 LDFLAGS     := -L$(FFMPEG_DIR) -lavformat -lavutil -lavcodec -lswscale
 
 # Rules

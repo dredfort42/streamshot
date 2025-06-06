@@ -30,8 +30,9 @@
 #define ERROR_FAILED_TO_WRITE_FD "Error: Failed to write to file descriptor.\n"
 #define ERROR_NO_DATA_TO_WRITE "Error: No data to write to file descriptor.\n"
 
-#define ERROR_INVALID_RTSP_URL "Error: Invalid RTSP URL provided.\n"
 #define ERROR_INVALID_ARGUMENTS "Error: Invalid arguments provided.\n"
+#define ERROR_INVALID_RTSP_URL "Error: Invalid RTSP URL provided.\n"
+#define ERROR_INVALID_OUTPUT_FD "Error: Invalid output file descriptor specified.\n"
 #define ERROR_INVALID_TIMEOUT "Error: Invalid timeout value.\n"
 #define ERROR_INVALID_EXPOSURE "Error: Invalid exposure value.\n"
 #define ERROR_INVALID_OUTPUT_FORMAT "Error: Invalid output format specified.\n"

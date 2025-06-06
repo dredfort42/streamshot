@@ -69,6 +69,12 @@ short _validate_options(const options_t* options)
         return RTN_ERROR;
     }
 
+    if (options->output_file_fd && options->output_file_fd < MIN_OUTPUT_FD)
+    {
+        write_msg_to_fd(STDERR_FILENO, "(f) _validate_options | " ERROR_INVALID_OUTPUT_FD);
+        return RTN_ERROR;
+    }
+
     if (options->timeout_sec < 1 || options->timeout_sec > MAX_TIMEOUT_SEC)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) _validate_options | " ERROR_INVALID_TIMEOUT);

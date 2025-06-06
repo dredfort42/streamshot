@@ -24,24 +24,25 @@ make build
 
 ### Options
 
-| Option                         | Description                                                                                                                       |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| `-i, --input <string>`         | RTSP URL to connect to (required).                                                                                                |
-| `-t, --timeout <uint>`         | RTSP stream connection timeout in seconds (default: 10, max: 300).                                                                |
-| `-o, --output-file <string>`   | Output file path. If omitted, no file is saved.                                                                                   |
-| `-O, --output-fd <uint>`       | Output file descriptor. Takes precedence over `-o, --output-file` if both are specified.                                          |
-| `-e, --exposure <uint>`        | Exposure time in seconds (max: 86400). If omitted, snapshot is from the first I-frame; otherwise, averages frames over this time. |
-| `-f, --output-format <string>` | Output image format: `jpg`, `png`, `webp`, `tiff`, `bmp`, `ppm` (default: `jpg`).                                                 |
-| `-s, --scale <float>`          | Image scale factor (0.1 to 10).                                                                                                   |
-| `-h, --resize-height <uint>`   | Resize to fit specified height, maintaining aspect ratio (min: 108, max: 10800).                                                  |
-| `-w, --resize-width <uint>`    | Resize to fit specified width, maintaining aspect ratio (min: 192, max: 19200).                                                   |
-|                                | If `--scale` is set, it overrides `--resize-height` and `--resize-width`. If both are set, both dimensions are considered.        |
-| `-q, --image-quality <uint>`   | Image quality (min: 0, max: 100, default: 95).                                                                                    |
-| `-d, --debug`                  | Enable debug mode to print additional information.                                                                                |
-| `    --debug-step <uint>`      | Save debug file every N steps (default: 100, requires debug mode).                                                                |
-| `    --debug-dir <string>`     | Directory for debug files (default: `./debug_files`, requires debug mode).                                                        |
-| `-h, --help`                   | Show help message and exit.                                                                                                       |
-| `-v, --version`                | Show version information and exit.                                                                                                |
+| Option                         | Description                                                                                                                           |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `-i, --input <string>`         | RTSP URL to connect to (required).                                                                                                    |
+| `-t, --timeout <uint>`         | RTSP stream connection timeout in seconds (default: 10, max: 300).                                                                    |
+| `-o, --output-file <string>`   | Output file path. If omitted, no file is saved.                                                                                       |
+| `-O, --output-fd <uint>`       | Output file descriptor.                                                                                                               |
+| `-e, --exposure <uint>`        | Exposure time in seconds (max: 86400). If omitted, snapshot is from the first I-frame; otherwise, averages frames over this time.     |
+| `-f, --output-format <string>` | Output image format: `jpg`, `png`, `webp`, `tiff`, `bmp`, `ppm` (default: `jpg`).                                                     |
+| `-s, --scale <float>`          | Image scale factor (0.1 to 10).                                                                                                       |
+|                                | If `--scale` is set, then `--resize-height` and `--resize-width` are ignored.                                                         |
+| `-h, --resize-height <uint>`   | Resize to fit specified height, maintaining aspect ratio (min: 108, max: 10800).                                                      |
+| `-w, --resize-width <uint>`    | Resize to fit specified width, maintaining aspect ratio (min: 192, max: 19200).                                                       |
+|                                | If both `--resize-height` and `--resize-width` are set image is resized to fit within these dimensions with maintaining aspect ratio. |
+| `-q, --image-quality <uint>`   | Image quality (min: 0, max: 100, default: 95).                                                                                        |
+| `-d, --debug`                  | Enable debug mode to print additional information.                                                                                    |
+| `    --debug-step <uint>`      | Save debug file every N steps (default: 100, requires debug mode).                                                                    |
+| `    --debug-dir <string>`     | Directory for debug files (default: `./debug_files`, requires debug mode).                                                            |
+| `-h, --help`                   | Show help message and exit.                                                                                                           |
+| `-v, --version`                | Show version information and exit.                                                                                                    |
 
 ### Notes
 
