@@ -262,7 +262,7 @@ short _calculate_number_of_frames_to_read(stream_t* stream, const options_t* opt
     return RTN_SUCCESS;
 }
 
-short _init_sws_context(stream_t* stream, const options_t* options)
+short _init_sws_context(stream_t* stream, const options_t* options, float scale_factor)
 {
     if (!stream || !options || stream->video_stream_index < 0)
     {
@@ -273,9 +273,6 @@ short _init_sws_context(stream_t* stream, const options_t* options)
     AVStream* video_stream = stream->format_context->streams[stream->video_stream_index];
     enum AVPixelFormat src_pix_fmt = video_stream->codecpar->format;
     enum AVPixelFormat dst_pix_fmt = AV_PIX_FMT_RGB24;
-    float scale_factor = _get_scale_factor(stream, options);
-    if (scale_factor < 0)
-        return RTN_ERROR;
 
     stream->sws_context =
         sws_getContext(video_stream->codecpar->width, video_stream->codecpar->height, src_pix_fmt, video_stream->codecpar->width * scale_factor,

@@ -23,6 +23,7 @@
 #include "errors.h"
 #include "libavcodec/avcodec.h"
 #include "libavformat/avformat.h"
+#include "libavutil/imgutils.h"
 #include "libswscale/swscale.h"
 #include "options.h"
 
@@ -66,7 +67,7 @@ short _open_stream(stream_t* stream, const options_t* options);
 short _find_decoder(stream_t* stream, const options_t* options);
 short _init_codec_context(stream_t* stream, const options_t* options);
 short _calculate_number_of_frames_to_read(stream_t* stream, const options_t* options);
-short _init_sws_context(stream_t* stream, const options_t* options);
+short _init_sws_context(stream_t* stream, const options_t* options, float scale_factor);
 void _free_stream(stream_t* stream);
 
 uint8_t* _process_streamshot(stream_t* stream, const options_t* options);

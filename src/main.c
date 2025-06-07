@@ -25,16 +25,26 @@ int main(int argc, char* argv[])
         return MAIN_ERROR_CODE;
     }
 
-    options_t options;
     short error_code = 0;
-
-    error_code = parse_args(argc, argv, &options);
-    if (error_code)
+    options_t* options = get_options(argc, argv);
+    if (!options)
         goto end;
 
-    get_streamshot(&options);
+    if (options->help || options->version)
+    {
+        error_code = MAIN_SUCCESS_CODE;
+        goto end;
+    }
+
+    // error_code = parse_args(argc, argv, &options);
+    // if (error_code)
+    //     goto end;
+
+    // get_streamshot(&options);
 
 end:
-    free_options(&options);
+    if (options)
+        free_options(options);
+
     return error_code < 0 ? MAIN_ERROR_CODE : MAIN_SUCCESS_CODE;
 }

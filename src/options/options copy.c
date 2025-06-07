@@ -16,9 +16,34 @@
 
 #include "options.h"
 
-void _options_init(options_t* options)
+/**
+ * @brief Initializes and allocates an options_t structure with default values.
+ *
+ * This function allocates memory for an options_t structure, sets all fields to zero,
+ * and then assigns default values to each configurable option. If memory allocation fails
+ * at any point, an error message is written to STDERR and NULL is returned.
+ *
+ * @return options_t* Pointer to the newly allocated and initialized options_t structure,
+ *         or NULL if memory allocation fails.
+ *
+ * @note The returned structure must be freed by the caller using the appropriate
+ *       deallocation function to avoid memory leaks.
+ *
+ * Error Handling:
+ * - If allocation of the options_t structure or the debug_dir string fails,
+ *   an error message is written to STDERR and NULL is returned.
+ */
+options_t* init_options()
 {
+    options_t* options = (options_t*)malloc(sizeof(options_t));
+    if (!options)
+    {
+        write_msg_to_fd(STDERR_FILENO, "(f) init_options | " ERROR_FAILED_TO_ALLOCATE_MEMORY);
+        return NULL;
+    }
+
     memset(options, 0, sizeof(*options));
+
     options->timeout_sec = DEFAULT_TIMEOUT_SEC;
     options->exposure_sec = DEFAULT_EXPOSURE_SEC;
     options->output_format = DEFAULT_OUTPUT_FORMAT;
@@ -28,9 +53,12 @@ void _options_init(options_t* options)
     options->debug_dir = strdup(DEFAULT_DEBUG_DIR);
     if (!options->debug_dir)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) _options_init | " ERROR_FAILED_TO_ALLOCATE_MEMORY);
-        exit(RTN_ERROR);
+        write_msg_to_fd(STDERR_FILENO, "(f) init_options | " ERROR_FAILED_TO_ALLOCATE_MEMORY);
+        free(options);
+        return NULL;
     }
+
+    return options;
 }
 
 short _starts_with(const char* str, const char* prefix) { return str && prefix && strncmp(str, prefix, strlen(prefix)) == 0; }
@@ -165,7 +193,7 @@ short parse_args(int argc, char* argv[], options_t* options)
         return RTN_ERROR;
     }
 
-    _options_init(options);
+    init_options(options);
 
     for (int i = 1; i < argc; i++)
     {

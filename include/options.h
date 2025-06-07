@@ -22,7 +22,7 @@
 #include <sys/stat.h>
 
 #include "errors.h"
-#include "writer.h"
+#include "utilities.h"
 
 #define DEFAULT_TIMEOUT_SEC 10                  // Default timeout for RTSP stream connection in seconds.
 #define MAX_TIMEOUT_SEC 300                     // Maximum timeout for RTSP stream connection in seconds.
@@ -43,13 +43,11 @@
 #define DEFAULT_DEBUG_STEP 100                  // Default debug interval for saving debug files (requires debug mode).
 #define DEFAULT_DEBUG_DIR "./debug_files"       // Default directory for debug files (requires debug mode).
 
+// Enum for supported image formats
 typedef enum e_image_format
 {
     IMAGE_FORMAT_JPG = 0,
     IMAGE_FORMAT_PNG,
-    IMAGE_FORMAT_WEBP,
-    IMAGE_FORMAT_TIFF,
-    IMAGE_FORMAT_BMP,
     IMAGE_FORMAT_PPM,
     IMAGE_FORMAT_UNKNOWN
 } image_format_t;
@@ -63,16 +61,10 @@ static inline const char* image_format_to_string(image_format_t format)
             return "jpg";
         case IMAGE_FORMAT_PNG:
             return "png";
-        case IMAGE_FORMAT_WEBP:
-            return "webp";
-        case IMAGE_FORMAT_TIFF:
-            return "tiff";
-        case IMAGE_FORMAT_BMP:
-            return "bmp";
         case IMAGE_FORMAT_PPM:
             return "ppm";
         default:
-            return "unknown";
+            return "unknown format";
     }
 }
 
@@ -83,18 +75,18 @@ static inline image_format_t string_to_image_format(const char* str)
         return IMAGE_FORMAT_JPG;
     else if (!strcmp(str, "png"))
         return IMAGE_FORMAT_PNG;
-    else if (!strcmp(str, "webp"))
-        return IMAGE_FORMAT_WEBP;
-    else if (!strcmp(str, "tiff"))
-        return IMAGE_FORMAT_TIFF;
-    else if (!strcmp(str, "bmp"))
-        return IMAGE_FORMAT_BMP;
     else if (!strcmp(str, "ppm"))
         return IMAGE_FORMAT_PPM;
     else
         return IMAGE_FORMAT_UNKNOWN;
 }
 
+/**
+ * @brief Structure to hold configuration options for the application.
+ *
+ * This structure encapsulates various settings and parameters
+ * that control the behavior and features of the application.
+ */
 typedef struct options_s
 {
     char* rtsp_url;                // RTSP URL to connect to.
@@ -110,15 +102,20 @@ typedef struct options_s
     char debug;                    // Debug mode: print debug information (0: off, 1: on).
     int debug_step;                // Save debug file every N steps.
     char* debug_dir;               // Directory for debug files (default: ./debug_files).
+    char help;                     // Help flag: print usage information (0: off, 1: on).
+    char version;                  // Version flag: print version information (0: off, 1: on).
 } options_t;
 
 #define MATCH(opt, longopt) (strcmp(arg, opt) == 0 || strcmp(arg, longopt) == 0)
 #define MATCH_PREFIX(opt) (strncmp(arg, opt "=", strlen(opt) + 1) == 0)
 
+options_t* init_options();
+options_t* get_options(int argc, char* argv[]);
 short parse_args(int argc, char* argv[], options_t* options);
-void print_help(const char* program_name);
-void print_version();
-void print_options(const options_t* options);
 void free_options(options_t* options);
+
+void print_options(const options_t* options);
+
+void print_help(const char* program_name);
 
 #endif  // OPTIONS_H

@@ -43,7 +43,7 @@ uint8_t* get_streamshot(const options_t* options)
     if (_calculate_number_of_frames_to_read(stream, options) != RTN_SUCCESS)
         goto end;
 
-    if (_init_sws_context(stream, options) != RTN_SUCCESS)
+    if (_init_sws_context(stream, options, DEFAULT_SCALE_FACTOR) != RTN_SUCCESS)
         goto end;
 
     _process_streamshot(stream, options);

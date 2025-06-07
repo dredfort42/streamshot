@@ -17,6 +17,8 @@
 #ifndef ERRORS_H
 #define ERRORS_H
 
+#include <errno.h>
+
 #define ANSI_RED "\033[31m"
 #define ANSI_GREEN "\033[32m"
 #define ANSI_YELLOW "\033[33m"
@@ -29,6 +31,7 @@
 #define ERROR_FAILED_TO_WRITE_FILE "Error: Failed to write to file.\n"
 #define ERROR_FAILED_TO_WRITE_FD "Error: Failed to write to file descriptor.\n"
 #define ERROR_NO_DATA_TO_WRITE "Error: No data to write to file descriptor.\n"
+#define ERROR_NOT_NULL_TERMINATED "Error: The provided message is not null-terminated.\n"
 
 #define ERROR_INVALID_ARGUMENTS "Error: Invalid arguments provided.\n"
 #define ERROR_INVALID_RTSP_URL "Error: Invalid RTSP URL provided.\n"
