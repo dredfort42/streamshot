@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | main.c
     ::  ::          ::  ::    Created  | 2025-06-04
-          ::::  ::::          Modified | 2025-06-05
+          ::::  ::::          Modified | 2025-06-08
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -21,6 +21,7 @@ int main(int argc, char* argv[])
 {
     if (argc < 2)
     {
+        write_msg_to_fd(STDERR_FILENO, "(f) main | " ERROR_INVALID_ARGUMENTS);
         print_help(argv[0]);
         return MAIN_ERROR_CODE;
     }
@@ -30,8 +31,15 @@ int main(int argc, char* argv[])
     if (!options)
         goto end;
 
-    if (options->help || options->version)
+    if (options->help)
     {
+        print_help(argv[0]);
+        error_code = MAIN_SUCCESS_CODE;
+        goto end;
+    }
+    else if (options->version)
+    {
+        print_version();
         error_code = MAIN_SUCCESS_CODE;
         goto end;
     }

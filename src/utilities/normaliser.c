@@ -47,3 +47,47 @@ char* normalize_file_path(const char* file_path)
 
     return normalized_path;
 }
+
+/**
+ * @brief Trims leading and trailing whitespace and quote-like characters from a string.
+ *
+ * This function creates a duplicate of the input string and removes any leading or trailing
+ * spaces, double quotes ('"'), single quotes ('\''), or backticks ('`'). The returned string
+ * is dynamically allocated and must be freed by the caller.
+ *
+ * @param str The input null-terminated string to be trimmed. May be NULL.
+ * @return A newly allocated, trimmed string on success, or NULL if the input is NULL,
+ *         empty, or memory allocation fails. The caller is responsible for freeing the result.
+ *
+ * @note This function does not modify the original string.
+ *       If the input string contains only characters to be trimmed, an empty string is returned.
+ *
+ * Example usage:
+ * @code
+ *   char* trimmed = trim_flag_value("  \"'example value'\"  ");
+ *   // trimmed now points to "example value"
+ *   free(trimmed);
+ * @endcode
+ */
+char* trim_flag_value(const char* str)
+{
+    if (!str || strlen(str) == 0)
+        return NULL;
+
+    char* result = strdup(str);
+    if (!result)
+        return NULL;
+
+    char* end = result + strlen(result) - 1;
+    while (end > result && (*end == ' ' || *end == '\"' || *end == '\'' || *end == '`')) end--;
+
+    *(end + 1) = '\0';
+
+    char* start = result;
+    while (*start && (*start == ' ' || *start == '\"' || *start == '\'' || *start == '`')) start++;
+
+    if (start != result)
+        memmove(result, start, end - start + 2);
+
+    return result;
+}

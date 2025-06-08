@@ -28,6 +28,7 @@ ssize_t write_data_to_file(const char* file_path, const void* buf, size_t buf_si
 ssize_t write_data_to_fd(int fd, const void* buf, size_t buf_size);
 ssize_t write_msg_to_fd(int fd, const char* msg);
 char* normalize_file_path(const char* file_path);
+char* trim_flag_value(const char* str);
 void print_version();
 
 #endif  // WRITER_H

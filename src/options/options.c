@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | options.c
     ::  ::          ::  ::    Created  | 2025-06-05
-          ::::  ::::          Modified | 2025-06-06
+          ::::  ::::          Modified | 2025-06-08
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -71,6 +71,9 @@ options_t* get_options(int argc, char* argv[])
 
     if (parse_args(argc, argv, options) == RTN_ERROR)
         return NULL;
+
+    if (options->debug)
+        print_options(options);
 
     return options;
 }

@@ -20,7 +20,7 @@ SRC_DIR     := src
 BUILD_DIR   := build
 LIB_DIR     := lib
 
-SRCS        := $(wildcard $(SRC_DIR)/*.c)
+SRCS        := $(shell find $(SRC_DIR) -type f -name '*.c')
 
 #FFMPEG library
 FFMPEG_DIR 	:= ${LIB_DIR}/ffmpeg
@@ -44,7 +44,8 @@ build: build_check $(NAME)
 $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-$(BUILD_DIR)/%.o: src/%.c
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:

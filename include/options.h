@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | options.h
     ::  ::          ::  ::    Created  | 2025-06-05
-          ::::  ::::          Modified | 2025-06-05
+          ::::  ::::          Modified | 2025-06-08
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -106,16 +106,12 @@ typedef struct options_s
     char version;                  // Version flag: print version information (0: off, 1: on).
 } options_t;
 
-#define MATCH(opt, longopt) (strcmp(arg, opt) == 0 || strcmp(arg, longopt) == 0)
-#define MATCH_PREFIX(opt) (strncmp(arg, opt "=", strlen(opt) + 1) == 0)
-
 options_t* init_options();
 options_t* get_options(int argc, char* argv[]);
 short parse_args(int argc, char* argv[], options_t* options);
 void free_options(options_t* options);
 
 void print_options(const options_t* options);
-
 void print_help(const char* program_name);
 
 #endif  // OPTIONS_H

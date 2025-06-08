@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | errors.h
     ::  ::          ::  ::    Created  | 2025-06-05
-          ::::  ::::          Modified | 2025-06-05
+          ::::  ::::          Modified | 2025-06-08
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -50,7 +50,6 @@
 
 #define RTN_ERROR -1
 #define RTN_SUCCESS 0
-#define RTN_COMPLETE 1
 
 #define MAIN_ERROR_CODE 1
 #define MAIN_SUCCESS_CODE 0
