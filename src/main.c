@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | main.c
     ::  ::          ::  ::    Created  | 2025-06-04
-          ::::  ::::          Modified | 2025-06-08
+          ::::  ::::          Modified | 2025-06-09
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -15,7 +15,7 @@
 *******************************************************************/
 
 #include "options.h"
-#include "reader.h"
+#include "stream_process.h"
 
 int main(int argc, char* argv[])
 {
@@ -29,7 +29,10 @@ int main(int argc, char* argv[])
     short error_code = 0;
     options_t* options = get_options(argc, argv);
     if (!options)
+    {
+        error_code = MAIN_ERROR_CODE;
         goto end;
+    }
 
     if (options->help)
     {
@@ -44,15 +47,11 @@ int main(int argc, char* argv[])
         goto end;
     }
 
-    // error_code = parse_args(argc, argv, &options);
-    // if (error_code)
-    //     goto end;
-
-    // get_streamshot(&options);
+    get_streamshot(options);
 
 end:
     if (options)
         free_options(options);
 
-    return error_code < 0 ? MAIN_ERROR_CODE : MAIN_SUCCESS_CODE;
+    return error_code;
 }

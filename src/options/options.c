@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | options.c
     ::  ::          ::  ::    Created  | 2025-06-05
-          ::::  ::::          Modified | 2025-06-08
+          ::::  ::::          Modified | 2025-06-09
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -21,17 +21,13 @@
  *
  * This function allocates memory for an options_t structure, sets all fields to zero,
  * and then assigns default values to each configurable option. If memory allocation fails
- * at any point, an error message is written to STDERR and NULL is returned.
+ * at any point, NULL is returned.
  *
  * @return options_t* Pointer to the newly allocated and initialized options_t structure,
  *         or NULL if memory allocation fails.
  *
  * @note The returned structure must be freed by the caller using the appropriate
  *       deallocation function to avoid memory leaks.
- *
- * Error Handling:
- * - If allocation of the options_t structure or the debug_dir string fails,
- *   an error message is written to STDERR and NULL is returned.
  */
 options_t* init_options()
 {
@@ -42,15 +38,17 @@ options_t* init_options()
         return NULL;
     }
 
-    memset(options, 0, sizeof(*options));
-
+    options->rtsp_url = NULL;
     options->timeout_sec = DEFAULT_TIMEOUT_SEC;
-    options->exposure_sec = DEFAULT_EXPOSURE_SEC;
+    options->output_file_path = NULL;
     options->output_file_fd = -1;
-
+    options->exposure_sec = DEFAULT_EXPOSURE_SEC;
     options->output_format = DEFAULT_OUTPUT_FORMAT;
     options->scale_factor = DEFAULT_SCALE_FACTOR;
+    options->resize_height = 0;
+    options->resize_width = 0;
     options->image_quality = DEFAULT_IMAGE_QUALITY;
+    options->debug = 0;
     options->debug_step = DEFAULT_DEBUG_STEP;
     options->debug_dir = strdup(DEFAULT_DEBUG_DIR);
     if (!options->debug_dir)
@@ -59,23 +57,54 @@ options_t* init_options()
         free(options);
         return NULL;
     }
+    options->help = 0;
+    options->version = 0;
 
     return options;
 }
 
+/**
+ * @brief Parses command-line arguments and populates the options_t structure.
+ *
+ * This function processes the command-line arguments provided in argc and argv,
+ * populating the options_t structure with the parsed values. It handles both short
+ * and long option formats, as well as key=value pairs. If any errors occur during
+ * parsing or validation, it returns NULL.
+ *
+ * @param argc The number of command-line arguments.
+ * @param argv The array of command-line argument strings.
+ *
+ * @return options_t* Pointer to the populated options_t structure, or NULL if an error occurs.
+ */
 options_t* get_options(int argc, char* argv[])
 {
     options_t* options = init_options();
     if (!options)
-        return NULL;
+        goto error;
 
     if (parse_args(argc, argv, options) == RTN_ERROR)
-        return NULL;
+        goto error;
 
     if (options->debug)
+        printf(ANSI_BLUE "Debug:" ANSI_RESET " ARGS parsed successfully.\n");
+
+    if (validate_options(options) == RTN_ERROR)
+        goto error;
+
+    if (options->debug)
+        printf(ANSI_BLUE "Debug:" ANSI_RESET " Options validated successfully.\n");
+
+    if (options->debug)
+    {
+        printf(ANSI_BLUE "Debug:" ANSI_RESET " Printing options:\n");
         print_options(options);
+    }
 
     return options;
+
+error:
+    free_options(options);
+    return NULL;
 }
 
 /**

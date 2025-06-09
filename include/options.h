@@ -109,6 +109,7 @@ typedef struct options_s
 options_t* init_options();
 options_t* get_options(int argc, char* argv[]);
 short parse_args(int argc, char* argv[], options_t* options);
+short validate_options(const options_t* options);
 void free_options(options_t* options);
 
 void print_options(const options_t* options);

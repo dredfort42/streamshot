@@ -19,12 +19,6 @@
 
 #include <errno.h>
 
-#define ANSI_RED "\033[31m"
-#define ANSI_GREEN "\033[32m"
-#define ANSI_YELLOW "\033[33m"
-#define ANSI_BLUE "\033[34m"
-#define ANSI_RESET "\033[0m"
-
 #define ERROR_FAILED_TO_ALLOCATE_MEMORY "Error: Failed to allocate memory.\n"
 #define ERROR_FAILED_TO_CREATE_DEBUG_DIR "Error: Failed to create debug directory.\n"
 #define ERROR_FAILED_TO_OPEN_FILE "Error: Failed to open file.\n"

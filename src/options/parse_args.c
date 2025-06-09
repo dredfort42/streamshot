@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | parse_args.c
     ::  ::          ::  ::    Created  | 2025-06-07
-          ::::  ::::          Modified | 2025-06-08
+          ::::  ::::          Modified | 2025-06-09
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -15,6 +15,76 @@
 *******************************************************************/
 
 #include "options.h"
+
+typedef struct argument_s
+{
+    char* key;    // Argument key (e.g., -i, --input)
+    char* value;  // Argument value (e.g., rtsp://example.com/stream)
+} argument_t;
+
+/**
+ * @brief Parses a command-line argument at the specified index and returns it as an argument_t structure.
+ *
+ * This function processes the argument at the given index in the argv array, extracting the key and value
+ * if present. It supports arguments in the form of "key=value" as well as "key value" pairs. Special flags
+ * such as "-v", "--version", "-h", "--help", "-d", and "--debug" are handled as standalone keys without values.
+ *
+ * @param argc   The count of command-line arguments.
+ * @param argv   The array of command-line argument strings.
+ * @param index  The index of the argument to parse (must be >= 1 and < argc).
+ *
+ * @return       Pointer to a dynamically allocated argument_t structure containing the parsed key and value,
+ *               or NULL if parsing fails or memory allocation fails.
+ *
+ * @note The returned argument_t structure must be freed by the caller to avoid memory leaks.
+ */
+argument_t* _get_argument(int argc, char* argv[], int* index)
+{
+    if (!index || *index < 1 || *index >= argc)
+        return NULL;
+
+    argument_t* argument = (argument_t*)malloc(sizeof(argument_t));
+    if (!argument)
+    {
+        write_msg_to_fd(STDERR_FILENO, "(f) create_argument | " ERROR_FAILED_TO_ALLOCATE_MEMORY);
+        return NULL;
+    }
+
+    argument->key = NULL;
+    argument->value = NULL;
+
+    if (!argv[*index] || strlen(argv[*index]) == 0)
+        goto error;
+
+    char* eq = strchr(argv[*index], '=');
+    if (eq)
+    {
+        *eq = '\0';
+        argument->key = argv[*index];
+        argument->value = eq + 1;
+        if (!argument->value || strlen(argument->value) == 0)
+            goto error;
+    }
+    else
+    {
+        argument->key = argv[*index];
+        if (strcmp(argument->key, "-v") != 0 && strcmp(argument->key, "--version") != 0 && strcmp(argument->key, "-h") != 0 &&
+            strcmp(argument->key, "--help") != 0 && strcmp(argument->key, "-d") != 0 && strcmp(argument->key, "--debug") != 0)
+        {
+            if (*index + 1 < argc && argv[*index + 1][0] != '-')
+                argument->value = argv[++(*index)];
+            else
+                goto error;
+        }
+    }
+
+    return argument;
+
+error:
+    write_msg_to_fd(STDERR_FILENO, "(f) create_argument | " ERROR_INVALID_ARGUMENTS);
+    free(argument);
+    return NULL;
+}
 
 /**
  * @brief Parses command-line arguments and populates the provided options structure.
@@ -60,41 +130,25 @@ short parse_args(int argc, char* argv[], options_t* options)
     int i = 1;
     while (i < argc)
     {
-        char* key = NULL;
-        char* value = NULL;
+        argument_t* argument = _get_argument(argc, argv, &i);
+        if (!argument)
+            return RTN_ERROR;
 
-        char* eq = strchr(argv[i], '=');
-        if (eq)
-        {
-            *eq = '\0';
-            key = argv[i];
-            value = eq + 1;
-            if (!value || strlen(value) == 0)
-                goto invalid_arg;
-        }
-        else
-        {
-            key = argv[i];
-            if (strcmp(key, "-v") != 0 && strcmp(key, "--version") != 0 && strcmp(key, "-h") != 0 && strcmp(key, "--help") != 0 && strcmp(key, "-d") != 0 &&
-                strcmp(key, "--debug") != 0)
-            {
-                if (i + 1 < argc && argv[i + 1][0] != '-')
-                    value = argv[++i];
-                else
-                    goto invalid_arg;
-            }
-        }
+        char* key = argument->key;
+        char* value = argument->value;
 
 #define MATCH(opt, longopt) (strcmp(key, opt) == 0 || strcmp(key, longopt) == 0)
 
         if (MATCH("-v", "--version"))
         {
             options->version = 1;
+            free(argument);
             return RTN_SUCCESS;
         }
         else if (MATCH("-h", "--help"))
         {
             options->help = 1;
+            free(argument);
             return RTN_SUCCESS;
         }
         else if (MATCH("-i", "--input"))
@@ -129,11 +183,12 @@ short parse_args(int argc, char* argv[], options_t* options)
             options->debug_dir = trim_flag_value(value);
         else
         {
-        invalid_arg:
             write_msg_to_fd(STDERR_FILENO, "(f) parse_args | " ERROR_INVALID_ARGUMENTS);
+            free(argument);
             return RTN_ERROR;
         }
 
+        free(argument);
         i++;
     }
 

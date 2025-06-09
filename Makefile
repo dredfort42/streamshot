@@ -17,6 +17,7 @@
 # Variables
 NAME        := streamshot
 SRC_DIR     := src
+TESTS_DIR  := tests
 BUILD_DIR   := build
 LIB_DIR     := lib
 
@@ -35,7 +36,7 @@ CFLAGS      := -g -O0 -fsanitize=address -Wall -Wextra -Werror $(INCLUDES)
 LDFLAGS     := -L$(FFMPEG_DIR) -lavformat -lavutil -lavcodec -lswscale
 
 # Rules
-.PHONY: all build clean fclean re
+.PHONY: all build clean fclean re test
 
 all: build
 
@@ -50,13 +51,20 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 
 clean:
 	@rm -rf $(BUILD_DIR)
+	@rm -f $(NAME)
+	@rm -rf debug_files
 
 fclean: clean
-	@rm -rf debug_files
 	@rm -rf $(LIB_DIR)
-	@rm -f $(NAME)
 
 re: clean all
+
+test: build_check
+	@mkdir -p $(BUILD_DIR)/tests
+	$(CC) $(CFLAGS) $(wildcard $(TESTS_DIR)/*.c) $(filter-out $(SRC_DIR)/main.c, $(SRCS)) -o $(BUILD_DIR)/tests/test_runner $(LDFLAGS)
+	@clear
+	@$(BUILD_DIR)/tests/test_runner
+
 
 # Check for existence of directories
 build_check: check_src_exists check_build_exists check_lib_exists check_ffmpeg_exists

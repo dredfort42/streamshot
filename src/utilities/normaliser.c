@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | normaliser.c
     ::  ::          ::  ::    Created  | 2025-06-05
-          ::::  ::::          Modified | 2025-06-07
+          ::::  ::::          Modified | 2025-06-09
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -71,23 +71,32 @@ char* normalize_file_path(const char* file_path)
  */
 char* trim_flag_value(const char* str)
 {
-    if (!str || strlen(str) == 0)
+    if (!str || *str == '\0')
         return NULL;
 
-    char* result = strdup(str);
+    const char* start = str;
+    while (*start && (*start == ' ' || *start == '"' || *start == '\'' || *start == '`')) start++;
+
+    if (*start == '\0')
+        return NULL;
+
+    const char* end = start + strlen(start) - 1;
+    while (end > start && (*end == ' ' || *end == '"' || *end == '\'' || *end == '`')) end--;
+
+    size_t trimmed_len = end - start + 1;
+
+    char* result = (char*)malloc(trimmed_len + 1);
     if (!result)
         return NULL;
 
-    char* end = result + strlen(result) - 1;
-    while (end > result && (*end == ' ' || *end == '\"' || *end == '\'' || *end == '`')) end--;
+    size_t i = 0;
+    while (i < trimmed_len)
+    {
+        result[i] = start[i];
+        i++;
+    }
 
-    *(end + 1) = '\0';
-
-    char* start = result;
-    while (*start && (*start == ' ' || *start == '\"' || *start == '\'' || *start == '`')) start++;
-
-    if (start != result)
-        memmove(result, start, end - start + 2);
+    result[trimmed_len] = '\0';
 
     return result;
 }
