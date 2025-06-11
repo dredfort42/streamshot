@@ -29,12 +29,12 @@
  * @note The returned structure must be freed by the caller using the appropriate
  *       deallocation function to avoid memory leaks.
  */
-options_t* init_options()
+static options_t* _init_options()
 {
     options_t* options = (options_t*)malloc(sizeof(options_t));
     if (!options)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) init_options | " ERROR_FAILED_TO_ALLOCATE_MEMORY);
+        write_msg_to_fd(STDERR_FILENO, "(f) _init_options | " ERROR_FAILED_TO_ALLOCATE_MEMORY);
         return NULL;
     }
 
@@ -53,7 +53,7 @@ options_t* init_options()
     options->debug_dir = strdup(DEFAULT_DEBUG_DIR);
     if (!options->debug_dir)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) init_options | " ERROR_FAILED_TO_ALLOCATE_MEMORY);
+        write_msg_to_fd(STDERR_FILENO, "(f) _init_options | " ERROR_FAILED_TO_ALLOCATE_MEMORY);
         free(options);
         return NULL;
     }
@@ -78,7 +78,7 @@ options_t* init_options()
  */
 options_t* get_options(int argc, char* argv[])
 {
-    options_t* options = init_options();
+    options_t* options = _init_options();
     if (!options)
         goto error;
 

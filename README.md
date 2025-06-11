@@ -19,7 +19,7 @@ make build
 ## Usage
 
 ```bash
-./streamshot RTSP_URL [OPTIONS]
+./streamshot [OPTIONS]
 ```
 
 ### Options

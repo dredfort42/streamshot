@@ -41,6 +41,7 @@
 #define ERROR_INVALID_DEBUG_DIR "Error: Invalid debug directory specified.\n"
 
 #define ERROR_FAILED_TO_SET_STREAM_OPTIONS "Error: Failed to set stream options.\n"
+#define ERROR_FAILED_TO_GET_IMAGE_SIZE "Error: Failed to get image size.\n"
 
 #define RTN_ERROR -1
 #define RTN_SUCCESS 0
