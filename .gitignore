@@ -49,6 +49,12 @@ dkms.conf
 build/
 lib/
 
+# TMP files
+*.tmp
+*.temp
+*.cache
+_*.*
+_*/
 
 # Logs and backups
 *.log

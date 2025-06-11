@@ -11,9 +11,9 @@ typedef struct stream_s
     unsigned int number_of_frames_to_read;  // Number of frames to read from the stream.
     long long stop_reading_at;              // Timestamp to stop reading frames (in microseconds).
 
-    // AVFrame* frame;                       // Frame for storing decoded video frames.
-    // size_t frame_size;                    // Size of the frame in bytes.
-    // uint8_t* frame_data;                  // Pointer to the frame data buffer.
+    // AVFrame* video_frame;                       // Frame for storing decoded video frames.
+    // size_t frame_size;                    // Size of the video_frame in bytes.
+    // uint8_t* frame_data;                  // Pointer to the video_frame data buffer.
     // AVStream* video_stream;               // Pointer to the video stream in the format context.
     // double fps;                           // Frame rate of the video stream (frames per second).
 
@@ -228,7 +228,7 @@ short _calculate_number_of_frames_to_read(stream_t* stream, const options_t* opt
 
         if (fps <= 0)
         {
-            write_msg_to_fd(STDERR_FILENO, "(f) _calculate_number_of_frames_to_read | Invalid frame rate.\n");
+            write_msg_to_fd(STDERR_FILENO, "(f) _calculate_number_of_frames_to_read | Invalid video_frame rate.\n");
             return RTN_ERROR;
         }
 
@@ -273,6 +273,13 @@ short _set_stop_reading_at(stream_t* stream, const options_t* options)
     return RTN_SUCCESS;
 }
 
+typedef struct image_process_s
+{
+    AVFrame* video_frame;       // Pointer to the decoded video video_frame.
+    size_t frame_size;    // Size of the video_frame in bytes.
+    uint8_t* frame_data;  // Pointer to the video_frame data buffer.
+} image_process_t;
+
 short get_streamshot(options_t* options)
 {
     if (!options)
@@ -289,19 +296,28 @@ short get_streamshot(options_t* options)
         _init_sws_context(stream, options, DEFAULT_SCALE_FACTOR) || _calculate_number_of_frames_to_read(stream, options))
         return RTN_ERROR;
 
+    // -------------
+
     // Allocate frames and buffers
     AVPacket* pkt = av_packet_alloc();
-    AVFrame* frame = av_frame_alloc();
-    AVFrame* rgb_frame = av_frame_alloc();
-    size_t num_bytes = av_image_get_buffer_size(AV_PIX_FMT_RGB24, stream->codec_context->width, stream->codec_context->height, 1);
-    uint8_t* buffer = (uint8_t*)av_malloc(num_bytes * sizeof(uint8_t));
-    av_image_fill_arrays(rgb_frame->data, rgb_frame->linesize, buffer, AV_PIX_FMT_RGB24, stream->codec_context->width, stream->codec_context->height, 1);
+    AVFrame* video_frame = av_frame_alloc();
+    AVFrame* image_frame = av_frame_alloc();
+    size_t image_size = av_image_get_buffer_size(AV_PIX_FMT_RGB24, stream->codec_context->width, stream->codec_context->height, 1);
+    uint8_t* buffer = (uint8_t*)av_malloc(image_size * sizeof(uint8_t));
+
+    if (image_size != av_image_fill_arrays(image_frame->data, image_frame->linesize, buffer, AV_PIX_FMT_RGB24, stream->codec_context->width, stream->codec_context->height, 1))
+    {
+        return RTN_ERROR;
+    }
+
+    printf(ANSI_BLUE "Debug:" ANSI_RESET " Allocated memory for RGB video_frame: %zu bytes\n", image_size);
+
 
     unsigned long long frame_count = 0;
     short got_first_i_frame = 0;
 
     // Allocate buffer for summing pixel values
-    unsigned long long* sum_buffer = (unsigned long long*)calloc(num_bytes, sizeof(unsigned long long));
+    unsigned long long* sum_buffer = (unsigned long long*)calloc(image_size, sizeof(unsigned long long));
     if (!sum_buffer)
     {
         return 1;
@@ -322,56 +338,56 @@ short get_streamshot(options_t* options)
         {
             if (avcodec_send_packet(stream->codec_context, pkt) == 0)
             {
-                while (avcodec_receive_frame(stream->codec_context, frame) == 0)
+                while (avcodec_receive_frame(stream->codec_context, video_frame) == 0)
                 {
                     // Wait for first I-frame (key frame)
                     if (!got_first_i_frame)
                     {
-                        if (frame->pict_type == AV_PICTURE_TYPE_I)
+                        if (video_frame->pict_type == AV_PICTURE_TYPE_I)
                             got_first_i_frame = 1;
                         else
                             continue;
                     }
 
-                    // Convert frame to RGB
-                    sws_scale(stream->sws_context, (const uint8_t* const*)frame->data, frame->linesize, 0, stream->codec_context->height, rgb_frame->data,
-                              rgb_frame->linesize);
+                    // Convert video_frame to RGB
+                    sws_scale(stream->sws_context, (const uint8_t* const*)video_frame->data, video_frame->linesize, 0, stream->codec_context->height, image_frame->data,
+                              image_frame->linesize);
 
                     // Sum pixel values
-                    uint8_t* data = rgb_frame->data[0];
-                    for (size_t i = 0; i < num_bytes; ++i) sum_buffer[i] += data[i];
+                    // uint8_t* data = image_frame->data[0];
+                    for (size_t i = 0; i < image_size; ++i) sum_buffer[i] += image_frame->data[0][i];
 
                     if (options->debug && (frame_count == 0 || (frame_count + 1) % 100 == 0 || frame_count == stream->number_of_frames_to_read - 1))
                     {
                         char file_name[1024];
                         snprintf(file_name, sizeof(file_name), "%s/frame_%010llu.ppm", options->debug_dir, frame_count + 1);
 
-                        // Save current frame to PPM file (for debugging)
+                        // Save current video_frame to PPM file (for debugging)
                         FILE* f = fopen(file_name, "wb");
                         if (f)
                         {
                             char header[32];
                             snprintf(header, sizeof(header), "P6\n%d %d\n255\n", stream->codec_context->width, stream->codec_context->height);
                             fwrite(header, 1, strlen(header), f);
-                            fwrite(data, 1, num_bytes, f);
+                            fwrite(image_frame->data[0], 1, image_size, f);
                             fclose(f);
                             printf("Saved %s\n", file_name);
                         }
                     }
 
-                    // If last frame, compute average and write result
+                    // If last video_frame, compute average and write result
                     if (frame_count == stream->number_of_frames_to_read - 1)
                     {
                         if (options->debug)
-                            printf("Computing average frame...\n");
+                            printf("Computing average video_frame...\n");
 
-                        uint8_t* avg_buffer = (uint8_t*)malloc(num_bytes);
+                        uint8_t* avg_buffer = (uint8_t*)malloc(image_size);
                         if (!avg_buffer)
                         {
                             write_msg_to_fd(STDERR_FILENO, "(f) get_streamshot | " ERROR_FAILED_TO_ALLOCATE_MEMORY);
                             break;
                         }
-                        for (size_t i = 0; i < num_bytes; ++i) avg_buffer[i] = (uint8_t)(sum_buffer[i] / stream->number_of_frames_to_read);
+                        for (size_t i = 0; i < image_size; ++i) avg_buffer[i] = (uint8_t)(sum_buffer[i] / stream->number_of_frames_to_read);
 
                         char header[32];
                         snprintf(header, sizeof(header), "P6\n%d %d\n255\n", stream->codec_context->width, stream->codec_context->height);
@@ -385,18 +401,18 @@ short get_streamshot(options_t* options)
                         if (f)
                         {
                             fwrite(header, 1, strlen(header), f);
-                            fwrite(avg_buffer, 1, num_bytes, f);
+                            fwrite(avg_buffer, 1, image_size, f);
                             fclose(f);
                             if (options->debug)
                                 printf("Saved %s\n", file_name);
                         }
                         // }
 
-                        // // Write average frame to output fd
+                        // // Write average video_frame to output fd
                         // write_data_to_fd(data_fd, (const uint8_t*)header, strlen(header));
-                        // write_data_to_fd(data_fd, avg_buffer, num_bytes);
+                        // write_data_to_fd(data_fd, avg_buffer, image_size);
                         // if (options->debug)
-                        //     printf("Average frame written to data_fd %d\n", data_fd);
+                        //     printf("Average video_frame written to data_fd %d\n", data_fd);
 
                         free(avg_buffer);
                     }
@@ -430,8 +446,8 @@ short get_streamshot(options_t* options)
 
     // Cleanup
     av_free(buffer);
-    av_frame_free(&rgb_frame);
-    av_frame_free(&frame);
+    av_frame_free(&image_frame);
+    av_frame_free(&video_frame);
     av_packet_free(&pkt);
     sws_freeContext(stream->sws_context);
     avformat_close_input(&stream->format_context);
