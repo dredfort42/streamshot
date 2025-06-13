@@ -10,13 +10,6 @@ typedef struct stream_s
     struct SwsContext* sws_context;         // SwsContext for scaling and converting pixel formats.
     unsigned int number_of_frames_to_read;  // Number of frames to read from the stream.
     long long stop_reading_at;              // Timestamp to stop reading frames (in microseconds).
-
-    // AVFrame* video_frame;                       // Frame for storing decoded video frames.
-    // size_t frame_size;                    // Size of the video_frame in bytes.
-    // uint8_t* frame_data;                  // Pointer to the video_frame data buffer.
-    // AVStream* video_stream;               // Pointer to the video stream in the format context.
-    // double fps;                           // Frame rate of the video stream (frames per second).
-
 } stream_t;
 
 stream_t* _init_stream()
@@ -383,31 +376,10 @@ short get_streamshot(options_t* options)
     (void)img_proc;
     // -------------
 
-    // Allocate frames and buffers
     AVPacket* av_packet = av_packet_alloc();
-    // AVFrame* video_frame = av_frame_alloc();
-    // AVFrame* image_frame = av_frame_alloc();
-    // size_t image_size = av_image_get_buffer_size(AV_PIX_FMT_RGB24, stream->codec_context->width, stream->codec_context->height, 1);
-    // uint8_t* buffer = (uint8_t*)av_malloc(image_size * sizeof(uint8_t));
-
-    // if ((ssize_t)image_size != (ssize_t)av_image_fill_arrays(image_frame->data, image_frame->linesize, buffer, AV_PIX_FMT_RGB24,
-    // stream->codec_context->width,
-    //                                                          stream->codec_context->height, 1))
-    // {
-    //     return RTN_ERROR;
-    // }
-
-    // printf(ANSI_BLUE "Debug:" ANSI_RESET " Allocated memory for RGB video_frame: %zu bytes\n", image_size);
 
     unsigned long long frame_counter = 0;
     short got_first_i_frame = 0;
-
-    // // Allocate buffer for summing pixel values
-    // unsigned long long* sum_buffer = (unsigned long long*)calloc(image_size, sizeof(unsigned long long));
-    // if (!sum_buffer)
-    // {
-    //     return 1;
-    // }
 
     if (options->debug)
         printf(ANSI_BLUE "Debug:" ANSI_RESET " Starting to read %u frames from RTSP stream...\n", stream->number_of_frames_to_read);
@@ -539,7 +511,6 @@ short get_streamshot(options_t* options)
     sws_freeContext(stream->sws_context);
     avformat_close_input(&stream->format_context);
     av_dict_free(&stream->options);
-    avformat_network_deinit();
 
     if (frame_counter < stream->number_of_frames_to_read)
         return 1;
