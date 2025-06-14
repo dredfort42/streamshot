@@ -1,16 +1,4 @@
-#include "stream_process.h"
-
-typedef struct stream_s
-{
-    AVDictionary* options;            // Options for the RTSP stream (e.g., timeout).
-    AVFormatContext* format_context;  // Format context for the RTSP stream.
-    int video_stream_index;           // Index of the video stream in the format context.
-
-    AVCodecContext* codec_context;          // Codec context for decoding the video stream.
-    struct SwsContext* sws_context;         // SwsContext for scaling and converting pixel formats.
-    unsigned int number_of_frames_to_read;  // Number of frames to read from the stream.
-    long long stop_reading_at;              // Timestamp to stop reading frames (in microseconds).
-} stream_t;
+#include "stream.h"
 
 stream_t* _init_stream()
 {
@@ -266,17 +254,7 @@ short _set_stop_reading_at(stream_t* stream, const options_t* options)
     return RTN_SUCCESS;
 }
 
-typedef struct image_process_s
-{
-    AVFrame* video_frame;                  // Pointer to the decoded video video_frame.
-    AVFrame* image_frame;                  // Pointer to the RGB image video_frame.
-    size_t image_size;                     // Size of the image in bytes (calculated based on width, height, and pixel format).
-    uint8_t* buffer;                       // Pointer to the buffer for storing the RGB image data.
-    unsigned long long* pixel_sum_buffer;  // Buffer for summing pixel values across multiple frames.
-
-} image_process_t;
-
-void free_image_process(image_process_t* img_proc)
+void free_image_process(process_t* img_proc)
 {
     if (!img_proc)
         return;
@@ -293,7 +271,7 @@ void free_image_process(image_process_t* img_proc)
     free(img_proc);
 }
 
-static image_process_t* _init_image_process(stream_t* stream, const options_t* options)
+static process_t* _init_image_process(stream_t* stream, const options_t* options)
 {
     if (!stream || !stream->codec_context || stream->video_stream_index < 0 || !options)
     {
@@ -301,7 +279,7 @@ static image_process_t* _init_image_process(stream_t* stream, const options_t* o
         return NULL;
     }
 
-    image_process_t* img_proc = (image_process_t*)malloc(sizeof(image_process_t));
+    process_t* img_proc = (process_t*)malloc(sizeof(process_t));
     if (!img_proc)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) _init_image_process | " ERROR_FAILED_TO_ALLOCATE_MEMORY);
@@ -372,7 +350,7 @@ short get_streamshot(options_t* options)
         _init_sws_context(stream, options, DEFAULT_SCALE_FACTOR) || _calculate_number_of_frames_to_read(stream, options))
         return RTN_ERROR;
 
-    image_process_t* img_proc = _init_image_process(stream, options);
+    process_t* img_proc = _init_image_process(stream, options);
     (void)img_proc;
     // -------------
 

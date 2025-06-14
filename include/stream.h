@@ -28,6 +28,27 @@
 #include "options.h"
 #include "utilities.h"
 
+typedef struct stream_s
+{
+    AVDictionary* options;                  // Options for the RTSP stream (e.g., timeout).
+    AVFormatContext* format_context;        // Format context for the RTSP stream.
+    int video_stream_index;                 // Index of the video stream in the format context.
+    AVCodecContext* codec_context;          // Codec context for decoding the video stream.
+    struct SwsContext* sws_context;         // SwsContext for scaling and converting pixel formats.
+    unsigned int number_of_frames_to_read;  // Number of frames to read from the stream.
+    long long stop_reading_at;              // Timestamp to stop reading frames (in microseconds).
+} stream_t;
+
+typedef struct process_s
+{
+    AVFrame* video_frame;                  // Pointer to the decoded video video_frame.
+    AVFrame* image_frame;                  // Pointer to the RGB image video_frame.
+    size_t image_size;                     // Size of the image in bytes (calculated based on width, height, and pixel format).
+    uint8_t* buffer;                       // Pointer to the buffer for storing the RGB image data.
+    unsigned long long* pixel_sum_buffer;  // Buffer for summing pixel values across multiple frames.
+
+} process_t;
+
 // typedef struct stream_s
 // {
 //     AVDictionary* options;                  // Options for the RTSP stream (e.g., timeout).
