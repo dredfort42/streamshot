@@ -106,7 +106,6 @@ typedef struct options_s
     char version;                  // Version flag: print version information (0: off, 1: on).
 } options_t;
 
-options_t* init_options();
 options_t* get_options(int argc, char* argv[]);
 short parse_args(int argc, char* argv[], options_t* options);
 short validate_options(const options_t* options);
