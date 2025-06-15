@@ -15,7 +15,7 @@
 *******************************************************************/
 
 #include "options.h"
-#include "stream_process.h"
+#include "stream.h"
 
 int main(int argc, char* argv[])
 {

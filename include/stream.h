@@ -14,11 +14,10 @@
 
 *******************************************************************/
 
-#ifndef STREAM_PROCESS_H
-#define STREAM_PROCESS_H
+#ifndef STREAM_H
+#define STREAM_H
 
 #include <stdint.h>
-#include <sys/time.h>
 
 #include "errors.h"
 #include "libavcodec/avcodec.h"
@@ -38,6 +37,9 @@ typedef struct stream_s
     unsigned int number_of_frames_to_read;  // Number of frames to read from the stream.
     long long stop_reading_at;              // Timestamp to stop reading frames (in microseconds).
 } stream_t;
+
+stream_t* get_stream(options_t* options);
+void free_stream(stream_t* stream);
 
 typedef struct process_s
 {
@@ -96,4 +98,4 @@ typedef struct process_s
 
 short get_streamshot(options_t* options);
 
-#endif  // STREAM_PROCESS_H
+#endif  // STREAM_H

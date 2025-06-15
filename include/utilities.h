@@ -14,12 +14,13 @@
 
 *******************************************************************/
 
-#ifndef WRITER_H
-#define WRITER_H
+#ifndef UTILITIES_H
+#define UTILITIES_H
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
 #include <unistd.h>
 
 #include "errors.h"
@@ -37,4 +38,6 @@ char* normalize_file_path(const char* file_path);
 char* trim_flag_value(const char* str);
 void print_version();
 
-#endif  // WRITER_H
+long long time_now_in_microseconds();
+
+#endif  // UTILITIES_H
