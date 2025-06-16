@@ -14,6 +14,13 @@
 
 *******************************************************************/
 
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#include "errors.h"
 #include "utilities.h"
 
 /**
@@ -38,6 +45,7 @@ ssize_t write_data_to_fd(int fd, const void* buf, size_t buf_size)
     if (fd < 0 || buf == NULL || buf_size == 0)
     {
         write(STDERR_FILENO, "(f) write_data_to_fd | " ERROR_INVALID_ARGUMENTS, strlen("(f) write_data_to_fd | " ERROR_INVALID_ARGUMENTS));
+
         return RTN_ERROR;
     }
 
@@ -63,6 +71,7 @@ ssize_t write_data_to_fd(int fd, const void* buf, size_t buf_size)
 error:
 
     write(STDERR_FILENO, "(f) write_data_to_fd | " ERROR_FAILED_TO_WRITE_FD, strlen("(f) write_data_to_fd | " ERROR_FAILED_TO_WRITE_FD));
+
     return RTN_ERROR;
 }
 
@@ -86,12 +95,14 @@ ssize_t write_msg_to_fd(int fd, const char* msg)
     if (fd < 0 || msg == NULL)
     {
         write(STDERR_FILENO, "(f) write_msg_to_fd | " ERROR_INVALID_ARGUMENTS, strlen("(f) write_msg_to_fd | " ERROR_INVALID_ARGUMENTS));
+
         return RTN_ERROR;
     }
 
     if (strchr(msg, '\0') == NULL)
     {
         write(STDERR_FILENO, "(f) write_msg_to_fd | " ERROR_NOT_NULL_TERMINATED, strlen("(f) write_msg_to_fd | " ERROR_NOT_NULL_TERMINATED));
+
         return RTN_ERROR;
     }
 
@@ -101,6 +112,7 @@ ssize_t write_msg_to_fd(int fd, const char* msg)
 
     ssize_t total_written = write_data_to_fd(fd, msg, msg_len);
     if (total_written < 0)
+
         return RTN_ERROR;
 
     return total_written;
@@ -125,14 +137,16 @@ ssize_t write_data_to_file(const char* file_path, const void* buf, size_t buf_si
 {
     if (file_path == NULL || buf == NULL || buf_size == 0)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) write_data_to_file | " ERROR_INVALID_ARGUMENTS);
+        write_msg_to_fd(STDERR_FILENO, "(f) write_data_to_file | " ERROR_INVALID_ARGUMENTS "\n");
+
         return RTN_ERROR;
     }
 
     char* normalized_path = normalize_file_path(file_path);
     if (normalized_path == NULL)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) write_data_to_file | " ERROR_INVALID_ARGUMENTS);
+        write_msg_to_fd(STDERR_FILENO, "(f) write_data_to_file | " ERROR_INVALID_ARGUMENTS "\n");
+
         return RTN_ERROR;
     }
 
@@ -140,7 +154,7 @@ ssize_t write_data_to_file(const char* file_path, const void* buf, size_t buf_si
     FILE* file = fopen(normalized_path, "wb");
     if (!file)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) write_data_to_file | " ERROR_FAILED_TO_OPEN_FILE);
+        write_msg_to_fd(STDERR_FILENO, "(f) write_data_to_file | " ERROR_FAILED_TO_OPEN_FILE "\n");
         goto end;
     }
 
@@ -153,7 +167,7 @@ ssize_t write_data_to_file(const char* file_path, const void* buf, size_t buf_si
         {
             if (ferror(file))
             {
-                write_msg_to_fd(STDERR_FILENO, "(f) write_data_to_file | " ERROR_FAILED_TO_WRITE_FILE);
+                write_msg_to_fd(STDERR_FILENO, "(f) write_data_to_file | " ERROR_FAILED_TO_WRITE_FILE "\n");
                 goto end;
             }
 
@@ -172,6 +186,7 @@ end:
         free(normalized_path);
 
     if (total_written != buf_size)
+
         return RTN_ERROR;
 
     return (ssize_t)total_written;

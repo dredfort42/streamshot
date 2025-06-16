@@ -14,7 +14,12 @@
 
 *******************************************************************/
 
+#include <stdio.h>
+#include <unistd.h>
+
+#include "errors.h"
 #include "options.h"
+#include "utilities.h"
 
 /**
  * @brief Prints usage information for the application.
@@ -26,6 +31,13 @@
  */
 void print_help(const char* prog_name)
 {
+    if (!prog_name)
+    {
+        write_msg_to_fd(STDERR_FILENO, "(f) print_help | " ERROR_INVALID_ARGUMENTS "\n");
+
+        return;
+    }
+
     printf("Usage: %s [OPTIONS]\n\n", prog_name);
 
     printf("Options:\n");

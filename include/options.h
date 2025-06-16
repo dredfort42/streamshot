@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | options.h
     ::  ::          ::  ::    Created  | 2025-06-05
-          ::::  ::::          Modified | 2025-06-08
+          ::::  ::::          Modified | 2025-06-16
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -16,13 +16,6 @@
 
 #ifndef OPTIONS_H
 #define OPTIONS_H
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-
-#include "errors.h"
-#include "utilities.h"
 
 #define DEFAULT_TIMEOUT_SEC 10                  // Default timeout for RTSP stream connection in seconds.
 #define MAX_TIMEOUT_SEC 300                     // Maximum timeout for RTSP stream connection in seconds.
@@ -44,7 +37,7 @@
 #define DEFAULT_DEBUG_DIR "./debug_files"       // Default directory for debug files (requires debug mode).
 
 // Enum for supported image formats
-typedef enum e_image_format
+typedef enum image_format_e
 {
     IMAGE_FORMAT_JPG = 0,
     IMAGE_FORMAT_PNG,
@@ -52,34 +45,8 @@ typedef enum e_image_format
     IMAGE_FORMAT_UNKNOWN
 } image_format_t;
 
-// Helper function to get string representation of image_format_t
-static inline const char* image_format_to_string(image_format_t format)
-{
-    switch (format)
-    {
-        case IMAGE_FORMAT_JPG:
-            return "jpg";
-        case IMAGE_FORMAT_PNG:
-            return "png";
-        case IMAGE_FORMAT_PPM:
-            return "ppm";
-        default:
-            return "unknown format";
-    }
-}
-
-// Helper function to convert string to image_format_t
-static inline image_format_t string_to_image_format(const char* str)
-{
-    if (!strcmp(str, "jpg"))
-        return IMAGE_FORMAT_JPG;
-    else if (!strcmp(str, "png"))
-        return IMAGE_FORMAT_PNG;
-    else if (!strcmp(str, "ppm"))
-        return IMAGE_FORMAT_PPM;
-    else
-        return IMAGE_FORMAT_UNKNOWN;
-}
+const char* image_format_to_string(image_format_t format);
+image_format_t string_to_image_format(const char* str);
 
 /**
  * @brief Structure to hold configuration options for the application.

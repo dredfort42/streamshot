@@ -14,7 +14,14 @@
 
 *******************************************************************/
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#include "errors.h"
 #include "options.h"
+#include "utilities.h"
 
 typedef struct argument_s
 {
@@ -41,12 +48,14 @@ typedef struct argument_s
 argument_t* _get_argument(int argc, char* argv[], int* index)
 {
     if (!index || *index < 1 || *index >= argc)
+
         return NULL;
 
     argument_t* argument = (argument_t*)malloc(sizeof(argument_t));
     if (!argument)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) create_argument | " ERROR_FAILED_TO_ALLOCATE_MEMORY);
+
         return NULL;
     }
 
@@ -83,6 +92,7 @@ argument_t* _get_argument(int argc, char* argv[], int* index)
 error:
     write_msg_to_fd(STDERR_FILENO, "(f) create_argument | " ERROR_INVALID_ARGUMENTS);
     free(argument);
+
     return NULL;
 }
 
@@ -113,7 +123,8 @@ error:
  *   -   , --debug-dir         : Set the debug directory.
  *
  * If an invalid argument is encountered, an error message is written to stderr
- * and the function returns an error code.
+ * and the function
+        returns an error code.
  *
  * @param argc      The number of command-line arguments.
  * @param argv      The array of command-line argument strings.
@@ -125,6 +136,7 @@ error:
 short parse_args(int argc, char* argv[], options_t* options)
 {
     if (argc < 2 || !options)
+
         return RTN_ERROR;
 
     int i = 1;
@@ -132,6 +144,7 @@ short parse_args(int argc, char* argv[], options_t* options)
     {
         argument_t* argument = _get_argument(argc, argv, &i);
         if (!argument)
+
             return RTN_ERROR;
 
         char* key = argument->key;
@@ -143,12 +156,14 @@ short parse_args(int argc, char* argv[], options_t* options)
         {
             options->version = 1;
             free(argument);
+
             return RTN_SUCCESS;
         }
         else if (MATCH("-h", "--help"))
         {
             options->help = 1;
             free(argument);
+
             return RTN_SUCCESS;
         }
         else if (MATCH("-i", "--input"))
@@ -183,8 +198,9 @@ short parse_args(int argc, char* argv[], options_t* options)
             options->debug_dir = trim_flag_value(value);
         else
         {
-            write_msg_to_fd(STDERR_FILENO, "(f) parse_args | " ERROR_INVALID_ARGUMENTS);
+            write_msg_to_fd(STDERR_FILENO, "(f) parse_args | " ERROR_INVALID_ARGUMENTS "\n");
             free(argument);
+
             return RTN_ERROR;
         }
 

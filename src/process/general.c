@@ -1,27 +1,16 @@
+#include <unistd.h>
+
+#include "errors.h"
+#include "process.h"
 #include "stream.h"
+#include "utilities.h"
 
-short _set_stop_reading_at(stream_t* stream, const options_t* options)
-{
-    if (!stream || !options)
-    {
-        write_msg_to_fd(STDERR_FILENO, "(f) _set_stop_reading_at | " ERROR_INVALID_ARGUMENTS);
-        return RTN_ERROR;
-    }
-
-    if (options->exposure_sec > 0)
-        stream->stop_reading_at = time_now_in_microseconds() + (long long)(options->exposure_sec * 2 * 1000000);
-    else
-        stream->stop_reading_at = time_now_in_microseconds() + (long long)(options->timeout_sec * 2 * 1000000);
-
-    if (options->debug)
-        printf(ANSI_BLUE "Debug:" ANSI_RESET " Stop reading at: %lld microseconds\n", stream->stop_reading_at);
-
-    return RTN_SUCCESS;
-}
+short _calculate_limits(stream_t* stream, const options_t* options);
 
 void free_image_process(process_t* img_proc)
 {
     if (!img_proc)
+
         return;
 
     if (img_proc->video_frame)
@@ -40,41 +29,43 @@ static process_t* _init_image_process(stream_t* stream, const options_t* options
 {
     if (!stream || !stream->codec_context || stream->video_stream_index < 0 || !options)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) _init_image_process | " ERROR_INVALID_ARGUMENTS);
+        write_msg_to_fd(STDERR_FILENO, "(f) _init_image_process | " ERROR_INVALID_ARGUMENTS "\n");
+
         return NULL;
     }
 
     process_t* img_proc = (process_t*)malloc(sizeof(process_t));
     if (!img_proc)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) _init_image_process | " ERROR_FAILED_TO_ALLOCATE_MEMORY);
+        write_msg_to_fd(STDERR_FILENO, "(f) _init_image_process | " ERROR_FAILED_TO_ALLOCATE_MEMORY "\n");
+
         return NULL;
     }
 
     img_proc->video_frame = av_frame_alloc();
     if (!img_proc->video_frame)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) _init_image_process | " ERROR_FAILED_TO_ALLOCATE_MEMORY);
+        write_msg_to_fd(STDERR_FILENO, "(f) _init_image_process | " ERROR_FAILED_TO_ALLOCATE_MEMORY "\n");
         goto error;
     }
 
     img_proc->image_frame = av_frame_alloc();
     if (!img_proc->image_frame)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) _init_image_process | " ERROR_FAILED_TO_ALLOCATE_MEMORY);
+        write_msg_to_fd(STDERR_FILENO, "(f) _init_image_process | " ERROR_FAILED_TO_ALLOCATE_MEMORY "\n");
         goto error;
     }
 
     img_proc->image_size = av_image_get_buffer_size(AV_PIX_FMT_RGB24, stream->codec_context->width, stream->codec_context->height, 1);
     if (img_proc->image_size < 0)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) _init_image_process | " ERROR_FAILED_TO_GET_IMAGE_SIZE);
+        write_msg_to_fd(STDERR_FILENO, "(f) _init_image_process | " ERROR_FAILED_TO_GET_IMAGE_SIZE "\n");
     }
 
     img_proc->buffer = (uint8_t*)av_malloc(img_proc->image_size * sizeof(uint8_t));
     if (!img_proc->buffer)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) _init_image_process | " ERROR_FAILED_TO_ALLOCATE_MEMORY);
+        write_msg_to_fd(STDERR_FILENO, "(f) _init_image_process | " ERROR_FAILED_TO_ALLOCATE_MEMORY "\n");
         goto error;
     }
 
@@ -85,7 +76,7 @@ static process_t* _init_image_process(stream_t* stream, const options_t* options
     img_proc->pixel_sum_buffer = (unsigned long long*)calloc(img_proc->image_size, sizeof(unsigned long long));
     if (!img_proc->pixel_sum_buffer)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) _init_image_process | " ERROR_FAILED_TO_ALLOCATE_MEMORY);
+        write_msg_to_fd(STDERR_FILENO, "(f) _init_image_process | " ERROR_FAILED_TO_ALLOCATE_MEMORY "\n");
         goto error;
     }
 
@@ -96,19 +87,22 @@ static process_t* _init_image_process(stream_t* stream, const options_t* options
 
 error:
     free_image_process(img_proc);
+
     return NULL;
 }
 
-short get_streamshot(options_t* options)
+short process_stream(options_t* options)
 {
     if (!options)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) get_streamshot | " ERROR_INVALID_ARGUMENTS);
+        write_msg_to_fd(STDERR_FILENO, "(f) get_streamshot | " ERROR_INVALID_ARGUMENTS "\n");
+
         return RTN_ERROR;
     }
 
     stream_t* stream = get_stream(options);
     if (!stream)
+
         return RTN_ERROR;
 
     process_t* img_proc = _init_image_process(stream, options);
@@ -123,10 +117,9 @@ short get_streamshot(options_t* options)
     if (options->debug)
         printf(ANSI_BLUE "Debug:" ANSI_RESET " Starting to read %u frames from RTSP stream...\n", stream->number_of_frames_to_read);
 
-    if (_set_stop_reading_at(stream, options) != RTN_SUCCESS)
-    {
+    if (_calculate_limits(stream, options))
         return RTN_ERROR;
-    }
+
     // Main loop: read and process frames
     int read_status = 0;
     // while ((read_result = av_read_frame(stream->format_context, av_packet)) >= 0 && frame_counter < stream->number_of_frames_to_read)
@@ -183,7 +176,7 @@ short get_streamshot(options_t* options)
                         uint8_t* avg_buffer = (uint8_t*)malloc(img_proc->image_size);
                         if (!avg_buffer)
                         {
-                            write_msg_to_fd(STDERR_FILENO, "(f) get_streamshot | " ERROR_FAILED_TO_ALLOCATE_MEMORY);
+                            write_msg_to_fd(STDERR_FILENO, "(f) get_streamshot | " ERROR_FAILED_TO_ALLOCATE_MEMORY "\n");
                             break;
                         }
                         for (size_t i = 0; i < img_proc->image_size; ++i)
@@ -252,6 +245,7 @@ short get_streamshot(options_t* options)
     av_dict_free(&stream->options);
 
     if (frame_counter < stream->number_of_frames_to_read)
+
         return 1;
 
     return 0;

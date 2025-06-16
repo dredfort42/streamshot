@@ -5,9 +5,9 @@
         ::::::::::::::        | Email  | dredfort.42@gmail.com |
       ::::  ::::::  ::::      +--------+-----------------------+
     ::::::::::::::::::::::
-    ::  ::::::::::::::  ::    File     | stream_process.h
+    ::  ::::::::::::::  ::    File     | stream.h
     ::  ::          ::  ::    Created  | 2025-06-06
-          ::::  ::::          Modified | 2025-06-09
+          ::::  ::::          Modified | 2025-06-16
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -17,15 +17,15 @@
 #ifndef STREAM_H
 #define STREAM_H
 
-#include <stdint.h>
+// #include <stdint.h>
+#include "options.h"
 
-#include "errors.h"
+// #include "errors.h"
 #include "libavcodec/avcodec.h"
 #include "libavformat/avformat.h"
-#include "libavutil/imgutils.h"
+// // #include "libavutil/imgutils.h"
 #include "libswscale/swscale.h"
-#include "options.h"
-#include "utilities.h"
+// #include "utilities.h"
 
 typedef struct stream_s
 {
@@ -41,15 +41,15 @@ typedef struct stream_s
 stream_t* get_stream(options_t* options);
 void free_stream(stream_t* stream);
 
-typedef struct process_s
-{
-    AVFrame* video_frame;                  // Pointer to the decoded video video_frame.
-    AVFrame* image_frame;                  // Pointer to the RGB image video_frame.
-    size_t image_size;                     // Size of the image in bytes (calculated based on width, height, and pixel format).
-    uint8_t* buffer;                       // Pointer to the buffer for storing the RGB image data.
-    unsigned long long* pixel_sum_buffer;  // Buffer for summing pixel values across multiple frames.
+// typedef struct process_s
+// {
+//     AVFrame* video_frame;                  // Pointer to the decoded video video_frame.
+//     AVFrame* image_frame;                  // Pointer to the RGB image video_frame.
+//     size_t image_size;                     // Size of the image in bytes (calculated based on width, height, and pixel format).
+//     uint8_t* buffer;                       // Pointer to the buffer for storing the RGB image data.
+//     unsigned long long* pixel_sum_buffer;  // Buffer for summing pixel values across multiple frames.
 
-} process_t;
+// } process_t;
 
 // typedef struct stream_s
 // {
@@ -96,6 +96,6 @@ typedef struct process_s
 
 // uint8_t* _process_streamshot(stream_t* stream, const options_t* options);
 
-short get_streamshot(options_t* options);
+// short get_streamshot(options_t* options);
 
 #endif  // STREAM_H

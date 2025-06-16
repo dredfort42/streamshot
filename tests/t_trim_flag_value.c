@@ -71,7 +71,8 @@ int trim_flag_value_test()
     }
     else
     {
-        printf("[" ANSI_GREEN "OK" ANSI_RESET "] (f) trim_flag_value: input=\"%s\" returned NULL as expected\n", input);
+        printf("[" ANSI_GREEN "OK" ANSI_RESET "] (f) trim_flag_value: input=\"%s\" 
+        returned NULL as expected\n", input);
     }
 
     // Test 4: Only quotes
@@ -85,7 +86,8 @@ int trim_flag_value_test()
     }
     else
     {
-        printf("[" ANSI_GREEN "OK" ANSI_RESET "] (f) trim_flag_value: input=\"%s\" returned NULL as expected\n", input);
+        printf("[" ANSI_GREEN "OK" ANSI_RESET "] (f) trim_flag_value: input=\"%s\" 
+        returned NULL as expected\n", input);
     }
 
     // Test 5: Leading and trailing backticks
@@ -135,7 +137,8 @@ int trim_flag_value_test()
     }
     else
     {
-        printf("[" ANSI_GREEN "OK" ANSI_RESET "] (f) trim_flag_value: input=\"%s\" returned NULL as expected\n", input);
+        printf("[" ANSI_GREEN "OK" ANSI_RESET "] (f) trim_flag_value: input=\"%s\" 
+        returned NULL as expected\n", input);
     }
 
     // Test 8: NULL input
@@ -149,7 +152,8 @@ int trim_flag_value_test()
     }
     else
     {
-        printf("[" ANSI_GREEN "OK" ANSI_RESET "] (f) trim_flag_value: input=NULL returned NULL as expected\n");
+        printf("[" ANSI_GREEN "OK" ANSI_RESET "] (f) trim_flag_value: input=NULL 
+        returned NULL as expected\n");
     }
 
     // Test 9: Only one character to trim
@@ -163,7 +167,8 @@ int trim_flag_value_test()
     }
     else
     {
-        printf("[" ANSI_GREEN "OK" ANSI_RESET "] (f) trim_flag_value: input=\"%s\" returned NULL as expected\n", input);
+        printf("[" ANSI_GREEN "OK" ANSI_RESET "] (f) trim_flag_value: input=\"%s\" 
+        returned NULL as expected\n", input);
     }
 
     // Test 10: No trailing/leading, but quotes inside

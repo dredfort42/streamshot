@@ -61,13 +61,16 @@ int normalize_file_path_test()
     // Test case 3: Normalizing an empty string
     char* test3 = normalize_file_path("");
     if (!test3)
-        printf("[" ANSI_GREEN "OK" ANSI_RESET "] (f) normalize_file_path: input empty string returned NULL as expected.\n");
+        printf("[" ANSI_GREEN "OK" ANSI_RESET "] (f) normalize_file_path: input empty string 
+        returned NULL as expected.\n");
     else
     {
-        failed++;
-        printf("[" ANSI_RED "KO" ANSI_RESET "] (f) normalize_file_path: input empty string did not return NULL, got %s\n", test3);
+            failed++;
+        printf("[" ANSI_RED "KO" ANSI_RESET "] (f) normalize_file_path: input empty string did not 
+        return NULL, got %s\n", test3);
         free(test3);
     }
 
-    return failed;
+    
+        return failed;
 }

@@ -14,8 +14,14 @@
 
 *******************************************************************/
 
+// #include "options.h"
+#include <unistd.h>
+
+#include "errors.h"
 #include "options.h"
+#include "process.h"
 #include "stream.h"
+#include "utilities.h"
 
 int main(int argc, char* argv[])
 {
@@ -23,6 +29,7 @@ int main(int argc, char* argv[])
     {
         write_msg_to_fd(STDERR_FILENO, "(f) main | " ERROR_INVALID_ARGUMENTS);
         print_help(argv[0]);
+
         return MAIN_ERROR_CODE;
     }
 
@@ -47,7 +54,7 @@ int main(int argc, char* argv[])
         goto end;
     }
 
-    get_streamshot(options);
+    process_stream(options);
 
 end:
     if (options)

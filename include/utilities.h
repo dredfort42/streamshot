@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | utilities.h
     ::  ::          ::  ::    Created  | 2025-06-05
-          ::::  ::::          Modified | 2025-06-08
+          ::::  ::::          Modified | 2025-06-16
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -18,12 +18,6 @@
 #define UTILITIES_H
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/time.h>
-#include <unistd.h>
-
-#include "errors.h"
 
 #define ANSI_RED "\033[31m"
 #define ANSI_GREEN "\033[32m"
