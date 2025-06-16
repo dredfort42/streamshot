@@ -87,7 +87,7 @@ short _init_codec_context(stream_t* stream, const options_t* options)
     return RTN_SUCCESS;
 
 error:
-    if (stream->codec_context)
+    if (stream && stream->codec_context)
     {
         avcodec_free_context(&stream->codec_context);
         stream->codec_context = NULL;

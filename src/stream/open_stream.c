@@ -118,7 +118,7 @@ short _open_stream(stream_t* stream, const options_t* options)
     return RTN_SUCCESS;
 
 error:
-    if (stream->format_context)
+    if (stream && stream->format_context)
     {
         avformat_close_input(&stream->format_context);
         stream->format_context = NULL;

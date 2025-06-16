@@ -46,13 +46,19 @@
 #define ERROR_INVALID_DESTINATION_DIMENSIONS "Error: Invalid destination dimensions for scaling."
 #define ERROR_FAILED_TO_CREATE_SWS_CONTEXT "Error: Failed to create SwsContext for scaling."
 
+#define ERROR_INVALID_FPS "Error: Invalid FPS value specified."
+
 #define ERROR_FAILED_TO_GET_IMAGE_SIZE "Error: Failed to get image size."
 #define ERROR_NO_STREAMS_FOUND "Error: No streams found in the format context."
 #define ERROR_NO_VIDEO_STREAM_FOUND "Error: No video stream found in the format context."
 #define ERROR_NO_DECODER_FOUND "Error: No decoder found for the video stream."
 #define ERROR_FAILED_TO_ALLOCATE_CODEC_CONTEXT "Error: Failed to allocate codec context."
+#define ERROR_FAILED_TO_ALLOCATE_VIDEO_FRAME "Error: Failed to allocate video frame."
+#define ERROR_FAILED_TO_ALLOCATE_IMAGE_FRAME "Error: Failed to allocate image frame."
+#define ERROR_FAILED_TO_ALLOCATE_BUFFER "Error: Failed to allocate buffer for image data."
 #define ERROR_FAILED_TO_COPY_CODEC_PARAMETERS "Error: Failed to copy codec parameters to context."
 #define ERROR_FAILED_TO_OPEN_CODEC "Error: Failed to open codec."
+#define ERROR_FAILED_TO_FILL_IMAGE_ARRAYS "Error: Failed to fill image arrays."
 
 #define RTN_ERROR -1
 #define RTN_SUCCESS 0

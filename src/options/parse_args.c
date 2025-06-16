@@ -48,15 +48,17 @@ typedef struct argument_s
 argument_t* _get_argument(int argc, char* argv[], int* index)
 {
     if (!index || *index < 1 || *index >= argc)
+    {
+        write_msg_to_fd(STDERR_FILENO, "(f) create_argument | " ERROR_INVALID_ARGUMENTS);
 
         return NULL;
+    }
 
     argument_t* argument = (argument_t*)malloc(sizeof(argument_t));
     if (!argument)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) create_argument | " ERROR_FAILED_TO_ALLOCATE_MEMORY);
-
-        return NULL;
+        goto error;
     }
 
     argument->key = NULL;
@@ -136,8 +138,11 @@ error:
 short parse_args(int argc, char* argv[], options_t* options)
 {
     if (argc < 2 || !options)
+    {
+        write_msg_to_fd(STDERR_FILENO, "(f) parse_args | " ERROR_INVALID_ARGUMENTS "\n");
 
         return RTN_ERROR;
+    }
 
     int i = 1;
     while (i < argc)

@@ -69,7 +69,7 @@ short _set_stream_options(stream_t* stream, const options_t* options)
     return RTN_SUCCESS;
 
 error:
-    if (stream->options)
+    if (stream && stream->options)
     {
         av_dict_free(&stream->options);
         stream->options = NULL;

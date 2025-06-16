@@ -54,7 +54,38 @@ int main(int argc, char* argv[])
         goto end;
     }
 
-    process_stream(options);
+    raw_image_t* raw_image = get_raw_image(options);
+    if (!raw_image)
+    {
+        error_code = MAIN_ERROR_CODE;
+        goto end;
+    }
+
+    // TMP
+    char header[32];
+    snprintf(header, sizeof(header), "P6\n%d %d\n255\n", raw_image->width, raw_image->height);
+
+    // if (options->debug)
+    // {
+    // Save to PPM file (for debugging)
+    char file_name[1024];
+    snprintf(file_name, sizeof(file_name), "%s/average_frame.ppm", options->debug_dir);
+    FILE* f = fopen(file_name, "wb");
+    if (f)
+    {
+        fwrite(header, 1, strlen(header), f);
+        fwrite(raw_image->data, 1, raw_image->size, f);
+        fclose(f);
+        if (options->debug)
+            printf("Saved %s\n", file_name);
+    }
+    // }
+
+    // // Write average video_frame to output fd
+    // write_data_to_fd(data_fd, (const uint8_t*)header, strlen(header));
+    // write_data_to_fd(data_fd, avg_buffer, image_size);
+    // if (options->debug)
+    //     printf("Average video_frame written to data_fd %d\n", data_fd);
 
 end:
     if (options)
