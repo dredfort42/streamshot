@@ -29,7 +29,6 @@ int main(int argc, char* argv[])
     {
         write_msg_to_fd(STDERR_FILENO, "(f) main | " ERROR_INVALID_ARGUMENTS);
         print_help(argv[0]);
-
         return MAIN_ERROR_CODE;
     }
 

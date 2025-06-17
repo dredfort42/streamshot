@@ -33,12 +33,15 @@
 
 typedef struct process_s
 {
-    AVFrame* video_frame;                  // Pointer to the decoded video video_frame.
-    AVFrame* image_frame;                  // Pointer to the RGB image video_frame.
-    size_t image_size;                     // Size of the image in bytes (calculated based on width, height, and pixel format).
-    uint8_t* buffer;                       // Pointer to the buffer for storing the RGB image data.
-    unsigned long long* pixel_sum_buffer;  // Buffer for summing pixel values across multiple frames.
-
+    AVPacket* av_packet;                 // Pointer to the AVPacket for the current frame.
+    AVFrame* video_frame;                // Pointer to the decoded video video_frame.
+    AVFrame* image_frame;                // Pointer to the RGB image video_frame.
+    size_t image_size;                   // Calculated size of the image in bytes.
+    uint8_t* buffer;                     // Pointer to the buffer for storing the RGB image data.
+    unsigned long long* sum_buffer;      // Buffer for summing pixel values across multiple frames.
+    unsigned long long received_frames;  // Number of frames received from the stream.
+    short got_first_i_frame;             // Flag indicating if the first I-frame has been received.
+    int stream_read_status;              // Status of the stream reading (0: success, < 0: error).
 } process_t;
 
 typedef struct raw_image_s

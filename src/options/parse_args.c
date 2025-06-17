@@ -30,18 +30,20 @@ typedef struct argument_s
 } argument_t;
 
 /**
- * @brief Parses a command-line argument at the specified index and returns it as an argument_t structure.
+ * @brief Parses a command-line argument at the specified index and returns it as an argument_t
+ * structure.
  *
- * This function processes the argument at the given index in the argv array, extracting the key and value
- * if present. It supports arguments in the form of "key=value" as well as "key value" pairs. Special flags
- * such as "-v", "--version", "-h", "--help", "-d", and "--debug" are handled as standalone keys without values.
+ * This function processes the argument at the given index in the argv array, extracting the key and
+ * value if present. It supports arguments in the form of "key=value" as well as "key value" pairs.
+ * Special flags such as "-v", "--version", "-h", "--help", "-d", and "--debug" are handled as
+ * standalone keys without values.
  *
  * @param argc   The count of command-line arguments.
  * @param argv   The array of command-line argument strings.
  * @param index  The index of the argument to parse (must be >= 1 and < argc).
  *
- * @return       Pointer to a dynamically allocated argument_t structure containing the parsed key and value,
- *               or NULL if parsing fails or memory allocation fails.
+ * @return       Pointer to a dynamically allocated argument_t structure containing the parsed key
+ * and value, or NULL if parsing fails or memory allocation fails.
  *
  * @note The returned argument_t structure must be freed by the caller to avoid memory leaks.
  */
@@ -50,7 +52,6 @@ argument_t* _get_argument(int argc, char* argv[], int* index)
     if (!index || *index < 1 || *index >= argc)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) create_argument | " ERROR_INVALID_ARGUMENTS);
-
         return NULL;
     }
 
@@ -79,8 +80,9 @@ argument_t* _get_argument(int argc, char* argv[], int* index)
     else
     {
         argument->key = argv[*index];
-        if (strcmp(argument->key, "-v") != 0 && strcmp(argument->key, "--version") != 0 && strcmp(argument->key, "-h") != 0 &&
-            strcmp(argument->key, "--help") != 0 && strcmp(argument->key, "-d") != 0 && strcmp(argument->key, "--debug") != 0)
+        if (strcmp(argument->key, "-v") != 0 && strcmp(argument->key, "--version") != 0 &&
+            strcmp(argument->key, "-h") != 0 && strcmp(argument->key, "--help") != 0 &&
+            strcmp(argument->key, "-d") != 0 && strcmp(argument->key, "--debug") != 0)
         {
             if (*index + 1 < argc && argv[*index + 1][0] != '-')
                 argument->value = argv[++(*index)];
@@ -125,8 +127,7 @@ error:
  *   -   , --debug-dir         : Set the debug directory.
  *
  * If an invalid argument is encountered, an error message is written to stderr
- * and the function
-        returns an error code.
+ * and the function        returns an error code.
  *
  * @param argc      The number of command-line arguments.
  * @param argv      The array of command-line argument strings.
@@ -140,7 +141,6 @@ short parse_args(int argc, char* argv[], options_t* options)
     if (argc < 2 || !options)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) parse_args | " ERROR_INVALID_ARGUMENTS "\n");
-
         return RTN_ERROR;
     }
 

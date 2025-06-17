@@ -27,7 +27,8 @@
  * This function scans through the streams in the provided stream_t structure's format context,
  * searching for a stream of type AVMEDIA_TYPE_VIDEO. If found, it sets the video_stream_index
  * member of the stream_t structure to the index of the video stream. If no video stream is found,
- * or if the input arguments are invalid, an error message is written to STDERR and an error code isreturned.
+ * or if the input arguments are invalid, an error message is written to STDERR and an error code
+ * isreturned.
  *
  * @param stream Pointer to a stream_t structure containing the format context to search.
  *
@@ -38,7 +39,6 @@ short _detect_video_stream(stream_t* stream)
     if (!stream || !stream->format_context)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) _detect_video_stream | " ERROR_INVALID_ARGUMENTS "\n");
-
         return RTN_ERROR;
     }
 
@@ -47,7 +47,6 @@ short _detect_video_stream(stream_t* stream)
     if (!stream->format_context->nb_streams)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) _detect_video_stream | " ERROR_NO_STREAMS_FOUND "\n");
-
         return RTN_ERROR;
     }
 
@@ -62,8 +61,8 @@ short _detect_video_stream(stream_t* stream)
 
     if (stream->video_stream_index == -1)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) _detect_video_stream | " ERROR_NO_VIDEO_STREAM_FOUND "\n");
-
+        write_msg_to_fd(STDERR_FILENO,
+                        "(f) _detect_video_stream | " ERROR_NO_VIDEO_STREAM_FOUND "\n");
         return RTN_ERROR;
     }
 
@@ -98,7 +97,8 @@ short _open_stream(stream_t* stream, const options_t* options)
     }
 
     if (options->debug)
-        printf(ANSI_BLUE "Debug:" ANSI_RESET " Successfully opened RTSP stream: %s\n", options->rtsp_url);
+        printf(ANSI_BLUE "Debug:" ANSI_RESET " Successfully opened RTSP stream: %s\n",
+               options->rtsp_url);
 
     if (avformat_find_stream_info(stream->format_context, NULL) < 0)
     {
@@ -107,13 +107,16 @@ short _open_stream(stream_t* stream, const options_t* options)
     }
 
     if (options->debug)
-        printf(ANSI_BLUE "Debug:" ANSI_RESET " Found information about %d streams in the RTSP stream.\n", stream->format_context->nb_streams);
+        printf(ANSI_BLUE "Debug:" ANSI_RESET
+                         " Found information about %d streams in the RTSP stream.\n",
+               stream->format_context->nb_streams);
 
     if (_detect_video_stream(stream) != RTN_SUCCESS)
         goto error;
 
     if (options->debug)
-        printf(ANSI_BLUE "Debug:" ANSI_RESET " Detected video stream index: %d\n", stream->video_stream_index);
+        printf(ANSI_BLUE "Debug:" ANSI_RESET " Detected video stream index: %d\n",
+               stream->video_stream_index);
 
     return RTN_SUCCESS;
 

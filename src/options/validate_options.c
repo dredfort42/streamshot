@@ -27,7 +27,6 @@ short _validate_rtsp_url(const char* rtsp_url)
     if (!rtsp_url || strlen(rtsp_url) < 8 || strncmp(rtsp_url, "rtsp://", 7) != 0)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) validate_rtsp_url | " ERROR_INVALID_RTSP_URL "\n");
-
         return RTN_ERROR;
     }
 
@@ -39,7 +38,6 @@ short _validate_timeout_sec(int timeout_sec)
     if (timeout_sec < 1 || timeout_sec > MAX_TIMEOUT_SEC)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) validate_timeout_sec | " ERROR_INVALID_TIMEOUT "\n");
-
         return RTN_ERROR;
     }
 
@@ -50,8 +48,8 @@ short _validate_output_file_path(const char* output_file_path)
 {
     if (output_file_path && strlen(output_file_path) < 3)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) validate_output_file_path | " ERROR_INVALID_ARGUMENTS "\n");
-
+        write_msg_to_fd(STDERR_FILENO,
+                        "(f) validate_output_file_path | " ERROR_INVALID_ARGUMENTS "\n");
         return RTN_ERROR;
     }
 
@@ -62,8 +60,8 @@ short _validate_output_file_fd(int output_file_fd)
 {
     if (output_file_fd != -1 && output_file_fd < MIN_OUTPUT_FD)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) validate_output_file_fd | " ERROR_INVALID_OUTPUT_FD "\n");
-
+        write_msg_to_fd(STDERR_FILENO,
+                        "(f) validate_output_file_fd | " ERROR_INVALID_OUTPUT_FD "\n");
         return RTN_ERROR;
     }
 
@@ -75,7 +73,6 @@ short _validate_exposure_sec(int exposure_sec)
     if (exposure_sec < 0 || exposure_sec > MAX_EXPOSURE_SEC)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) validate_exposure_sec | " ERROR_INVALID_EXPOSURE "\n");
-
         return RTN_ERROR;
     }
 
@@ -86,8 +83,8 @@ short _validate_output_format(image_format_t output_format)
 {
     if (output_format == IMAGE_FORMAT_UNKNOWN)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) validate_output_format | " ERROR_INVALID_OUTPUT_FORMAT "\n");
-
+        write_msg_to_fd(STDERR_FILENO,
+                        "(f) validate_output_format | " ERROR_INVALID_OUTPUT_FORMAT "\n");
         return RTN_ERROR;
     }
 
@@ -98,8 +95,8 @@ short _validate_scale_factor(float scale_factor)
 {
     if (scale_factor < MIN_SCALE_FACTOR || scale_factor > MAX_SCALE_FACTOR)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) validate_scale_factor | " ERROR_INVALID_SCALE_FACTOR "\n");
-
+        write_msg_to_fd(STDERR_FILENO,
+                        "(f) validate_scale_factor | " ERROR_INVALID_SCALE_FACTOR "\n");
         return RTN_ERROR;
     }
 
@@ -110,8 +107,8 @@ short _validate_resize_height(int resize_height)
 {
     if (resize_height && (resize_height < MIN_RESIZE_HEIGHT || resize_height > MAX_RESIZE_HEIGHT))
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) validate_resize_height | " ERROR_INVALID_RESIZE_HEIGHT "\n");
-
+        write_msg_to_fd(STDERR_FILENO,
+                        "(f) validate_resize_height | " ERROR_INVALID_RESIZE_HEIGHT "\n");
         return RTN_ERROR;
     }
 
@@ -122,8 +119,8 @@ short _validate_resize_width(int resize_width)
 {
     if (resize_width && (resize_width < MIN_RESIZE_WIDTH || resize_width > MAX_RESIZE_WIDTH))
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) validate_resize_width | " ERROR_INVALID_RESIZE_WIDTH "\n");
-
+        write_msg_to_fd(STDERR_FILENO,
+                        "(f) validate_resize_width | " ERROR_INVALID_RESIZE_WIDTH "\n");
         return RTN_ERROR;
     }
 
@@ -134,8 +131,8 @@ short _validate_image_quality(int image_quality)
 {
     if (image_quality < MIN_IMAGE_QUALITY || image_quality > MAX_IMAGE_QUALITY)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) validate_image_quality | " ERROR_INVALID_IMAGE_QUALITY "\n");
-
+        write_msg_to_fd(STDERR_FILENO,
+                        "(f) validate_image_quality | " ERROR_INVALID_IMAGE_QUALITY "\n");
         return RTN_ERROR;
     }
 
@@ -147,7 +144,6 @@ short _validate_debug_step(int debug_step)
     if (debug_step < 1)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) validate_debug_step | " ERROR_INVALID_DEBUG_STEP "\n");
-
         return RTN_ERROR;
     }
 
@@ -166,7 +162,8 @@ short _validate_debug_dir(const char* debug_dir)
         {
             if (mkdir(debug_dir, 0755) == -1)
             {
-                write_msg_to_fd(STDERR_FILENO, "(f) validate_debug_dir | " ERROR_FAILED_TO_CREATE_DEBUG_DIR "\n");
+                write_msg_to_fd(STDERR_FILENO,
+                                "(f) validate_debug_dir | " ERROR_FAILED_TO_CREATE_DEBUG_DIR "\n");
 
                 return RTN_ERROR;
             }
@@ -197,7 +194,6 @@ error:
 short validate_options(const options_t* options)
 {
     if (!options)
-
         return RTN_ERROR;
 
     short result = 0;

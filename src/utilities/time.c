@@ -24,8 +24,7 @@
 /**
  * @brief Get the current time in microseconds since the Unix Epoch.
  *
- * Uses gettimeofday() to obtain the current time and
-        returns the total number
+ * Uses gettimeofday() to obtain the current time and        returns the total number
  * of microseconds elapsed since January 1, 1970 (UTC).
  *
  * @return The current time in microseconds as a long long integer on success,
@@ -40,8 +39,8 @@ long long time_now_in_microseconds()
     struct timeval tv;
     if (gettimeofday(&tv, NULL))
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) time_now_in_microseconds | " ERROR_FAILED_TO_GET_TIME "\n");
-
+        write_msg_to_fd(STDERR_FILENO,
+                        "(f) time_now_in_microseconds | " ERROR_FAILED_TO_GET_TIME "\n");
         return RTN_ERROR;
     }
 

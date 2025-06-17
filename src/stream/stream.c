@@ -32,7 +32,6 @@ stream_t* _init_stream()
     if (!stream)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) _init_stream | " ERROR_FAILED_TO_ALLOCATE_MEMORY "\n");
-
         return NULL;
     }
 
@@ -51,9 +50,9 @@ stream_t* get_stream(options_t* options)
 {
     stream_t* stream = _init_stream();
 
-    if (_set_stream_options(stream, options) || _open_stream(stream, options) || _init_codec_context(stream, options) ||
+    if (_set_stream_options(stream, options) || _open_stream(stream, options) ||
+        _init_codec_context(stream, options) ||
         _init_sws_context(stream, options, DEFAULT_SCALE_FACTOR))
-
         return NULL;
 
     return stream;
@@ -62,7 +61,6 @@ stream_t* get_stream(options_t* options)
 void free_stream(stream_t* stream)
 {
     if (!stream)
-
         return;
 
     if (stream->options)

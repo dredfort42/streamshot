@@ -42,15 +42,11 @@ const char* image_format_to_string(image_format_t format)
 image_format_t string_to_image_format(const char* str)
 {
     if (!strcmp(str, "jpg"))
-
         return IMAGE_FORMAT_JPG;
     else if (!strcmp(str, "png"))
-
         return IMAGE_FORMAT_PNG;
     else if (!strcmp(str, "ppm"))
-
         return IMAGE_FORMAT_PPM;
     else
-
         return IMAGE_FORMAT_UNKNOWN;
 }

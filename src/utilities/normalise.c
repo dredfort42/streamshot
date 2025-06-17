@@ -20,8 +20,7 @@
 /**
  * @brief Normalize a file path by replacing invalid characters with underscores.
  *
- * This function allocates and
-        returns a new string where all characters in the input
+ * This function allocates and        returns a new string where all characters in the input
  * path that are not alphanumeric, '_', '-', '.', or '/' are replaced with '_'.
  *
  * @param file_path  Input file path string.
@@ -33,19 +32,18 @@
 char* normalize_file_path(const char* file_path)
 {
     if (file_path == NULL || strlen(file_path) < 3)
-
         return NULL;
 
     char* normalized_path = strdup(file_path);
     if (normalized_path == NULL)
-
         return NULL;
 
     size_t len = strlen(file_path);
     for (size_t i = 0; i < len; i++)
     {
         char c = file_path[i];
-        if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_' || c == '-' || c == '.' || c == '/'))
+        if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') ||
+              c == '_' || c == '-' || c == '.' || c == '/'))
             normalized_path[i] = '_';
     }
 
@@ -56,8 +54,7 @@ char* normalize_file_path(const char* file_path)
  * @brief Trims leading and trailing whitespace and quote-like characters from a string.
  *
  * This function creates a duplicate of the input string and removes any leading or trailing
- * spaces, double quotes ('"'), single quotes ('\''), or backticks ('`'). The
-        returned string
+ * spaces, double quotes ('"'), single quotes ('\''), or backticks ('`'). The        returned string
  * is dynamically allocated and must be freed by the caller.
  *
  * @param str The input null-terminated string to be trimmed. May be NULL.
@@ -71,14 +68,12 @@ char* normalize_file_path(const char* file_path)
 char* trim_flag_value(const char* str)
 {
     if (!str || *str == '\0')
-
         return NULL;
 
     const char* start = str;
     while (*start && (*start == ' ' || *start == '"' || *start == '\'' || *start == '`')) start++;
 
     if (*start == '\0')
-
         return NULL;
 
     const char* end = start + strlen(start) - 1;
@@ -88,7 +83,6 @@ char* trim_flag_value(const char* str)
 
     char* result = (char*)malloc(trimmed_len + 1);
     if (!result)
-
         return NULL;
 
     size_t i = 0;

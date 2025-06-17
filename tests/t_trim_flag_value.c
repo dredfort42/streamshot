@@ -18,7 +18,8 @@
 
 int trim_flag_value_test()
 {
-#define RESULT(test, expected) strcmp(test, expected) ? ANSI_RED "KO" ANSI_RESET : ANSI_GREEN "OK" ANSI_RESET
+#define RESULT(test, expected) \
+    strcmp(test, expected) ? ANSI_RED "KO" ANSI_RESET : ANSI_GREEN "OK" ANSI_RESET
 
     char* input;
     char* expected_output;
@@ -32,14 +33,16 @@ int trim_flag_value_test()
     {
         if (strcmp(test1, expected_output))
             failed++;
-        printf("[%s] (f) trim_flag_value: input=\"%s\" | expected=\"%s\" | got=\"%s\"\n", RESULT(test1, expected_output), input, expected_output,
-               test1 ? test1 : "NULL");
+        printf("[%s] (f) trim_flag_value: input=\"%s\" | expected=\"%s\" | got=\"%s\"\n",
+               RESULT(test1, expected_output), input, expected_output, test1 ? test1 : "NULL");
         free(test1);
     }
     else
     {
         failed++;
-        printf("[" ANSI_RED "KO" ANSI_RESET "] (f) trim_flag_value: input=\"%s\" | expected=\"%s\" | got=NULL\n", input, expected_output);
+        printf("[" ANSI_RED "KO" ANSI_RESET
+               "] (f) trim_flag_value: input=\"%s\" | expected=\"%s\" | got=NULL\n",
+               input, expected_output);
     }
 
     // Test 2: No trimming needed
@@ -50,14 +53,16 @@ int trim_flag_value_test()
     {
         if (strcmp(test2, expected_output))
             failed++;
-        printf("[%s] (f) trim_flag_value: input=\"%s\" | expected=\"%s\" | got=\"%s\"\n", RESULT(test2, expected_output), input, expected_output,
-               test2 ? test2 : "NULL");
+        printf("[%s] (f) trim_flag_value: input=\"%s\" | expected=\"%s\" | got=\"%s\"\n",
+               RESULT(test2, expected_output), input, expected_output, test2 ? test2 : "NULL");
         free(test2);
     }
     else
     {
         failed++;
-        printf("[" ANSI_RED "KO" ANSI_RESET "] (f) trim_flag_value: input=\"%s\" | expected=\"%s\" | got=NULL\n", input, expected_output);
+        printf("[" ANSI_RED "KO" ANSI_RESET
+               "] (f) trim_flag_value: input=\"%s\" | expected=\"%s\" | got=NULL\n",
+               input, expected_output);
     }
 
     // Test 3: Only spaces
@@ -66,13 +71,16 @@ int trim_flag_value_test()
     if (test3)
     {
         failed++;
-        printf("[" ANSI_RED "KO" ANSI_RESET "] (f) trim_flag_value: input=\"%s\" | expected=NULL | got=\"%s\"\n", input, test3);
+        printf("[" ANSI_RED "KO" ANSI_RESET
+               "] (f) trim_flag_value: input=\"%s\" | expected=NULL | got=\"%s\"\n",
+               input, test3);
         free(test3);
     }
     else
     {
-        printf("[" ANSI_GREEN "OK" ANSI_RESET "] (f) trim_flag_value: input=\"%s\" 
-        returned NULL as expected\n", input);
+        printf("[" ANSI_GREEN "OK" ANSI_RESET
+               "] (f) trim_flag_value: input=\"%s\"         returned NULL as expected\n",
+               input);
     }
 
     // Test 4: Only quotes
@@ -81,13 +89,16 @@ int trim_flag_value_test()
     if (test4)
     {
         failed++;
-        printf("[" ANSI_RED "KO" ANSI_RESET "] (f) trim_flag_value: input=\"%s\" | expected=NULL | got=\"%s\"\n", input, test4);
+        printf("[" ANSI_RED "KO" ANSI_RESET
+               "] (f) trim_flag_value: input=\"%s\" | expected=NULL | got=\"%s\"\n",
+               input, test4);
         free(test4);
     }
     else
     {
-        printf("[" ANSI_GREEN "OK" ANSI_RESET "] (f) trim_flag_value: input=\"%s\" 
-        returned NULL as expected\n", input);
+        printf("[" ANSI_GREEN "OK" ANSI_RESET
+               "] (f) trim_flag_value: input=\"%s\"         returned NULL as expected\n",
+               input);
     }
 
     // Test 5: Leading and trailing backticks
@@ -98,14 +109,16 @@ int trim_flag_value_test()
     {
         if (strcmp(test5, expected_output))
             failed++;
-        printf("[%s] (f) trim_flag_value: input=\"%s\" | expected=\"%s\" | got=\"%s\"\n", RESULT(test5, expected_output), input, expected_output,
-               test5 ? test5 : "NULL");
+        printf("[%s] (f) trim_flag_value: input=\"%s\" | expected=\"%s\" | got=\"%s\"\n",
+               RESULT(test5, expected_output), input, expected_output, test5 ? test5 : "NULL");
         free(test5);
     }
     else
     {
         failed++;
-        printf("[" ANSI_RED "KO" ANSI_RESET "] (f) trim_flag_value: input=\"%s\" | expected=\"%s\" | got=NULL\n", input, expected_output);
+        printf("[" ANSI_RED "KO" ANSI_RESET
+               "] (f) trim_flag_value: input=\"%s\" | expected=\"%s\" | got=NULL\n",
+               input, expected_output);
     }
 
     // Test 6: Mixed whitespace and quotes
@@ -116,14 +129,16 @@ int trim_flag_value_test()
     {
         if (strcmp(test6, expected_output))
             failed++;
-        printf("[%s] (f) trim_flag_value: input=\"%s\" | expected=\"%s\" | got=\"%s\"\n", RESULT(test6, expected_output), input, expected_output,
-               test6 ? test6 : "NULL");
+        printf("[%s] (f) trim_flag_value: input=\"%s\" | expected=\"%s\" | got=\"%s\"\n",
+               RESULT(test6, expected_output), input, expected_output, test6 ? test6 : "NULL");
         free(test6);
     }
     else
     {
         failed++;
-        printf("[" ANSI_RED "KO" ANSI_RESET "] (f) trim_flag_value: input=\"%s\" | expected=\"%s\" | got=NULL\n", input, expected_output);
+        printf("[" ANSI_RED "KO" ANSI_RESET
+               "] (f) trim_flag_value: input=\"%s\" | expected=\"%s\" | got=NULL\n",
+               input, expected_output);
     }
 
     // Test 7: Empty string
@@ -132,13 +147,16 @@ int trim_flag_value_test()
     if (test7)
     {
         failed++;
-        printf("[" ANSI_RED "KO" ANSI_RESET "] (f) trim_flag_value: input=\"%s\" | expected=NULL | got=\"%s\"\n", input, test7);
+        printf("[" ANSI_RED "KO" ANSI_RESET
+               "] (f) trim_flag_value: input=\"%s\" | expected=NULL | got=\"%s\"\n",
+               input, test7);
         free(test7);
     }
     else
     {
-        printf("[" ANSI_GREEN "OK" ANSI_RESET "] (f) trim_flag_value: input=\"%s\" 
-        returned NULL as expected\n", input);
+        printf("[" ANSI_GREEN "OK" ANSI_RESET
+               "] (f) trim_flag_value: input=\"%s\"         returned NULL as expected\n",
+               input);
     }
 
     // Test 8: NULL input
@@ -147,13 +165,15 @@ int trim_flag_value_test()
     if (test8)
     {
         failed++;
-        printf("[" ANSI_RED "KO" ANSI_RESET "] (f) trim_flag_value: input=NULL | expected=NULL | got=\"%s\"\n", test8);
+        printf("[" ANSI_RED "KO" ANSI_RESET
+               "] (f) trim_flag_value: input=NULL | expected=NULL | got=\"%s\"\n",
+               test8);
         free(test8);
     }
     else
     {
-        printf("[" ANSI_GREEN "OK" ANSI_RESET "] (f) trim_flag_value: input=NULL 
-        returned NULL as expected\n");
+        printf("[" ANSI_GREEN "OK" ANSI_RESET
+               "] (f) trim_flag_value: input=NULL         returned NULL as expected\n");
     }
 
     // Test 9: Only one character to trim
@@ -162,13 +182,16 @@ int trim_flag_value_test()
     if (test9)
     {
         failed++;
-        printf("[" ANSI_RED "KO" ANSI_RESET "] (f) trim_flag_value: input=\"%s\" | expected=NULL | got=\"%s\"\n", input, test9);
+        printf("[" ANSI_RED "KO" ANSI_RESET
+               "] (f) trim_flag_value: input=\"%s\" | expected=NULL | got=\"%s\"\n",
+               input, test9);
         free(test9);
     }
     else
     {
-        printf("[" ANSI_GREEN "OK" ANSI_RESET "] (f) trim_flag_value: input=\"%s\" 
-        returned NULL as expected\n", input);
+        printf("[" ANSI_GREEN "OK" ANSI_RESET
+               "] (f) trim_flag_value: input=\"%s\"         returned NULL as expected\n",
+               input);
     }
 
     // Test 10: No trailing/leading, but quotes inside
@@ -179,14 +202,16 @@ int trim_flag_value_test()
     {
         if (strcmp(test10, expected_output))
             failed++;
-        printf("[%s] (f) trim_flag_value: input=\"%s\" | expected=\"%s\" | got=\"%s\"\n", RESULT(test10, expected_output), input, expected_output,
-               test10 ? test10 : "NULL");
+        printf("[%s] (f) trim_flag_value: input=\"%s\" | expected=\"%s\" | got=\"%s\"\n",
+               RESULT(test10, expected_output), input, expected_output, test10 ? test10 : "NULL");
         free(test10);
     }
     else
     {
         failed++;
-        printf("[" ANSI_RED "KO" ANSI_RESET "] (f) trim_flag_value: input=\"%s\" | expected=\"%s\" | got=NULL\n", input, expected_output);
+        printf("[" ANSI_RED "KO" ANSI_RESET
+               "] (f) trim_flag_value: input=\"%s\" | expected=\"%s\" | got=NULL\n",
+               input, expected_output);
     }
 
     return failed;

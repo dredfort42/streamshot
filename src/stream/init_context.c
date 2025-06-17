@@ -49,7 +49,8 @@ short _init_codec_context(stream_t* stream, const options_t* options)
 
     if ((long)stream->video_stream_index >= (long)stream->format_context->nb_streams)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) _init_codec_context | " ERROR_NO_VIDEO_STREAM_FOUND "\n");
+        write_msg_to_fd(STDERR_FILENO,
+                        "(f) _init_codec_context | " ERROR_NO_VIDEO_STREAM_FOUND "\n");
         goto error;
     }
 
@@ -65,19 +66,22 @@ short _init_codec_context(stream_t* stream, const options_t* options)
     stream->codec_context = avcodec_alloc_context3(codec);
     if (!stream->codec_context)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) _init_codec_context | " ERROR_FAILED_TO_ALLOCATE_CODEC_CONTEXT "\n");
+        write_msg_to_fd(STDERR_FILENO,
+                        "(f) _init_codec_context | " ERROR_FAILED_TO_ALLOCATE_CODEC_CONTEXT "\n");
         goto error;
     }
 
     if (avcodec_parameters_to_context(stream->codec_context, codecpar) < 0)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) _init_codec_context | " ERROR_FAILED_TO_COPY_CODEC_PARAMETERS "\n");
+        write_msg_to_fd(STDERR_FILENO,
+                        "(f) _init_codec_context | " ERROR_FAILED_TO_COPY_CODEC_PARAMETERS "\n");
         goto error;
     }
 
     if (avcodec_open2(stream->codec_context, codec, NULL) < 0)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) _init_codec_context | " ERROR_FAILED_TO_OPEN_CODEC "\n");
+        write_msg_to_fd(STDERR_FILENO,
+                        "(f) _init_codec_context | " ERROR_FAILED_TO_OPEN_CODEC "\n");
         goto error;
     }
 
@@ -114,14 +118,13 @@ short _init_sws_context(stream_t* stream, const options_t* options, float scale_
     if (!stream || !options || stream->video_stream_index < 0)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) _init_sws_context | " ERROR_INVALID_ARGUMENTS "\n");
-
         return RTN_ERROR;
     }
 
-    if (!stream->format_context || (long)stream->video_stream_index >= (long)stream->format_context->nb_streams)
+    if (!stream->format_context ||
+        (long)stream->video_stream_index >= (long)stream->format_context->nb_streams)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) _init_sws_context | " ERROR_NO_VIDEO_STREAM_FOUND "\n");
-
         return RTN_ERROR;
     }
 
@@ -129,8 +132,8 @@ short _init_sws_context(stream_t* stream, const options_t* options, float scale_
     AVCodecParameters* codecpar = av_stream->codecpar;
     if (!codecpar)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) _init_sws_context | " ERROR_NO_CODEC_PARAMETERS_FOUND "\n");
-
+        write_msg_to_fd(STDERR_FILENO,
+                        "(f) _init_sws_context | " ERROR_NO_CODEC_PARAMETERS_FOUND "\n");
         return RTN_ERROR;
     }
 
@@ -141,23 +144,25 @@ short _init_sws_context(stream_t* stream, const options_t* options, float scale_
 
     if (dst_width <= 0 || dst_height <= 0)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) _init_sws_context | " ERROR_INVALID_DESTINATION_DIMENSIONS "\n");
-
+        write_msg_to_fd(STDERR_FILENO,
+                        "(f) _init_sws_context | " ERROR_INVALID_DESTINATION_DIMENSIONS "\n");
         return RTN_ERROR;
     }
 
     stream->sws_context =
-        sws_getContext(codecpar->width, codecpar->height, src_pix_fmt, dst_width, dst_height, dst_pix_fmt, SWS_FAST_BILINEAR, NULL, NULL, NULL);
+        sws_getContext(codecpar->width, codecpar->height, src_pix_fmt, dst_width, dst_height,
+                       dst_pix_fmt, SWS_FAST_BILINEAR, NULL, NULL, NULL);
 
     if (!stream->sws_context)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) _init_sws_context | " ERROR_FAILED_TO_CREATE_SWS_CONTEXT "\n");
-
+        write_msg_to_fd(STDERR_FILENO,
+                        "(f) _init_sws_context | " ERROR_FAILED_TO_CREATE_SWS_CONTEXT "\n");
         return RTN_ERROR;
     }
 
     if (options->debug)
-        printf(ANSI_BLUE "Debug:" ANSI_RESET " Initialized SwsContext for video stream index: %d\n", stream->video_stream_index);
+        printf(ANSI_BLUE "Debug:" ANSI_RESET " Initialized SwsContext for video stream index: %d\n",
+               stream->video_stream_index);
 
     return RTN_SUCCESS;
 }

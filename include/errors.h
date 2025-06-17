@@ -56,9 +56,15 @@
 #define ERROR_FAILED_TO_ALLOCATE_VIDEO_FRAME "Error: Failed to allocate video frame."
 #define ERROR_FAILED_TO_ALLOCATE_IMAGE_FRAME "Error: Failed to allocate image frame."
 #define ERROR_FAILED_TO_ALLOCATE_BUFFER "Error: Failed to allocate buffer for image data."
+#define ERROR_FAILED_TO_ALLOCATE_PACKET "Error: Failed to allocate AVPacket."
+#define ERROR_FAILED_TO_ALLOCATE_RAW_IMAGE "Error: Failed to allocate raw image structure."
+#define ERROR_FAILED_TO_ALLOCATE_SUM_BUFFER "Error: Failed to allocate sum buffer."
 #define ERROR_FAILED_TO_COPY_CODEC_PARAMETERS "Error: Failed to copy codec parameters to context."
 #define ERROR_FAILED_TO_OPEN_CODEC "Error: Failed to open codec."
 #define ERROR_FAILED_TO_FILL_IMAGE_ARRAYS "Error: Failed to fill image arrays."
+#define ERROR_FAILED_TO_SEND_PACKET "Error: Failed to send packet to decoder."
+#define ERROR_FAILED_TO_RECEIVE_FRAME "Error: Failed to receive frame from decoder."
+// #define ERROR_FAILED_TO_SEND_FRAME "Error: Failed to send frame to codec context."
 
 #define RTN_ERROR -1
 #define RTN_SUCCESS 0

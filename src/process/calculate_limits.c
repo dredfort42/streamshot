@@ -22,11 +22,13 @@
 #include "utilities.h"
 
 /**
- * @brief Calculates and sets the number of frames to read from a video stream based on the exposure time and stream properties.
+ * @brief Calculates and sets the number of frames to read from a video stream based on the exposure
+ * time and stream properties.
  *
- * This function determines the number of frames to read from the provided stream, using the exposure time specified in the options.
- * It uses the stream's average frame rate (or real frame rate as a fallback) to compute the frame count.
- * If the exposure time is zero, only one frame is read.
+ * This function determines the number of frames to read from the provided stream, using the
+ * exposure time specified in the options. It uses the stream's average frame rate (or real frame
+ * rate as a fallback) to compute the frame count. If the exposure time is zero, only one frame is
+ * read.
  *
  * @param stream   Pointer to the stream_t structure containing stream information.
  * @param options  Pointer to the options_t structure containing configuration options.
@@ -34,14 +36,15 @@
  * @return 0 on success, -1 on failure.
  *
  * @note
- * The function also ensures that the calculated frame count does not exceed a safe upper limit to prevent overflow.
+ * The function also ensures that the calculated frame count does not exceed a safe upper limit to
+ * prevent overflow.
  */
 short _number_of_frames_to_read(stream_t* stream, const options_t* options)
 {
     if (!stream || !options || options->exposure_sec < 0)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) _number_of_frames_to_read | " ERROR_INVALID_ARGUMENTS "\n");
-
+        write_msg_to_fd(STDERR_FILENO,
+                        "(f) _number_of_frames_to_read | " ERROR_INVALID_ARGUMENTS "\n");
         return RTN_ERROR;
     }
 
@@ -58,7 +61,8 @@ short _number_of_frames_to_read(stream_t* stream, const options_t* options)
 
         if (fps <= 0)
         {
-            write_msg_to_fd(STDERR_FILENO, "(f) _calculate_number_of_frames_to_read | " ERROR_INVALID_FPS "\n");
+            write_msg_to_fd(STDERR_FILENO,
+                            "(f) _calculate_number_of_frames_to_read | " ERROR_INVALID_FPS "\n");
 
             return RTN_ERROR;
         }
@@ -71,7 +75,8 @@ short _number_of_frames_to_read(stream_t* stream, const options_t* options)
     }
 
     if (options->debug)
-        printf(ANSI_BLUE "Debug:" ANSI_RESET " Frames to read: %u\n", stream->number_of_frames_to_read);
+        printf(ANSI_BLUE "Debug:" ANSI_RESET " Frames to read: %u\n",
+               stream->number_of_frames_to_read);
 
     return RTN_SUCCESS;
 }
@@ -79,10 +84,10 @@ short _number_of_frames_to_read(stream_t* stream, const options_t* options)
 /**
  * @brief Calculates and sets the timestamp at which reading from the stream should stop.
  *
- * This function determines the stop time for reading from the given stream based on the provided options.
- * If the exposure time is zero, it uses a default timeout (I_FRAME_TIMEOUT_SEC).
- * If the exposure time is positive, it adds the exposure time and network jitter to the timeout.
- * If the exposure time is negative, it writes an error message to STDERR.
+ * This function determines the stop time for reading from the given stream based on the provided
+ * options. If the exposure time is zero, it uses a default timeout (I_FRAME_TIMEOUT_SEC). If the
+ * exposure time is positive, it adds the exposure time and network jitter to the timeout. If the
+ * exposure time is negative, it writes an error message to STDERR.
  *
  * @param stream   Pointer to the stream_t structure containing stream information.
  * @param options  Pointer to the options_t structure containing configuration options.
@@ -94,23 +99,26 @@ short _stop_reading_at(stream_t* stream, const options_t* options)
     if (!stream || !options)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) _stop_reading_at | " ERROR_INVALID_ARGUMENTS "\n");
-
         return RTN_ERROR;
     }
 
     if (!options->exposure_sec)
-        stream->stop_reading_at = time_now_in_microseconds() + (long long)(I_FRAME_TIMEOUT_SEC * 1000000);
+        stream->stop_reading_at =
+            time_now_in_microseconds() + (long long)(I_FRAME_TIMEOUT_SEC * 1000000);
     else if (options->exposure_sec > 0)
-        stream->stop_reading_at = time_now_in_microseconds() + (long long)((I_FRAME_TIMEOUT_SEC + options->exposure_sec + NETWORK_JITTER_SEC) * 1000000);
+        stream->stop_reading_at =
+            time_now_in_microseconds() +
+            (long long)((I_FRAME_TIMEOUT_SEC + options->exposure_sec + NETWORK_JITTER_SEC) *
+                        1000000);
     else
     {
         write_msg_to_fd(STDERR_FILENO, "(f) _stop_reading_at | " ERROR_INVALID_EXPOSURE "\n");
-
         return RTN_ERROR;
     }
 
     if (options->debug)
-        printf(ANSI_BLUE "Debug:" ANSI_RESET " Stop reading at: %lld microseconds\n", stream->stop_reading_at);
+        printf(ANSI_BLUE "Debug:" ANSI_RESET " Stop reading at: %lld microseconds\n",
+               stream->stop_reading_at);
 
     return RTN_SUCCESS;
 }
@@ -128,7 +136,6 @@ short _calculate_limits(stream_t* stream, const options_t* options)
     if (!stream || !options)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) _calculate_limits | " ERROR_INVALID_ARGUMENTS "\n");
-
         return RTN_ERROR;
     }
 

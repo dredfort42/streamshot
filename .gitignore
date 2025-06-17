@@ -53,8 +53,7 @@ lib/
 *.tmp
 *.temp
 *.cache
-_*.*
-_*/
+_*
 
 # Logs and backups
 *.log

@@ -29,15 +29,12 @@
  *
  * This function allocates memory for an options_t structure, sets all fields to zero,
  * and then assigns default values to each configurable option. If memory allocation fails
- * at any point, NULL is
-        returned.
+ * at any point, NULL is        returned.
  *
- * @
-        return options_t* Pointer to the newly allocated and initialized options_t structure,
+ * @        return options_t* Pointer to the newly allocated and initialized options_t structure,
  *         or NULL if memory allocation fails.
  *
- * @note The
-        returned structure must be freed by the caller using the appropriate
+ * @note The        returned structure must be freed by the caller using the appropriate
  *       deallocation function to avoid memory leaks.
  */
 static options_t* _init_options()
@@ -46,7 +43,6 @@ static options_t* _init_options()
     if (!options)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) _init_options | " ERROR_FAILED_TO_ALLOCATE_MEMORY "\n");
-
         return NULL;
     }
 
@@ -67,7 +63,6 @@ static options_t* _init_options()
     {
         write_msg_to_fd(STDERR_FILENO, "(f) _init_options | " ERROR_FAILED_TO_ALLOCATE_MEMORY "\n");
         free(options);
-
         return NULL;
     }
     options->help = 0;
@@ -82,14 +77,13 @@ static options_t* _init_options()
  * This function processes the command-line arguments provided in argc and argv,
  * populating the options_t structure with the parsed values. It handles both short
  * and long option formats, as well as key=value pairs. If any errors occur during
- * parsing or validation, it
-        returns NULL.
+ * parsing or validation, it        returns NULL.
  *
  * @param argc The number of command-line arguments.
  * @param argv The array of command-line argument strings.
  *
- * @
-        return options_t* Pointer to the populated options_t structure, or NULL if an error occurs.
+ * @        return options_t* Pointer to the populated options_t structure, or NULL if an error
+ * occurs.
  */
 options_t* get_options(int argc, char* argv[])
 {
@@ -135,7 +129,6 @@ error:
 void free_options(options_t* options)
 {
     if (!options)
-
         return;
 
     if (options->rtsp_url)
