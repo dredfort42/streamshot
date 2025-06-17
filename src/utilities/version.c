@@ -14,7 +14,7 @@
 
 *******************************************************************/
 
-#include "utilities.h"
+#include <stdio.h>
 
 /**
  * @brief Prints version and author information for the application.

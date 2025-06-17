@@ -14,7 +14,11 @@
 
 *******************************************************************/
 
+#include <unistd.h>
+
+#include "errors.h"
 #include "options.h"
+#include "utilities.h"
 
 /**
  * @brief Prints the current configuration options.
@@ -30,13 +34,14 @@ void print_options(const options_t* options)
 {
     if (!options)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) print_options | " ERROR_INVALID_ARGUMENTS);
+        write_msg_to_fd(STDERR_FILENO, "(f) print_options | " ERROR_INVALID_ARGUMENTS "\n");
         return;
     }
 
     printf("RTSP url: %s\n", options->rtsp_url ? options->rtsp_url : "NULL");
     printf("Timeout: %d seconds\n", options->timeout_sec);
-    printf("Output File Path: %s\n", options->output_file_path ? options->output_file_path : "NULL");
+    printf("Output File Path: %s\n",
+           options->output_file_path ? options->output_file_path : "NULL");
     printf("Output File Descriptor: %d\n", options->output_file_fd);
     printf("Exposure Time: %d seconds\n", options->exposure_sec);
     printf("Output Format: %s\n", image_format_to_string(options->output_format));
