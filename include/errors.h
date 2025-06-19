@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | errors.h
     ::  ::          ::  ::    Created  | 2025-06-05
-          ::::  ::::          Modified | 2025-06-16
+          ::::  ::::          Modified | 2025-06-19
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -52,6 +52,7 @@
 #define ERROR_NO_STREAMS_FOUND "Error: No streams found in the format context."
 #define ERROR_NO_VIDEO_STREAM_FOUND "Error: No video stream found in the format context."
 #define ERROR_NO_DECODER_FOUND "Error: No decoder found for the video stream."
+#define ERROR_NO_FRAMES_TO_READ "Error: No frames to read."
 #define ERROR_FAILED_TO_ALLOCATE_CODEC_CONTEXT "Error: Failed to allocate codec context."
 #define ERROR_FAILED_TO_ALLOCATE_VIDEO_FRAME "Error: Failed to allocate video frame."
 #define ERROR_FAILED_TO_ALLOCATE_IMAGE_FRAME "Error: Failed to allocate image frame."
@@ -65,6 +66,10 @@
 #define ERROR_FAILED_TO_SEND_PACKET "Error: Failed to send packet to decoder."
 #define ERROR_FAILED_TO_RECEIVE_FRAME "Error: Failed to receive frame from decoder."
 // #define ERROR_FAILED_TO_SEND_FRAME "Error: Failed to send frame to codec context."
+
+#define ERROR_FAILED_TO_SAVE_DEBUG_FILE "Error: Failed to save debug file."
+#define ERROR_FAILED_TO_READ_FRAME "Error: Failed to read frame from stream."
+#define ERROR_FAILED_TO_CALCULATE_LIMITS "Error: Failed to calculate stream limits."
 
 #define RTN_ERROR -1
 #define RTN_SUCCESS 0

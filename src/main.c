@@ -7,14 +7,13 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | main.c
     ::  ::          ::  ::    Created  | 2025-06-04
-          ::::  ::::          Modified | 2025-06-09
+          ::::  ::::          Modified | 2025-06-19
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
 
 *******************************************************************/
 
-// #include "options.h"
 #include <unistd.h>
 
 #include "errors.h"
@@ -89,6 +88,5 @@ int main(int argc, char* argv[])
 end:
     if (options)
         free_options(options);
-
     return error_code;
 }

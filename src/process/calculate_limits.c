@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | calculate_limits.c
     ::  ::          ::  ::    Created  | 2025-06-16
-          ::::  ::::          Modified | 2025-06-16
+          ::::  ::::          Modified | 2025-06-19
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -63,7 +63,6 @@ short _number_of_frames_to_read(stream_t* stream, const options_t* options)
         {
             write_msg_to_fd(STDERR_FILENO,
                             "(f) _calculate_number_of_frames_to_read | " ERROR_INVALID_FPS "\n");
-
             return RTN_ERROR;
         }
 
@@ -102,13 +101,21 @@ short _stop_reading_at(stream_t* stream, const options_t* options)
         return RTN_ERROR;
     }
 
+    double fps = DEFAULT_FPS;
+    unsigned int number_of_frames_to_read = 0;
+    if (stream->number_of_frames_to_read > 0)
+        number_of_frames_to_read = stream->number_of_frames_to_read;
+    else
+        number_of_frames_to_read = (unsigned int)(options->exposure_sec * fps + 0.5);
+
     if (!options->exposure_sec)
         stream->stop_reading_at =
             time_now_in_microseconds() + (long long)(I_FRAME_TIMEOUT_SEC * 1000000);
     else if (options->exposure_sec > 0)
         stream->stop_reading_at =
             time_now_in_microseconds() +
-            (long long)((I_FRAME_TIMEOUT_SEC + options->exposure_sec + NETWORK_JITTER_SEC) *
+            (long long)((I_FRAME_TIMEOUT_SEC + options->exposure_sec +
+                         FRAME_DELIVERY_LATENCY_SEC * number_of_frames_to_read) *
                         1000000);
     else
     {
@@ -141,6 +148,8 @@ short _calculate_limits(stream_t* stream, const options_t* options)
 
     if (_number_of_frames_to_read(stream, options) || _stop_reading_at(stream, options))
     {
+        write_msg_to_fd(STDERR_FILENO,
+                        "(f) _calculate_limits | " ERROR_FAILED_TO_CALCULATE_LIMITS "\n");
         return RTN_ERROR;
     }
 

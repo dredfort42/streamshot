@@ -5,9 +5,9 @@
         ::::::::::::::        | Email  | dredfort.42@gmail.com |
       ::::  ::::::  ::::      +--------+-----------------------+
     ::::::::::::::::::::::
-    ::  ::::::::::::::  ::    File     | normaliser.c
+    ::  ::::::::::::::  ::    File     | normalise.c
     ::  ::          ::  ::    Created  | 2025-06-05
-          ::::  ::::          Modified | 2025-06-09
+          ::::  ::::          Modified | 2025-06-19
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -20,7 +20,7 @@
 /**
  * @brief Normalize a file path by replacing invalid characters with underscores.
  *
- * This function allocates and        returns a new string where all characters in the input
+ * This function allocates and returns a new string where all characters in the input
  * path that are not alphanumeric, '_', '-', '.', or '/' are replaced with '_'.
  *
  * @param file_path  Input file path string.
@@ -54,7 +54,7 @@ char* normalize_file_path(const char* file_path)
  * @brief Trims leading and trailing whitespace and quote-like characters from a string.
  *
  * This function creates a duplicate of the input string and removes any leading or trailing
- * spaces, double quotes ('"'), single quotes ('\''), or backticks ('`'). The        returned string
+ * spaces, double quotes ('"'), single quotes ('\''), or backticks ('`'). The returned string
  * is dynamically allocated and must be freed by the caller.
  *
  * @param str The input null-terminated string to be trimmed. May be NULL.
@@ -93,6 +93,5 @@ char* trim_flag_value(const char* str)
     }
 
     result[trimmed_len] = '\0';
-
     return result;
 }

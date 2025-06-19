@@ -32,8 +32,15 @@ OBJS        := $(patsubst src/%.c,$(BUILD_DIR)/%.o,$(SRCS))
 
 HDRS        := include
 INCLUDES    := -I$(HDRS) -I$(FFMPEG_DIR)/libavformat -I$(FFMPEG_DIR)/libavutil -I$(FFMPEG_DIR)/libavcodec -I$(FFMPEG_DIR)/libswscale
-CFLAGS      := -g -O0 -fsanitize=address -Wall -Wextra -Werror $(INCLUDES)
 LDFLAGS     := -L$(FFMPEG_DIR) -lavformat -lavutil -lavcodec -lswscale
+
+# -O3: Enables high-level optimizations for speed. The compiler tries to make your code run as fast as possible.
+# -march=native: Generates code optimized for the architecture of the machine compiling the code. It uses all instruction sets available on your CPU.
+# -flto: Enables Link Time Optimization, allowing the compiler to optimize across files during the linking stage for better performance.
+# -funroll-loops: Tells the compiler to unroll loops where possible, which can make loops run faster at the cost of larger binaries.
+CFLAGS      := -O3 -march=native -flto -funroll-loops -Wall -Wextra -Werror $(INCLUDES)
+# CFLAGS      := -Wall -Wextra -Werror $(INCLUDES)
+# CFLAGS      := -g -O0 -fsanitize=address -Wall -Wextra -Werror $(INCLUDES)
 
 # Rules
 .PHONY: all build clean fclean re test
