@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | parse_args.c
     ::  ::          ::  ::    Created  | 2025-06-07
-          ::::  ::::          Modified | 2025-06-09
+          ::::  ::::          Modified | 2025-06-19
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -27,10 +27,10 @@ typedef struct argument_s
 {
     char* key;    // Argument key (e.g., -i, --input)
     char* value;  // Argument value (e.g., rtsp://example.com/stream)
-} argument_t;
+} _argument_t;
 
 /**
- * @brief Parses a command-line argument at the specified index and returns it as an argument_t
+ * @brief Parses a command-line argument at the specified index and returns it as an _argument_t
  * structure.
  *
  * This function processes the argument at the given index in the argv array, extracting the key and
@@ -42,12 +42,12 @@ typedef struct argument_s
  * @param argv   The array of command-line argument strings.
  * @param index  The index of the argument to parse (must be >= 1 and < argc).
  *
- * @return       Pointer to a dynamically allocated argument_t structure containing the parsed key
+ * @return       Pointer to a dynamically allocated _argument_t structure containing the parsed key
  * and value, or NULL if parsing fails or memory allocation fails.
  *
- * @note The returned argument_t structure must be freed by the caller to avoid memory leaks.
+ * @note The returned _argument_t structure must be freed by the caller to avoid memory leaks.
  */
-argument_t* _get_argument(int argc, char* argv[], int* index)
+_argument_t* _get_argument(int argc, char* argv[], int* index)
 {
     if (!index || *index < 1 || *index >= argc)
     {
@@ -55,7 +55,7 @@ argument_t* _get_argument(int argc, char* argv[], int* index)
         return NULL;
     }
 
-    argument_t* argument = (argument_t*)malloc(sizeof(argument_t));
+    _argument_t* argument = (_argument_t*)malloc(sizeof(_argument_t));
     if (!argument)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) create_argument | " ERROR_FAILED_TO_ALLOCATE_MEMORY);
@@ -96,7 +96,6 @@ argument_t* _get_argument(int argc, char* argv[], int* index)
 error:
     write_msg_to_fd(STDERR_FILENO, "(f) create_argument | " ERROR_INVALID_ARGUMENTS);
     free(argument);
-
     return NULL;
 }
 
@@ -127,7 +126,7 @@ error:
  *   -   , --debug-dir         : Set the debug directory.
  *
  * If an invalid argument is encountered, an error message is written to stderr
- * and the function        returns an error code.
+ * and the function returns an error code.
  *
  * @param argc      The number of command-line arguments.
  * @param argv      The array of command-line argument strings.
@@ -147,9 +146,8 @@ short parse_args(int argc, char* argv[], options_t* options)
     int i = 1;
     while (i < argc)
     {
-        argument_t* argument = _get_argument(argc, argv, &i);
+        _argument_t* argument = _get_argument(argc, argv, &i);
         if (!argument)
-
             return RTN_ERROR;
 
         char* key = argument->key;
@@ -161,14 +159,12 @@ short parse_args(int argc, char* argv[], options_t* options)
         {
             options->version = 1;
             free(argument);
-
             return RTN_SUCCESS;
         }
         else if (MATCH("-h", "--help"))
         {
             options->help = 1;
             free(argument);
-
             return RTN_SUCCESS;
         }
         else if (MATCH("-i", "--input"))
@@ -205,7 +201,6 @@ short parse_args(int argc, char* argv[], options_t* options)
         {
             write_msg_to_fd(STDERR_FILENO, "(f) parse_args | " ERROR_INVALID_ARGUMENTS "\n");
             free(argument);
-
             return RTN_ERROR;
         }
 

@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | validate_options.c
     ::  ::          ::  ::    Created  | 2025-06-09
-          ::::  ::::          Modified | 2025-06-09
+          ::::  ::::          Modified | 2025-06-19
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -164,7 +164,6 @@ short _validate_debug_dir(const char* debug_dir)
             {
                 write_msg_to_fd(STDERR_FILENO,
                                 "(f) validate_debug_dir | " ERROR_FAILED_TO_CREATE_DEBUG_DIR "\n");
-
                 return RTN_ERROR;
             }
         }
@@ -176,7 +175,6 @@ short _validate_debug_dir(const char* debug_dir)
 
 error:
     write_msg_to_fd(STDERR_FILENO, "(f) validate_debug_dir | " ERROR_INVALID_DEBUG_DIR "\n");
-
     return RTN_ERROR;
 }
 

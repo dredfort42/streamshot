@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | image_format.c
     ::  ::          ::  ::    Created  | 2025-06-16
-          ::::  ::::          Modified | 2025-06-16
+          ::::  ::::          Modified | 2025-06-19
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -24,16 +24,12 @@ const char* image_format_to_string(image_format_t format)
     switch (format)
     {
         case IMAGE_FORMAT_JPG:
-
             return "jpg";
         case IMAGE_FORMAT_PNG:
-
             return "png";
         case IMAGE_FORMAT_PPM:
-
             return "ppm";
         default:
-
             return "unknown format";
     }
 }

@@ -5,9 +5,9 @@
         ::::::::::::::        | Email  | dredfort.42@gmail.com |
       ::::  ::::::  ::::      +--------+-----------------------+
     ::::::::::::::::::::::
-    ::  ::::::::::::::  ::    File     | writer.c
+    ::  ::::::::::::::  ::    File     | write.c
     ::  ::          ::  ::    Created  | 2025-06-05
-          ::::  ::::          Modified | 2025-06-07
+          ::::  ::::          Modified | 2025-06-19
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -72,7 +72,6 @@ error:
 
     write(STDERR_FILENO, "(f) write_data_to_fd | " ERROR_FAILED_TO_WRITE_FD,
           strlen("(f) write_data_to_fd | " ERROR_FAILED_TO_WRITE_FD));
-
     return RTN_ERROR;
 }
 

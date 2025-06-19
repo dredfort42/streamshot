@@ -5,9 +5,9 @@
         ::::::::::::::        | Email  | dredfort.42@gmail.com |
       ::::  ::::::  ::::      +--------+-----------------------+
     ::::::::::::::::::::::
-    ::  ::::::::::::::  ::    File     | stream.h
+    ::  ::::::::::::::  ::    File     | process.h
     ::  ::          ::  ::    Created  | 2025-06-06
-          ::::  ::::          Modified | 2025-06-16
+          ::::  ::::          Modified | 2025-06-19
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -17,19 +17,12 @@
 #ifndef PROCESS_H
 #define PROCESS_H
 
-// #include <stdint.h>
-
-// #include "errors.h"
 #include "libavcodec/avcodec.h"
-// #include "libavformat/avformat.h"
-// #include "libavutil/imgutils.h"
-// #include "libswscale/swscale.h"
 #include "options.h"
-// #include "utilities.h"
 
-#define DEFAULT_FPS 25.0f       // Default frame rate for video streams if not specified.
-#define I_FRAME_TIMEOUT_SEC 60  // Maximum timeout for I-frames in seconds (1 minute).
-#define NETWORK_JITTER_SEC 5    // Network jitter in seconds (5 seconds).
+#define DEFAULT_FPS 25.0f                // Default frame rate for video streams if not specified.
+#define I_FRAME_TIMEOUT_SEC 60           // Maximum timeout for I-frames in seconds (1 minute).
+#define FRAME_DELIVERY_LATENCY_SEC 0.3f  // Frame delivery latency in seconds (0.3 seconds).
 
 typedef struct process_s
 {
@@ -54,5 +47,6 @@ typedef struct raw_image_s
 
 raw_image_t* get_raw_image(options_t* options);
 void free_process(process_t* process);
+void free_raw_image(raw_image_t* raw_image);
 
 #endif  // PROCESS_H
