@@ -66,8 +66,7 @@ int main(int argc, char* argv[])
     // if (options->debug)
     // {
     // Save to PPM file (for debugging)
-    char file_name[1024];
-    snprintf(file_name, sizeof(file_name), "%s/average_frame.ppm", options->debug_dir);
+    char file_name[1024] = "./average_frame.ppm";
     FILE* f = fopen(file_name, "wb");
     if (f)
     {
@@ -88,5 +87,8 @@ int main(int argc, char* argv[])
 end:
     if (options)
         free_options(options);
+    if (raw_image)
+        free_raw_image(raw_image);
+
     return error_code;
 }

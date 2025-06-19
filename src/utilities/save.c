@@ -19,6 +19,7 @@
 #include <unistd.h>
 
 #include "errors.h"
+#include "process.h"
 #include "utilities.h"
 
 /**
@@ -38,7 +39,7 @@
 short save_ppm(const char* path, const uint8_t* data, size_t size, int width, int height)
 {
     if (!path || !data || size == 0 || width <= 0 || height <= 0 ||
-        size != (size_t)(width * height * 3))
+        size != (size_t)(width * height * RGB_BYTES_PER_PIXEL))
     {
         write_msg_to_fd(STDERR_FILENO, "(f) save_ppm | " ERROR_INVALID_ARGUMENTS "\n");
         return RTN_ERROR;

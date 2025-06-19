@@ -26,6 +26,7 @@ raw_image_t* _init_raw_image(const process_t* process, const stream_t* stream,
                              const options_t* options);
 short _calculate_limits(stream_t* stream, const options_t* options);
 short _read_frame(stream_t* stream, process_t* process, const options_t* options);
+short _scale_image(raw_image_t* raw_image, const options_t* options);
 
 /**
  * @brief Checks the status of the image processing operation.
@@ -79,7 +80,7 @@ short _check_process_status(const process_t* process, const stream_t* stream)
  *
  * @param options  Pointer to the options_t structure containing configuration options.
  *
- * @return Pointer to a raw_image_t structure containing the retrieved image data,
+ * @return Pointer to a raw_image_t structure containing the image data,
  *         or NULL if an error occurred during the process.
  */
 raw_image_t* get_raw_image(options_t* options)
@@ -113,6 +114,17 @@ raw_image_t* get_raw_image(options_t* options)
         goto error;
 
     raw_image_t* raw_image = _init_raw_image(process, stream, options);
+    if (!raw_image)
+    {
+        write_msg_to_fd(STDERR_FILENO, "(f) get_raw_image | " ERROR_FAILED_TO_INIT_RAW_IMAGE "\n");
+        goto error;
+    }
+
+    if (_scale_image(raw_image, options))
+    {
+        write_msg_to_fd(STDERR_FILENO, "(f) get_raw_image | " ERROR_FAILED_TO_SCALE_IMAGE "\n");
+        goto error;
+    }
 
     free_process(process);
     free_stream(stream);

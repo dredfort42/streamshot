@@ -72,10 +72,17 @@ raw_image_t* _init_raw_image(const process_t* process, const stream_t* stream,
         raw_image->data[i] = (uint8_t)(process->sum_buffer[i] / stream->number_of_frames_to_read);
 
     if (options->debug)
+    {
         printf(ANSI_BLUE "Debug:" ANSI_RESET
                          " Raw image initialized with size: %zu bytes, "
                          "width: %d pixels, height: %d pixels\n",
                raw_image->size, raw_image->width, raw_image->height);
+
+        char path[256];
+        snprintf(path, sizeof(path), "%s/raw_average_image.ppm", options->debug_dir);
+        if (!save_ppm(path, raw_image->data, raw_image->size, raw_image->width, raw_image->height))
+            printf(ANSI_BLUE "Debug:" ANSI_RESET " Saved raw average image to: %s\n", path);
+    }
 
     return raw_image;
 

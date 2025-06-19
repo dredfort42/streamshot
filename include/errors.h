@@ -38,6 +38,7 @@
 #define ERROR_INVALID_IMAGE_QUALITY "Error: Invalid image quality specified."
 #define ERROR_INVALID_DEBUG_STEP "Error: Invalid debug step specified."
 #define ERROR_INVALID_DEBUG_DIR "Error: Invalid debug directory specified."
+#define ERROR_INVALID_IMAGE_SIZE "Error: Invalid image size specified."
 
 #define ERROR_FAILED_TO_SET_STREAM_OPTIONS "Error: Failed to set stream options."
 #define ERROR_FAILED_TO_OPEN_RTSP_STREAM "Error: Failed to open RTSP stream."
@@ -65,7 +66,8 @@
 #define ERROR_FAILED_TO_FILL_IMAGE_ARRAYS "Error: Failed to fill image arrays."
 #define ERROR_FAILED_TO_SEND_PACKET "Error: Failed to send packet to decoder."
 #define ERROR_FAILED_TO_RECEIVE_FRAME "Error: Failed to receive frame from decoder."
-// #define ERROR_FAILED_TO_SEND_FRAME "Error: Failed to send frame to codec context."
+#define ERROR_FAILED_TO_INIT_RAW_IMAGE "Error: Failed to initialize raw image."
+#define ERROR_FAILED_TO_SCALE_IMAGE "Error: Failed to scale image."
 
 #define ERROR_FAILED_TO_SAVE_DEBUG_FILE "Error: Failed to save debug file."
 #define ERROR_FAILED_TO_READ_FRAME "Error: Failed to read frame from stream."

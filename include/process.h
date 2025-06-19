@@ -23,6 +23,7 @@
 #define DEFAULT_FPS 25.0f                // Default frame rate for video streams if not specified.
 #define I_FRAME_TIMEOUT_SEC 60           // Maximum timeout for I-frames in seconds (1 minute).
 #define FRAME_DELIVERY_LATENCY_SEC 0.3f  // Frame delivery latency in seconds (0.3 seconds).
+#define RGB_BYTES_PER_PIXEL 3            // Number of bytes per pixel in RGB format.
 
 typedef struct process_s
 {
