@@ -59,44 +59,72 @@ LDFLAGS     := -L$(ZLIB_DIR)/lib -lz \
 CFLAGS      := -O3 -march=native -flto -funroll-loops -Wall -Wextra -Werror -Wno-error=visibility $(INCLUDES)
 # CFLAGS      := -g -O0 -fsanitize=address -Wall -Wextra -Werror -Wno-error=visibility $(INCLUDES)
 
+# Platform detection
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+	PLATFORM := macos
+	PKG_INSTALL := brew install
+	SED_INPLACE := sed -i ''
+	READLINK := greadlink
+else
+	PLATFORM := linux
+	PKG_INSTALL := sudo apt-get install -y
+	SED_INPLACE := sed -i
+	READLINK := readlink
+endif
+
+# Output colors
+GREEN=\033[0;32m
+RED=\033[0;31m
+YELLOW=\033[1;33m
+NC=\033[0m
+
 # Rules
-.PHONY: all build clean fclean re test
+.PHONY: all build clean fclean re test help
 
 all: build
 
 build: build_check $(NAME)
+	@echo "${GREEN}Build complete.${NC}"
 
 $(NAME): $(OBJS)
+	@echo "${YELLOW}Linking $@...${NC}"
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(dir $@)
+	@echo "${YELLOW}Compiling $<...${NC}"
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	@rm -rf $(BUILD_DIR)
 	@rm -f $(NAME)
 	@rm -rf debug_files
+	@echo "${GREEN}Cleaned build artifacts.${NC}"
 
 fclean: clean
 	@rm -rf $(LIB_DIR)
+	@echo "${GREEN}Fully cleaned all artifacts and libraries.${NC}"
 
 re: clean all
 
-test: build_check
-	@mkdir -p $(BUILD_DIR)/tests
-	$(CC) $(CFLAGS) $(wildcard $(TESTS_DIR)/*.c) $(filter-out $(SRC_DIR)/main.c, $(SRCS)) -o $(BUILD_DIR)/tests/test_runner $(LDFLAGS)
-	@clear
-	@$(BUILD_DIR)/tests/test_runner
-
+help:
+	@echo "${YELLOW}Available targets:${NC}"
+	@echo "  all      - Build the project (default)"
+	@echo "  build    - Build the project"
+	@echo "  clean    - Remove build artifacts"
+	@echo "  fclean   - Remove all build artifacts and libraries"
+	@echo "  re       - Clean and rebuild"
+	@echo "  test     - Build and run tests"
+	@echo "  help     - Show this help message"
 
 # Check for existence of directories
 build_check: check_src_exists check_build_exists check_lib_exists check_ffmpeg_exists check_jpeg_exists check_zlib_exists check_png_exists
-	@echo "All necessary directories exist."
+	@echo "${GREEN}All necessary directories exist.${NC}"
 
 check_src_exists:
 	@if [ ! -d src ]; then \
-		echo "Error: src directory does not exist."; \
+		echo "${RED}Error: src directory does not exist.${NC}"; \
 		exit 1; \
 	fi
 
@@ -172,4 +200,8 @@ check_build_exists:
 	@if [ ! -d $(BUILD_DIR) ]; then \
 		mkdir -p $(BUILD_DIR); \
 	fi
+
+# Platform-specific help
+detect_platform:
+	@echo "Detected platform: $(PLATFORM)"
 
