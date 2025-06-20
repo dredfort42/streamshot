@@ -31,6 +31,7 @@ int main(int argc, char* argv[])
         return MAIN_ERROR_CODE;
     }
 
+    raw_image_t* raw_image = NULL;
     short error_code = 0;
     options_t* options = get_options(argc, argv);
     if (!options)
@@ -51,8 +52,15 @@ int main(int argc, char* argv[])
         error_code = MAIN_SUCCESS_CODE;
         goto end;
     }
+    else if (!options->debug && !options->output_file_path && options->output_file_fd < 0)
+    {
+        write_msg_to_fd(STDERR_FILENO, "(f) main | " ERROR_NO_OUTPUT_SPECIFIED "\n");
+        print_help(argv[0]);
+        error_code = MAIN_ERROR_CODE;
+        goto end;
+    }
 
-    raw_image_t* raw_image = get_raw_image(options);
+    raw_image = get_raw_image(options);
     if (!raw_image)
     {
         error_code = MAIN_ERROR_CODE;

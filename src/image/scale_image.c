@@ -22,6 +22,21 @@
 #include "process.h"
 #include "utilities.h"
 
+/**
+ * Calculates the scale factor for resizing an image based on the provided source dimensions and
+ * options.
+ *
+ * The function determines the appropriate scale factor to use for resizing an image, considering
+ * the requested resize width, height, and/or a direct scale factor from the options. It ensures the
+ * scale factor stays within the allowed minimum and maximum bounds. If both resize width and height
+ * are specified, the smaller scale factor is chosen to maintain aspect ratio.
+ *
+ * @param src_width      The width of the source image (must be > 0).
+ * @param src_height     The height of the source image (must be > 0).
+ * @param options        Pointer to an options_t structure containing resize and scaling parameters.
+ *
+ * @return               The calculated scale factor as a float, or RTN_ERROR on invalid arguments.
+ */
 float _get_scale_factor(int src_width, int src_height, const options_t* options)
 {
     if (src_width <= 0 || src_height <= 0 || !options)
@@ -44,7 +59,7 @@ float _get_scale_factor(int src_width, int src_height, const options_t* options)
         return sf;
     }
 
-    double scale_w = 1.0, scale_h = 1.0;
+    double scale_w = DEFAULT_SCALE_FACTOR, scale_h = DEFAULT_SCALE_FACTOR;
     if (options->resize_width > 0)
         scale_w = (double)options->resize_width / src_width;
     if (options->resize_height > 0)
@@ -65,6 +80,57 @@ float _get_scale_factor(int src_width, int src_height, const options_t* options)
     return sf;
 }
 
+/**
+ * @brief Determines the appropriate scaling flags for the software scaler based on the provided
+ * options.
+ *
+ * This function selects the scaling algorithm flags for image processing depending on the
+ * image quality specified in the options. It also enables debug information if requested.
+ *
+ * @param options Pointer to an options_t structure containing image quality and debug settings.
+ *
+ * @return The selected scaling flags, or -1 if the options pointer is NULL.
+ */
+int _get_sws_flags(const options_t* options)
+{
+    if (!options)
+    {
+        write_msg_to_fd(STDERR_FILENO, "(f) _get_sws_flags | " ERROR_INVALID_ARGUMENTS "\n");
+        return RTN_ERROR;
+    }
+
+    int flags = 0;
+
+    if (options->image_quality < QUALITY_FAST_BILINEAR)
+        flags = SWS_FAST_BILINEAR;
+    else if (options->image_quality < QUALITY_BILINEAR)
+        flags = SWS_BILINEAR;
+    else if (options->image_quality < QUALITY_BICUBIC)
+        flags = SWS_BICUBIC;
+    else if (options->image_quality < QUALITY_GAUSS)
+        flags = SWS_GAUSS;
+    else if (options->image_quality < QUALITY_LANCZOS)
+        flags = SWS_LANCZOS;
+
+    if (options->debug)
+        flags |= SWS_PRINT_INFO;
+
+    return flags;
+}
+
+/**
+ * @brief Scales a raw RGB image according to the specified options.
+ *
+ * This function resizes a raw RGB image in-place using the scale factor or target dimensions
+ * provided in the options structure. It uses libswscale for high-quality scaling and updates
+ * the raw_image_t structure with the new image data, dimensions, and size.
+ *
+ * @param raw_image Pointer to a raw_image_t structure containing the image data to be scaled.
+ * @param options   Pointer to an options_t structure specifying scaling parameters and debug
+ * options.
+ *
+ * @return 0 on success, or -1 on failure.
+ */
 short _scale_image(raw_image_t* raw_image, const options_t* options)
 {
     if (!raw_image || !options)
@@ -82,7 +148,7 @@ short _scale_image(raw_image_t* raw_image, const options_t* options)
     float scale_factor = _get_scale_factor(raw_image->width, raw_image->height, options);
     if (scale_factor < 0 || scale_factor > MAX_SCALE_FACTOR)
         return RTN_ERROR;
-    else if (scale_factor == 1.0)
+    else if (scale_factor == DEFAULT_SCALE_FACTOR)
         return RTN_SUCCESS;
 
     int dst_width = (int)(raw_image->width * scale_factor);
@@ -118,9 +184,16 @@ short _scale_image(raw_image_t* raw_image, const options_t* options)
         goto error;
     }
 
+    int sws_flags = _get_sws_flags(options);
+    if (sws_flags < 0)
+    {
+        write_msg_to_fd(STDERR_FILENO, "(f) _scale_image | " ERROR_INVALID_ARGUMENTS "\n");
+        goto error;
+    }
+
     struct SwsContext* scale_context =
         sws_getContext(raw_image->width, raw_image->height, AV_PIX_FMT_RGB24, dst_width, dst_height,
-                       AV_PIX_FMT_RGB24, SWS_LANCZOS, NULL, NULL, NULL);
+                       AV_PIX_FMT_RGB24, sws_flags, NULL, NULL, NULL);
     if (!scale_context)
     {
         write_msg_to_fd(STDERR_FILENO,

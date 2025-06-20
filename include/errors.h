@@ -25,7 +25,7 @@
 #define ERROR_NO_DATA_TO_WRITE "Error: No data to write to file descriptor."
 #define ERROR_NOT_NULL_TERMINATED "Error: The provided message is not null-terminated."
 #define ERROR_FAILED_TO_GET_TIME "Error: Failed to get the current time."
-
+#define ERROR_NO_OUTPUT_SPECIFIED "Error: No output file or file descriptor specified."
 #define ERROR_INVALID_ARGUMENTS "Error: Invalid arguments provided."
 #define ERROR_INVALID_RTSP_URL "Error: Invalid RTSP URL provided."
 #define ERROR_INVALID_OUTPUT_FD "Error: Invalid output file descriptor specified."

@@ -25,6 +25,12 @@
 #define FRAME_DELIVERY_LATENCY_SEC 0.3f  // Frame delivery latency in seconds (0.3 seconds).
 #define RGB_BYTES_PER_PIXEL 3            // Number of bytes per pixel in RGB format.
 
+#define QUALITY_FAST_BILINEAR 20  // Prioritizing speed over quality.
+#define QUALITY_BILINEAR 40       // A balance between speed and quality.
+#define QUALITY_BICUBIC 60        // Providing higher quality at the cost of performance.
+#define QUALITY_GAUSS 80          // Typically used for high-quality smoothing or scaling.
+#define QUALITY_LANCZOS 100       // High quality.
+
 typedef struct process_s
 {
     AVPacket* av_packet;                 // Pointer to the AVPacket for the current frame.
