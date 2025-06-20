@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | raw_image.c
     ::  ::          ::  ::    Created  | 2025-06-19
-          ::::  ::::          Modified | 2025-06-19
+          ::::  ::::          Modified | 2025-06-20
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -22,19 +22,18 @@
 #include "utilities.h"
 
 /**
- * @brief Initializes a raw_image_t structure using the provided process, stream, and options.
+ * @brief Initializes a image_t structure using the provided process, stream, and options.
  *
- * This function allocates and initializes a raw_image_t object based on the image size
+ * This function allocates and initializes a image_t object based on the image size
  * specified in the process, and the width and height from the stream's codec context.
  *
  * @param process   Pointer to the process_t structure containing image size and sum buffer.
  * @param stream    Pointer to the stream_t structure containing codec context and frame count.
  * @param options   Pointer to the options_t structure for debug output.
  *
- * @return          Pointer to the initialized raw_image_t on success, or NULL on failure.
+ * @return          Pointer to the initialized image_t on success, or NULL on failure.
  */
-raw_image_t* _init_raw_image(const process_t* process, const stream_t* stream,
-                             const options_t* options)
+image_t* _init_raw_image(const process_t* process, const stream_t* stream, const options_t* options)
 {
     if (!process || !stream || !options || !stream->codec_context)
     {
@@ -42,7 +41,7 @@ raw_image_t* _init_raw_image(const process_t* process, const stream_t* stream,
         return NULL;
     }
 
-    raw_image_t* raw_image = (raw_image_t*)malloc(sizeof(raw_image_t));
+    image_t* raw_image = (image_t*)malloc(sizeof(image_t));
     if (!raw_image)
     {
         write_msg_to_fd(STDERR_FILENO,
@@ -87,26 +86,29 @@ raw_image_t* _init_raw_image(const process_t* process, const stream_t* stream,
     return raw_image;
 
 error:
-    free_raw_image(raw_image);
+    free_image(raw_image);
     return NULL;
 }
 
 /**
- * @brief Frees the memory allocated for a raw_image_t structure and its associated data buffer.
+ * @brief Frees the memory allocated for a image_t structure and its associated data buffer.
  *
- * This function safely deallocates the memory used by a raw_image_t object, including its internal
+ * This function safely deallocates the memory used by a image_t object, including its internal
  * data buffer, if present. If the provided pointer is NULL, the function does nothing.
  *
- * @param raw_image Pointer to the raw_image_t structure to be freed.
+ * @param image Pointer to the image_t structure to be freed.
  */
-void free_raw_image(raw_image_t* raw_image)
+void free_image(image_t* image)
 {
-    if (!raw_image)
+    if (!image)
         return;
 
-    if (raw_image->data)
-        free(raw_image->data);
+    if (image->data)
+    {
+        free(image->data);
+        image->data = NULL;
+    }
 
-    free(raw_image);
-    raw_image = NULL;
+    free(image);
+    image = NULL;
 }

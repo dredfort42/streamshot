@@ -5,9 +5,9 @@
         ::::::::::::::        | Email  | dredfort.42@gmail.com |
       ::::  ::::::  ::::      +--------+-----------------------+
     ::::::::::::::::::::::
-    ::  ::::::::::::::  ::    File     | get_scaled_image.c
+    ::  ::::::::::::::  ::    File     | scale_image.c
     ::  ::          ::  ::    Created  | 2025-06-19
-          ::::  ::::          Modified | 2025-06-19
+          ::::  ::::          Modified | 2025-06-20
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -18,7 +18,6 @@
 
 #include "errors.h"
 #include "libswscale/swscale.h"
-#include "options.h"
 #include "process.h"
 #include "utilities.h"
 
@@ -123,15 +122,15 @@ int _get_sws_flags(const options_t* options)
  *
  * This function resizes a raw RGB image in-place using the scale factor or target dimensions
  * provided in the options structure. It uses libswscale for high-quality scaling and updates
- * the raw_image_t structure with the new image data, dimensions, and size.
+ * the image_t structure with the new image data, dimensions, and size.
  *
- * @param raw_image Pointer to a raw_image_t structure containing the image data to be scaled.
+ * @param raw_image Pointer to a image_t structure containing the image data to be scaled.
  * @param options   Pointer to an options_t structure specifying scaling parameters and debug
  * options.
  *
  * @return 0 on success, or -1 on failure.
  */
-short _scale_image(raw_image_t* raw_image, const options_t* options)
+short _scale_image(image_t* raw_image, const options_t* options)
 {
     if (!raw_image || !options)
     {

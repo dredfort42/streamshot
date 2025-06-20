@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | process.c
     ::  ::          ::  ::    Created  | 2025-06-16
-          ::::  ::::          Modified | 2025-06-19
+          ::::  ::::          Modified | 2025-06-20
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -50,8 +50,18 @@ process_t* _init_process(const stream_t* stream, const options_t* options)
     if (!process)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) _init_process | " ERROR_FAILED_TO_ALLOCATE_MEMORY "\n");
-        goto error;
+        return NULL;
     }
+
+    process->av_packet = NULL;
+    process->video_frame = NULL;
+    process->image_frame = NULL;
+    process->buffer = NULL;
+    process->sum_buffer = NULL;
+    process->image_size = 0;
+    process->received_frames = 0;
+    process->got_first_i_frame = 0;
+    process->stream_read_status = 0;
 
     process->av_packet = av_packet_alloc();
     if (!process->av_packet)

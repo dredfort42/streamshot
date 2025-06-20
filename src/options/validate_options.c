@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | validate_options.c
     ::  ::          ::  ::    Created  | 2025-06-09
-          ::::  ::::          Modified | 2025-06-19
+          ::::  ::::          Modified | 2025-06-20
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -105,7 +105,8 @@ short _validate_scale_factor(float scale_factor)
 
 short _validate_resize_height(int resize_height)
 {
-    if (resize_height && (resize_height < MIN_RESIZE_HEIGHT || resize_height > MAX_RESIZE_HEIGHT))
+    if (resize_height && (resize_height < MIN_RESIZE_HEIGHT || resize_height > MAX_RESIZE_HEIGHT) &&
+        resize_height != -1)
     {
         write_msg_to_fd(STDERR_FILENO,
                         "(f) validate_resize_height | " ERROR_INVALID_RESIZE_HEIGHT "\n");
@@ -117,7 +118,8 @@ short _validate_resize_height(int resize_height)
 
 short _validate_resize_width(int resize_width)
 {
-    if (resize_width && (resize_width < MIN_RESIZE_WIDTH || resize_width > MAX_RESIZE_WIDTH))
+    if (resize_width && (resize_width < MIN_RESIZE_WIDTH || resize_width > MAX_RESIZE_WIDTH) &&
+        resize_width != -1)
     {
         write_msg_to_fd(STDERR_FILENO,
                         "(f) validate_resize_width | " ERROR_INVALID_RESIZE_WIDTH "\n");
@@ -193,6 +195,9 @@ short validate_options(const options_t* options)
 {
     if (!options)
         return RTN_ERROR;
+
+    if (options->help || options->version)
+        return RTN_SUCCESS;  // No need to validate further if help or version is requested.
 
     short result = 0;
 

@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | get_raw_image.c
     ::  ::          ::  ::    Created  | 2025-06-19
-          ::::  ::::          Modified | 2025-06-19
+          ::::  ::::          Modified | 2025-06-20
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -22,11 +22,11 @@
 #include "utilities.h"
 
 process_t* _init_process(const stream_t* stream, const options_t* options);
-raw_image_t* _init_raw_image(const process_t* process, const stream_t* stream,
-                             const options_t* options);
+image_t* _init_raw_image(const process_t* process, const stream_t* stream,
+                         const options_t* options);
 short _calculate_limits(stream_t* stream, const options_t* options);
 short _read_frame(stream_t* stream, process_t* process, const options_t* options);
-short _scale_image(raw_image_t* raw_image, const options_t* options);
+short _scale_image(image_t* raw_image, const options_t* options);
 
 /**
  * @brief Checks the status of the image processing operation.
@@ -80,10 +80,10 @@ short _check_process_status(const process_t* process, const stream_t* stream)
  *
  * @param options  Pointer to the options_t structure containing configuration options.
  *
- * @return Pointer to a raw_image_t structure containing the image data,
+ * @return Pointer to a image_t structure containing the image data,
  *         or NULL if an error occurred during the process.
  */
-raw_image_t* get_raw_image(options_t* options)
+image_t* get_raw_image(options_t* options)
 {
     if (!options)
     {
@@ -113,7 +113,7 @@ raw_image_t* get_raw_image(options_t* options)
     if (_check_process_status(process, stream))
         goto error;
 
-    raw_image_t* raw_image = _init_raw_image(process, stream, options);
+    image_t* raw_image = _init_raw_image(process, stream, options);
     if (!raw_image)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) get_raw_image | " ERROR_FAILED_TO_INIT_RAW_IMAGE "\n");

@@ -7,14 +7,13 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | time.c
     ::  ::          ::  ::    Created  | 2025-06-15
-          ::::  ::::          Modified | 2025-06-15
+          ::::  ::::          Modified | 2025-06-20
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
 
 *******************************************************************/
 
-#include <stdlib.h>
 #include <sys/time.h>
 #include <unistd.h>
 
@@ -30,9 +29,7 @@
  * @return The current time in microseconds as a long long integer on success,
  *         or -1 on failure.
  *
- * @note
- * - This function is POSIX-specific and will not work on Windows without changes.
- * - On failure, an error message is written to STDERR.
+ * @note   This function is POSIX-specific and will not work on Windows without changes.
  */
 long long time_now_in_microseconds()
 {
