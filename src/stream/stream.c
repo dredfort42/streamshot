@@ -24,7 +24,7 @@
 short _set_stream_options(stream_t* stream, const options_t* options);
 short _open_stream(stream_t* stream, const options_t* options);
 short _init_codec_context(stream_t* stream, const options_t* options);
-short _init_sws_context(stream_t* stream, const options_t* options, float scale_factor);
+short _init_sws_context(stream_t* stream, const options_t* options);
 
 /**
  * @brief Initializes and allocates a new stream_t structure.
@@ -60,7 +60,7 @@ stream_t* _init_stream()
  * @brief Initializes and configures a new stream based on the provided options.
  *
  * This function allocates and initializes a new stream object, sets its options,
- * opens the stream, and initializes the codec and scaling contexts. If any step fails,
+ * opens the stream, and initializes the codec and sws contexts. If any step fails,
  * the function returns NULL.
  *
  * @param options Pointer to an options_t structure containing stream configuration parameters.
@@ -72,8 +72,7 @@ stream_t* get_stream(options_t* options)
     stream_t* stream = _init_stream();
 
     if (_set_stream_options(stream, options) || _open_stream(stream, options) ||
-        _init_codec_context(stream, options) ||
-        _init_sws_context(stream, options, DEFAULT_SCALE_FACTOR))
+        _init_codec_context(stream, options) || _init_sws_context(stream, options))
         return NULL;
 
     return stream;

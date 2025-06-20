@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | printer.c
     ::  ::          ::  ::    Created  | 2025-06-05
-          ::::  ::::          Modified | 2025-06-06
+          ::::  ::::          Modified | 2025-06-20
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -46,7 +46,10 @@ void print_options(const options_t* options)
     printf("Exposure Time: %d seconds\n", options->exposure_sec);
     printf("Output Format: %s\n", image_format_to_string(options->output_format));
     printf("Scale Factor: %.1f\n", options->scale_factor);
+    printf("Scale Factor specified: %s\n",
+           (options->resize_height == -1 && options->resize_width == -1) ? "Yes" : "No");
     printf("Resize Height: %d pixels\n", options->resize_height);
+    printf("Resize Width: %d pixels\n", options->resize_width);
     printf("Resize Width: %d pixels\n", options->resize_width);
     printf("Image Quality: %d\n", options->image_quality);
     printf("Debug Mode: %s\n", options->debug ? "Enabled" : "Disabled");

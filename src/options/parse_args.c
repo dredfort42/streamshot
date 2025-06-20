@@ -7,15 +7,13 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | parse_args.c
     ::  ::          ::  ::    Created  | 2025-06-07
-          ::::  ::::          Modified | 2025-06-19
+          ::::  ::::          Modified | 2025-06-20
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
 
 *******************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -184,11 +182,25 @@ short parse_args(int argc, char* argv[], options_t* options)
             free(format_arg);
         }
         else if (MATCH("-s", "--scale"))
-            options->scale_factor = atof(value);
+        {
+            float scale = atof(value);
+            options->scale_factor = scale;
+            if (scale != DEFAULT_SCALE_FACTOR)
+            {
+                options->resize_height = -1;  // Disable height resize if scale is set.
+                options->resize_width = -1;   // Disable width resize if scale is set.
+            }
+        }
         else if (MATCH("-h", "--resize-height"))
-            options->resize_height = atoi(value);
+        {
+            if (options->resize_height != -1)
+                options->resize_height = atoi(value);
+        }
         else if (MATCH("-w", "--resize-width"))
-            options->resize_width = atoi(value);
+        {
+            if (options->resize_width != -1)
+                options->resize_width = atoi(value);
+        }
         else if (MATCH("-q", "--image-quality"))
             options->image_quality = atoi(value);
         else if (MATCH("-d", "--debug"))

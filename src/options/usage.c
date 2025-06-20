@@ -7,14 +7,13 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | usage.c
     ::  ::          ::  ::    Created  | 2025-06-05
-          ::::  ::::          Modified | 2025-06-07
+          ::::  ::::          Modified | 2025-06-20
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
 
 *******************************************************************/
 
-#include <stdio.h>
 #include <unistd.h>
 
 #include "errors.h"

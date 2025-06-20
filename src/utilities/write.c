@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | write.c
     ::  ::          ::  ::    Created  | 2025-06-05
-          ::::  ::::          Modified | 2025-06-19
+          ::::  ::::          Modified | 2025-06-20
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -15,8 +15,6 @@
 *******************************************************************/
 
 #include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -44,8 +42,8 @@ ssize_t write_data_to_fd(int fd, const void* buf, size_t buf_size)
 {
     if (fd < 0 || buf == NULL || buf_size == 0)
     {
-        write(STDERR_FILENO, "(f) write_data_to_fd | " ERROR_INVALID_ARGUMENTS,
-              strlen("(f) write_data_to_fd | " ERROR_INVALID_ARGUMENTS));
+        write(STDERR_FILENO, "(f) write_data_to_fd | " ERROR_INVALID_ARGUMENTS "\n",
+              strlen("(f) write_data_to_fd | " ERROR_INVALID_ARGUMENTS "\n"));
         return RTN_ERROR;
     }
 
@@ -59,7 +57,7 @@ ssize_t write_data_to_fd(int fd, const void* buf, size_t buf_size)
         if (written > 0)
             total_written += written;
         else if (written == 0)
-            goto error;  // EOF or no data to write
+            break;  // EOF reached, no more data to write
         else if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
             continue;  // Retry on non-blocking or interrupted write
         else
@@ -70,8 +68,8 @@ ssize_t write_data_to_fd(int fd, const void* buf, size_t buf_size)
 
 error:
 
-    write(STDERR_FILENO, "(f) write_data_to_fd | " ERROR_FAILED_TO_WRITE_FD,
-          strlen("(f) write_data_to_fd | " ERROR_FAILED_TO_WRITE_FD));
+    write(STDERR_FILENO, "(f) write_data_to_fd | " ERROR_FAILED_TO_WRITE_FD "\n",
+          strlen("(f) write_data_to_fd | " ERROR_FAILED_TO_WRITE_FD "\n"));
     return RTN_ERROR;
 }
 
@@ -94,15 +92,15 @@ ssize_t write_msg_to_fd(int fd, const char* msg)
 {
     if (fd < 0 || msg == NULL)
     {
-        write(STDERR_FILENO, "(f) write_msg_to_fd | " ERROR_INVALID_ARGUMENTS,
-              strlen("(f) write_msg_to_fd | " ERROR_INVALID_ARGUMENTS));
+        write(STDERR_FILENO, "(f) write_msg_to_fd | " ERROR_INVALID_ARGUMENTS "\n",
+              strlen("(f) write_msg_to_fd | " ERROR_INVALID_ARGUMENTS "\n"));
         return RTN_ERROR;
     }
 
     if (strchr(msg, '\0') == NULL)
     {
-        write(STDERR_FILENO, "(f) write_msg_to_fd | " ERROR_NOT_NULL_TERMINATED,
-              strlen("(f) write_msg_to_fd | " ERROR_NOT_NULL_TERMINATED));
+        write(STDERR_FILENO, "(f) write_msg_to_fd | " ERROR_NOT_NULL_TERMINATED "\n",
+              strlen("(f) write_msg_to_fd | " ERROR_NOT_NULL_TERMINATED "\n"));
         return RTN_ERROR;
     }
 

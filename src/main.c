@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | main.c
     ::  ::          ::  ::    Created  | 2025-06-04
-          ::::  ::::          Modified | 2025-06-19
+          ::::  ::::          Modified | 2025-06-20
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -17,7 +17,6 @@
 #include <unistd.h>
 
 #include "errors.h"
-#include "options.h"
 #include "process.h"
 #include "stream.h"
 #include "utilities.h"
@@ -32,6 +31,8 @@ int main(int argc, char* argv[])
     }
 
     short error_code = 0;
+    image_t* raw_image = NULL;
+    image_t* image = NULL;
     options_t* options = get_options(argc, argv);
     if (!options)
     {
@@ -51,42 +52,57 @@ int main(int argc, char* argv[])
         error_code = MAIN_SUCCESS_CODE;
         goto end;
     }
+    else if (!options->debug && !options->output_file_path && options->output_file_fd < 0)
+    {
+        write_msg_to_fd(STDERR_FILENO, "(f) main | " ERROR_NO_OUTPUT_SPECIFIED "\n");
+        print_help(argv[0]);
+        error_code = MAIN_ERROR_CODE;
+        goto end;
+    }
 
-    raw_image_t* raw_image = get_raw_image(options);
+    raw_image = get_raw_image(options);
     if (!raw_image)
     {
         error_code = MAIN_ERROR_CODE;
         goto end;
     }
 
-    // TMP
-    char header[32];
-    snprintf(header, sizeof(header), "P6\n%d %d\n255\n", raw_image->width, raw_image->height);
+    if (options->output_file_fd < 0 && !options->output_file_path)
+        goto end;
 
-    // if (options->debug)
-    // {
-    // Save to PPM file (for debugging)
-    char file_name[1024];
-    snprintf(file_name, sizeof(file_name), "%s/average_frame.ppm", options->debug_dir);
-    FILE* f = fopen(file_name, "wb");
-    if (f)
+    image = get_converted_image(options, raw_image);
+    if (!image)
     {
-        fwrite(header, 1, strlen(header), f);
-        fwrite(raw_image->data, 1, raw_image->size, f);
-        fclose(f);
-        if (options->debug)
-            printf("Saved %s\n", file_name);
+        write_msg_to_fd(STDERR_FILENO, "(f) main | " ERROR_FAILED_TO_CONVERT_IMAGE "\n");
+        error_code = MAIN_ERROR_CODE;
+        goto end;
     }
-    // }
 
-    // // Write average video_frame to output fd
-    // write_data_to_fd(data_fd, (const uint8_t*)header, strlen(header));
-    // write_data_to_fd(data_fd, avg_buffer, image_size);
-    // if (options->debug)
-    //     printf("Average video_frame written to data_fd %d\n", data_fd);
+    if (options->output_file_path)
+    {
+        if (write_data_to_file(options->output_file_path, image->data, image->size) < 0)
+            error_code = MAIN_ERROR_CODE;
+        else if (options->debug)
+            printf(ANSI_BLUE "Debug:" ANSI_RESET " Saved converted image to: %s\n",
+                   options->output_file_path);
+    }
+
+    if (options->output_file_fd != -1)
+    {
+        if (write_data_to_fd(options->output_file_fd, image->data, image->size) < 0)
+            error_code = MAIN_ERROR_CODE;
+        else if (options->debug)
+            printf(ANSI_BLUE "Debug:" ANSI_RESET " Saved converted image to file descriptor: %d\n",
+                   options->output_file_fd);
+    }
 
 end:
     if (options)
         free_options(options);
+    if (raw_image)
+        free_image(raw_image);
+    if (image)
+        free_image(image);
+
     return error_code;
 }

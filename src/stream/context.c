@@ -104,16 +104,14 @@ error:
  * @brief Initializes the SwsContext for scaling and converting pixel formats.
  *
  * This function sets up the SwsContext for converting the video stream's pixel format
- * to RGB24 format, applying a scaling factor if specified. It performs validation of
- * input arguments and handles errors appropriately.
+ * to RGB24 format.
  *
  * @param stream       Pointer to the stream_t structure containing stream information.
  * @param options      Pointer to the options_t structure containing configuration options.
- * @param scale_factor Scaling factor for resizing the video frames.
  *
  * @return 0 on success, -1 on failure.
  */
-short _init_sws_context(stream_t* stream, const options_t* options, float scale_factor)
+short _init_sws_context(stream_t* stream, const options_t* options)
 {
     if (!stream || !options || stream->video_stream_index < 0)
     {
@@ -137,21 +135,9 @@ short _init_sws_context(stream_t* stream, const options_t* options, float scale_
         return RTN_ERROR;
     }
 
-    enum AVPixelFormat src_pix_fmt = codecpar->format;
-    enum AVPixelFormat dst_pix_fmt = AV_PIX_FMT_RGB24;
-    int dst_width = (int)(codecpar->width * scale_factor);
-    int dst_height = (int)(codecpar->height * scale_factor);
-
-    if (dst_width <= 0 || dst_height <= 0)
-    {
-        write_msg_to_fd(STDERR_FILENO,
-                        "(f) _init_sws_context | " ERROR_INVALID_DESTINATION_DIMENSIONS "\n");
-        return RTN_ERROR;
-    }
-
     stream->sws_context =
-        sws_getContext(codecpar->width, codecpar->height, src_pix_fmt, dst_width, dst_height,
-                       dst_pix_fmt, SWS_FAST_BILINEAR, NULL, NULL, NULL);
+        sws_getContext(codecpar->width, codecpar->height, codecpar->format, codecpar->width,
+                       codecpar->height, AV_PIX_FMT_RGB24, SWS_FAST_BILINEAR, NULL, NULL, NULL);
 
     if (!stream->sws_context)
     {

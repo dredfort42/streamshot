@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | read_frame.c
     ::  ::          ::  ::    Created  | 2025-06-19
-          ::::  ::::          Modified | 2025-06-19
+          ::::  ::::          Modified | 2025-06-20
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -38,7 +38,7 @@ void _save_debug_frame(process_t* process, const options_t* options)
         return;
 
     char debug_file_name[256];
-    snprintf(debug_file_name, sizeof(debug_file_name), "%s/debug_image_%llu.ppm",
+    snprintf(debug_file_name, sizeof(debug_file_name), "%s/debug_image_%010llu.ppm",
              options->debug_dir, process->received_frames);
 
     if (!save_ppm(debug_file_name, process->image_frame->data[0], process->image_size,
