@@ -89,13 +89,15 @@ process_t* _init_process(const stream_t* stream, const options_t* options)
     process->image_frame->width = stream->codec_context->width;
     process->image_frame->height = stream->codec_context->height;
 
-    process->image_size = av_image_get_buffer_size(AV_PIX_FMT_RGB24, process->image_frame->width,
-                                                   process->image_frame->height, 1);
-    if (process->image_size < 0)
+    int size = av_image_get_buffer_size(AV_PIX_FMT_RGB24, process->image_frame->width,
+                                        process->image_frame->height, 1);
+    if (size < 0)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) _init_process | " ERROR_FAILED_TO_GET_IMAGE_SIZE "\n");
         goto error;
     }
+
+    process->image_size = (size_t)size;
 
     process->buffer = (uint8_t*)av_malloc(process->image_size * sizeof(uint8_t));
     if (!process->buffer)

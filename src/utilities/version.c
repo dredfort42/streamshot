@@ -19,7 +19,7 @@
 /**
  * @brief Prints version and author information for the application.
  */
-void print_version()
+void print_version(void)
 {
     printf("RTSP Stream Image Capture Tool\n");
     printf("Version: %s\n", "1.0.0");

@@ -14,8 +14,12 @@
 
 *******************************************************************/
 
+#define _POSIX_C_SOURCE 200809L
+
 #include "options.h"
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -35,7 +39,7 @@
  * @note The returned structure must be freed by the caller using the appropriate
  *       deallocation function to avoid memory leaks.
  */
-static options_t* _init_options()
+static options_t* _init_options(void)
 {
     options_t* options = (options_t*)malloc(sizeof(options_t));
     if (!options)
