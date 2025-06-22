@@ -43,11 +43,9 @@ TESTS_DIR	:= $(CRNT_DIR)/tests
 ifeq ($(PLATFORM),$(MACOS))
 	LIB_DIR := $(CRNT_DIR)/lib/macos
 	BUILD_DIR	:= $(CRNT_DIR)/build/macos
-	
 else ifeq ($(PLATFORM),$(LINUX))
 	LIB_DIR := $(CRNT_DIR)/lib/linux
 	BUILD_DIR	:= $(CRNT_DIR)/build/linux
-	
 endif
 
 SRCS		:= $(shell find $(SRC_DIR) -type f -name '*.c')
@@ -60,18 +58,18 @@ JPEG_DIR	:= $(LIB_DIR)/jpeg
 FFMPEG_DIR	:= $(LIB_DIR)/ffmpeg
 
 # Compiler and flags
-INCLUDES	:= -I$(HDR_DIR) \
-			   -I$(ZLIB_DIR)/include \
-			   -I$(PNG_DIR)/include \
-			   -I$(JPEG_DIR)/include \
-			   -I$(FFMPEG_DIR)/include
+INCLUDES	:= -I$(HDR_DIR)
 
-LDFLAGS		:= -L$(ZLIB_DIR)/lib \
-			   -L$(PNG_DIR)/lib \
-			   -L$(JPEG_DIR)/lib \
-			   -L$(FFMPEG_DIR)/lib
-
-LIBS		:= -lpng -ljpeg -lavformat -lavcodec -lavutil -lswscale -lm -lz -pthread
+# Platform-specific flags
+ifeq ($(PLATFORM),$(MACOS))
+	CFLAGS += -Wno-error=visibility
+	DEV_CFLAGS += -Wno-error=visibility
+	INCLUDES += -I/usr/local/opt/ffmpeg/include -I/usr/local/opt/libjpeg/include -I/usr/local/opt/libpng/include
+	LDFLAGS := -L/usr/local/opt/ffmpeg/lib -L/usr/local/opt/libjpeg/lib -L/usr/local/opt/libpng/lib
+else ifeq ($(PLATFORM),$(LINUX))
+	CFLAGS += -static -Wno-error=unused-result
+	DEV_CFLAGS += -static -Wno-error=unused-result
+endif
 
 CFLAGS		:= -std=c11 -O2 -DNDEBUG \
                -Wall -Wextra -Werror \
@@ -84,15 +82,7 @@ DEV_CFLAGS  := -std=c11 -Wall -Wextra -Wpedantic -Werror -O0 -g \
                -fno-omit-frame-pointer -fstack-protector-strong \
                $(INCLUDES)
 
-# Platform-specific flags
-ifeq ($(PLATFORM),$(MACOS))
-	LDFLAGS += -liconv
-	CFLAGS += -Wno-error=visibility
-	DEV_CFLAGS += -Wno-error=visibility
-else ifeq ($(PLATFORM),$(LINUX))
-	CFLAGS += -static -Wno-error=unused-result
-	DEV_CFLAGS += -static -Wno-error=unused-result
-endif
+LIBS		:= -lpng -ljpeg -lavformat -lavcodec -lavutil -lswscale -lm -lz -pthread
 
 CC		  := gcc
 
@@ -125,13 +115,12 @@ dev: clean build_check $(NAME)
 
 clean:
 	@rm -rf $(BUILD_DIR)
-	@rm -f $(NAME)
 	@rm -rf debug_files
-	@rm -rf *.dSYM
 	@echo "$(GREEN)Cleaned build artifacts.$(NC)"
 
 fclean: clean
-	@rm -rf $(LIB_DIR)
+	@rm -f $(NAME)
+	@rm -rf *.dSYM
 	@echo "$(GREEN)Fully cleaned all artifacts and libraries.$(NC)"
 
 re: clean all
@@ -150,7 +139,6 @@ help:
 # Check for existence of directories
 build_check: 	check_platform \
 				check_src_exists \
-				check_lib_exists \
 				check_build_exists \
 				check_png_exists \
 				check_jpeg_exists \
@@ -171,185 +159,66 @@ check_src_exists:
 		exit 1; \
 	fi
 
-check_lib_exists:
-	@if [ ! -d $(LIB_DIR) ]; then \
-		mkdir -p $(LIB_DIR); \
-	fi
-
 check_build_exists:
 	@if [ ! -d $(BUILD_DIR) ]; then \
 		mkdir -p $(BUILD_DIR); \
 	fi
 
-check_zlib_exists:
-	@if [ ! -d $(ZLIB_DIR) ]; then \
-		echo "$(YELLOW)Installing zlib (static build for production)...$(NC)"; \
-		cd $(LIB_DIR) && \
-		curl -LO https://zlib.net/zlib-1.3.1.tar.gz && \
-		tar xzf zlib-1.3.1.tar.gz && \
-		mv zlib-1.3.1 z_tmp && \
-		cd z_tmp && \
-		./configure --static --prefix="$(ZLIB_DIR)" && \
-		make clean && \
-		make -j2 && \
-		make install && \
-		cd .. && \
-		rm -rf z_tmp zlib-1.3.1.tar.gz; \
-		echo "$(GREEN)zlib static library installed successfully.$(NC)"; \
+check_png_exists: 
+	@echo "$(YELLOW)Checking for libpng...$(NC)"; \
+	if [ "$(PLATFORM)" = "$(MACOS)" ]; then \
+		if ! brew list libpng >/dev/null 2>&1; then \
+			echo "$(YELLOW)libpng not found. Installing...$(NC)"; \
+			$(PKG_INSTALL) libpng; \
+		else \
+			echo "$(GREEN)libpng found via brew.$(NC)"; \
+		fi; \
+	elif [ "$(PLATFORM)" = "$(LINUX)" ]; then \
+		if ! dpkg -s libpng-dev >/dev/null 2>&1; then \
+			echo "$(YELLOW)libpng not found. Installing...$(NC)"; \
+			$(PKG_INSTALL) libpng-dev; \
+		else \
+			echo "$(GREEN)libpng-dev found.$(NC)"; \
+		fi; \
 	else \
-		echo "$(GREEN)zlib exists.$(NC)"; \
-	fi
-
-check_png_exists: check_zlib_exists
-	@if [ ! -d $(PNG_DIR) ]; then \
-		echo "$(YELLOW)Installing libpng (static build for production)...$(NC)"; \
-		cd $(LIB_DIR) && \
-		curl -LO https://download.sourceforge.net/libpng/libpng-1.6.49.tar.gz && \
-		tar xzf libpng-1.6.49.tar.gz && \
-		mv libpng-1.6.49 png_tmp && \
-		cd png_tmp && \
-		./configure --disable-shared --enable-static --with-zlib-prefix="$(ZLIB_DIR)" --prefix="$(PNG_DIR)" && \
-		make && \
-		make install; \
-		cd .. && \
-		rm -rf png_tmp libpng-1.6.49.tar.gz; \
-		echo "$(GREEN)libpng static library installed successfully.$(NC)"; \
-	else \
-		echo "$(GREEN)libpng exists.$(NC)"; \
+		echo "$(RED)Please install libpng manually for your OS.$(NC)"; \
+		exit 1; \
 	fi
 
 check_jpeg_exists:
-	@if [ ! -d $(JPEG_DIR) ]; then \
-		echo "$(YELLOW)Installing libjpeg (static build for production)...$(NC)"; \
-		cd $(LIB_DIR) && \
-		curl -LO https://ijg.org/files/jpegsrc.v9f.tar.gz && \
-		tar xzf jpegsrc.v9f.tar.gz && \
-		mv jpeg-9f jpeg_tmp && \
-		cd jpeg_tmp && \
-		./configure --disable-shared --enable-static --prefix="$(JPEG_DIR)" && \
-		make && \
-		make install; \
-		cd .. && \
-		rm -rf jpeg_tmp jpegsrc.v9f.tar.gz; \
-		echo "$(GREEN)libjpeg static library installed successfully.$(NC)"; \
-	else \
-		echo "$(GREEN)libjpeg exists.$(NC)"; \
-	fi
-
-check_nasm_exists:
-	@if ! command -v nasm >/dev/null 2>&1; then \
-		if [ "$(PLATFORM)" = "$(MACOS)" ]; then \
-			echo "$(YELLOW)Installing nasm via brew...$(NC)"; \
-			$(PKG_INSTALL) nasm; \
-		elif [ "$(PLATFORM)" = "$(LINUX)" ]; then \
-			echo "$(YELLOW)Installing nasm via apt-get...$(NC)"; \
-			$(PKG_INSTALL) nasm; \
+	@echo "$(YELLOW)Checking for libjpeg...$(NC)"; \
+	if [ "$(PLATFORM)" = "$(MACOS)" ]; then \
+		if ! brew list jpeg >/dev/null 2>&1; then \
+			echo "$(YELLOW)libjpeg not found. Installing...$(NC)"; \
+			$(PKG_INSTALL) jpeg; \
 		else \
-			echo "Please install nasm manually for your OS."; \
-			exit 1; \
-		fi \
+			echo "$(GREEN)libjpeg found.$(NC)"; \
+		fi; \
+	elif [ "$(PLATFORM)" = "$(LINUX)" ]; then \
+		if ! dpkg -s libjpeg-dev >/dev/null 2>&1; then \
+			echo "$(YELLOW)libjpeg not found. Installing...$(NC)"; \
+			$(PKG_INSTALL) libjpeg-dev; \
+		else \
+			echo "$(GREEN)libjpeg-dev found.$(NC)"; \
+		fi; \
+	else \
+		echo "$(RED)Please install libjpeg manually for your OS.$(NC)"; \
+		exit 1; \
 	fi
 
-
-# check_ffmpeg_exists: check_nasm_exists
-# 	@if [ ! -d $(FFMPEG_DIR) ]; then \
-# 		echo "$(YELLOW)Installing FFmpeg (static build for production)...$(NC)"; \
-# 		cp -r ffmpeg_tmp $(LIB_DIR); \
-# 		cd $(LIB_DIR)/ffmpeg_tmp && \
-# 		export MACOSX_DEPLOYMENT_TARGET=10.13; \
-# 			./configure \
-# 				--disable-logging \
-# 				--prefix=$(FFMPEG_DIR) \
-# 				--extra-cflags="-fPIC -mmacosx-version-min=10.13" \
-# 				--extra-ldflags="-mmacosx-version-min=10.13" \
-# 				--enable-gpl \
-# 				--enable-version3 \
-# 				--enable-static \
-# 				--disable-swscale-alpha \
-# 				--disable-programs \
-# 				--disable-shared \
-# 				--disable-doc; \
-# 		make -j$(N_CPU) && \
-# 		make install && \
-# 		cd .. && \
-# 		rm -rf ffmpeg_tmp; \
-# 		echo "$(GREEN)FFmpeg static library installed successfully.$(NC)"; \
-# 	else \
-# 		echo "$(GREEN)FFmpeg exists.$(NC)"; \
-# 	fi
-# check_ffmpeg_exists: check_nasm_exists
-# 	@if [ ! -d $(FFMPEG_DIR) ]; then \
-# 		cd $(LIB_DIR)/ffmpeg_tmp && \
-# 		if [ "$(PLATFORM)" = "$(LINUX)" ]; then \
-# 			./configure \
-# 				--prefix=$(FFMPEG_DIR) \
-# 				--pkg-config-flags="--static" \
-# 				--extra-cflags="-fPIC" \
-# 				--extra-ldflags="-static" \
-# 				--enable-gpl \
-# 				--enable-version3 \
-# 				--enable-static \
-# 				--enable-decoder=vp9 \
-# 				--disable-shared \
-# 				--disable-programs \
-# 				--disable-doc \
-# 				--disable-everything \
-# 				--enable-avformat \
-# 				--enable-avcodec \
-# 				--enable-avutil \
-# 				--enable-swscale \
-# 				--enable-pic; \
-# 		elif [ "$(PLATFORM)" = "$(MACOS)" ]; then \
-# 			./configure \
-# 				--prefix=$(FFMPEG_DIR) \
-# 				--enable-static \
-# 				--disable-shared \
-# 				--disable-programs \
-# 				--disable-doc \
-# 				--disable-everything \
-# 				--enable-avformat \
-# 				--enable-avcodec \
-# 				--enable-avutil \
-# 				--enable-swscale \
-# 				--enable-pic; \
-# 		else \
-# 			echo "$(RED)Error: Unsupported platform $(PLATFORM) for FFmpeg.$(NC)"; \
-# 			exit 1; \
-# 		fi && \
-# 		make -j$(N_CPU) && \
-# 		make install && \
-# 		cd .. && \
-# 		rm -rf ffmpeg_tmp; \
-# 		echo "$(GREEN)FFmpeg static library installed successfully.$(NC)"; \
-# 	else \
-# 		echo "$(GREEN)FFmpeg exists.$(NC)"; \
-# 	fi
-check_ffmpeg_exists: check_nasm_exists
-	@if [ ! -d $(FFMPEG_DIR) ]; then \
-		git clone https://git.ffmpeg.org/ffmpeg.git $(LIB_DIR)/ffmpeg_tmp && \
-		cd $(LIB_DIR)/ffmpeg_tmp && \
-		echo "$(YELLOW)Configuring FFmpeg for static build...$(NC)"; \
-		./configure \
-			--prefix=$(FFMPEG_DIR) \
-			---enable-gpl \
-			--enable-version3 \
-			--enable-pic \
-			--enable-static \
-			--disable-shared \
-			--disable-programs \
-			--disable-doc \
-			--disable-everything \
-			--enable-avformat \
-			--enable-avcodec \
-			--enable-avutil \
-			--enable-swscale; \
-		echo "$(YELLOW)Building FFmpeg...$(NC)"; \
-		make -j$(N_CPU) && \
-		echo "$(YELLOW)Installing FFmpeg static library...$(NC)"; \
-		make install && \
-		cd .. && \
-		rm -rf ffmpeg_tmp; \
-		echo "$(GREEN)FFmpeg static library installed successfully.$(NC)"; \
+check_ffmpeg_exists:
+	@echo "$(YELLOW)Checking for ffmpeg...$(NC)"; \
+	if ! command -v ffmpeg >/dev/null 2>&1; then \
+		if [ "$(PLATFORM)" = "$(MACOS)" ]; then \
+			echo "$(YELLOW)ffmpeg not found. Installing...$(NC)"; \
+			$(PKG_INSTALL) ffmpeg; \
+		elif [ "$(PLATFORM)" = "$(LINUX)" ]; then \
+			echo "$(YELLOW)ffmpeg not found. Installing...$(NC)"; \
+			$(PKG_INSTALL) ffmpeg; \
+		else \
+			echo "$(RED)Please install ffmpeg manually for your OS.$(NC)"; \
+			exit 1; \
+		fi; \
 	else \
-		echo "$(GREEN)FFmpeg exists.$(NC)"; \
+		echo "$(GREEN)ffmpeg found.$(NC)"; \
 	fi
