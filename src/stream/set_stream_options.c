@@ -54,7 +54,8 @@ short _set_stream_options(stream_t* stream, const options_t* options)
 
     if (error)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) _set_stream_options | " ERROR_FAILED_TO_SET_STREAM_OPTIONS "\n");
+        write_msg_to_fd(STDERR_FILENO,
+                        "(f) _set_stream_options | " ERROR_FAILED_TO_SET_STREAM_OPTIONS "\n");
         goto error;
     }
 
@@ -63,7 +64,8 @@ short _set_stream_options(stream_t* stream, const options_t* options)
         printf(ANSI_BLUE "Debug:" ANSI_RESET " Printing RTSP stream options:\n");
 
         AVDictionaryEntry* entry = NULL;
-        while ((entry = av_dict_get(stream->options, "", entry, AV_DICT_IGNORE_SUFFIX))) printf("%s = %s\n", entry->key, entry->value);
+        while ((entry = av_dict_get(stream->options, "", entry, AV_DICT_IGNORE_SUFFIX)))
+            printf("%s = %s\n", entry->key, entry->value);
     }
 
     return RTN_SUCCESS;

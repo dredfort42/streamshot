@@ -48,6 +48,7 @@ image_t* get_ppm_image(const uint8_t* data, size_t size, int width, int height)
 
     char header[64];
     int header_len = snprintf(header, sizeof(header), "P6\n%d %d\n255\n", width, height);
+
     if (header_len < 0 || (size_t)header_len >= sizeof(header))
     {
         write_msg_to_fd(STDERR_FILENO, "(f) get_ppm_image | " ERROR_FAILED_TO_FORMAT_HEADER "\n");

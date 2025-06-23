@@ -44,7 +44,7 @@ short _detect_video_stream(stream_t* stream)
 
     stream->video_stream_index = -1;
 
-    if (!stream->format_context->nb_streams)
+    if (!stream->format_context->nb_streams || !stream->format_context->streams)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) _detect_video_stream | " ERROR_NO_STREAMS_FOUND "\n");
         return RTN_ERROR;
@@ -52,7 +52,8 @@ short _detect_video_stream(stream_t* stream)
 
     for (unsigned i = 0; i < stream->format_context->nb_streams; ++i)
     {
-        if (stream->format_context->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
+        if (stream->format_context->streams[i] && stream->format_context->streams[i]->codecpar &&
+            stream->format_context->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
         {
             stream->video_stream_index = i;
             break;

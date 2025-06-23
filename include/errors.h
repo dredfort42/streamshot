@@ -87,6 +87,7 @@
 #define ERROR_NO_STREAMS_FOUND "Error: No streams found in the format context."
 #define ERROR_NO_VIDEO_STREAM_FOUND "Error: No video stream found in the format context."
 #define ERROR_INVALID_DESTINATION_DIMENSIONS "Error: Invalid destination dimensions for scaling."
+#define ERROR_MISALIGNED_CODEC_PARAMETERS_POINTER "Error: Misaligned codec parameters pointer."
 
 /* Miscellaneous Errors */
 #define ERROR_FAILED_TO_CALCULATE_LIMITS "Error: Failed to calculate stream limits."

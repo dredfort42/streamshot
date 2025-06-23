@@ -31,7 +31,7 @@
  *
  * @note   This function is POSIX-specific and will not work on Windows without changes.
  */
-long long time_now_in_microseconds()
+long long time_now_in_microseconds(void)
 {
     struct timeval tv;
     if (gettimeofday(&tv, NULL))

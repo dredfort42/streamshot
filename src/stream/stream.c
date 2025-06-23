@@ -36,7 +36,7 @@ short _init_sws_context(stream_t* stream, const options_t* options);
  *
  * @return Pointer to the newly allocated stream_t structure, or NULL if memory allocation fails.
  */
-stream_t* _init_stream()
+stream_t* _init_stream(void)
 {
     stream_t* stream = (stream_t*)malloc(sizeof(stream_t));
     if (!stream)
