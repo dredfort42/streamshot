@@ -42,8 +42,6 @@ else
 	PLATFORM    := $(UNSUPPORTED)
 endif
 
-N_CPU = 2
-
 CRNT_DIR    := $(shell pwd)
 
 # Variables
@@ -81,6 +79,15 @@ LDFLAGS     := -L$(ZLIB_DIR)/lib \
                -L$(PNG_DIR)/lib \
                -L$(JPEG_DIR)/lib
 
+# Platform-specific libraries
+ifeq ($(PLATFORM),$(MACOS))
+	INCLUDES    += -I/usr/local/opt/ffmpeg/include
+	LDFLAGS     += -L/usr/local/opt/ffmpeg/lib
+else ifeq ($(PLATFORM),$(LINUX))
+	INCLUDES    += -I$(FFMPEG_DIR)/include
+	LDFLAGS     += -L$(FFMPEG_DIR)/lib
+endif
+
 LIBS        := -lpng \
                -ljpeg \
                -lavformat -lavcodec -lavutil -lswscale -lswresample \
@@ -101,13 +108,9 @@ DEV_CFLAGS  := -std=c11 -Wall -Wextra -Wpedantic -Werror -O0 -g \
 
 # Platform-specific flags
 ifeq ($(PLATFORM),$(MACOS))
-	INCLUDES    += -I/usr/local/opt/ffmpeg/include
-	LDFLAGS     += -L/usr/local/opt/ffmpeg/lib
 	CFLAGS      += -Wno-error=visibility
 	DEV_CFLAGS  += -Wno-error=visibility
 else ifeq ($(PLATFORM),$(LINUX))
-	INCLUDES    += -I$(FFMPEG_DIR)/include
-	LDFLAGS     += -L$(FFMPEG_DIR)/lib
 	CFLAGS      += -Wno-error=unused-result
 	DEV_CFLAGS  += -Wno-error=unused-result
 endif
@@ -337,13 +340,10 @@ check_ffmpeg_exists:
 		echo "$(BLUE)Configuring ffmpeg for static build...$(NC)"; \
 		./configure \
 			--prefix=$(FFMPEG_DIR) \
-			--pkg-config-flags="--static" \
 			--extra-cflags="-fPIC" \
 			--extra-ldflags="-static" \
 			--enable-gpl \
 			--enable-version3 \
-			--enable-static \
-			--enable-pic \
 			--disable-shared \
 			--disable-doc \
 			--disable-programs; \
