@@ -43,35 +43,41 @@ CRNT_DIR    := $(shell pwd)
 HDR_DIR     := $(CRNT_DIR)/include
 SRC_DIR     := $(CRNT_DIR)/src
 LIB_DIR     := $(CRNT_DIR)/lib
+BUILD_DIR   := $(CRNT_DIR)/build
 TESTS_DIR   := $(CRNT_DIR)/tests
 
 # Platform-specific directories
 ifeq ($(PLATFORM),$(MACOS))
-	BUILD_DIR := $(CRNT_DIR)/build/macos
+	OS_BUILD_DIR := $(BUILD_DIR)/macos
+	OS_LIB_DIR   := $(LIB_DIR)/macos
 else ifeq ($(PLATFORM),$(LINUX))
-	BUILD_DIR := $(CRNT_DIR)/build/linux
+	OS_BUILD_DIR := $(BUILD_DIR)/linux
+	OS_LIB_DIR   := $(LIB_DIR)/linux
 endif
 
 SRCS        := $(shell find $(SRC_DIR) -type f -name '*.c')
-OBJS        := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))
+OBJS        := $(patsubst $(SRC_DIR)/%.c,$(OS_BUILD_DIR)/%.o,$(SRCS))
 
 # Library directories for Linux static linking
-ZLIB_DIR    := $(LIB_DIR)/zlib
-PNG_DIR     := $(LIB_DIR)/png
-JPEG_DIR    := $(LIB_DIR)/jpeg
-FFMPEG_DIR  := $(LIB_DIR)/ffmpeg
+ZLIB_DIR    := $(OS_LIB_DIR)/zlib
+PNG_DIR     := $(OS_LIB_DIR)/png
+JPEG_DIR    := $(OS_LIB_DIR)/jpeg
+FFMPEG_DIR  := $(OS_LIB_DIR)/ffmpeg
 
 # Compiler and flags
-INCLUDES	:= -I$(HDR_DIR) \
-			   -I$(ZLIB_DIR)/include \
-			   -I$(PNG_DIR)/include \
-			   -I$(JPEG_DIR)/include
+INCLUDES    := -I$(HDR_DIR) \
+               -I$(ZLIB_DIR)/include \
+               -I$(PNG_DIR)/include \
+               -I$(JPEG_DIR)/include
 
-LDFLAGS		:= -L$(ZLIB_DIR)/lib \
-			   -L$(PNG_DIR)/lib \
-			   -L$(JPEG_DIR)/lib
+LDFLAGS     := -L$(ZLIB_DIR)/lib \
+               -L$(PNG_DIR)/lib \
+               -L$(JPEG_DIR)/lib
 
-LIBS		:= -lpng -ljpeg -lm -pthread -lz
+LIBS        := -lpng \
+               -ljpeg \
+               -lavformat -lavcodec -lavutil -lswscale -lswresample \
+               -lm -pthread -lz
 
 CFLAGS      := -std=c11 -O2 -DNDEBUG \
                -Wall -Wextra -Werror \
@@ -88,9 +94,13 @@ DEV_CFLAGS  := -std=c11 -Wall -Wextra -Wpedantic -Werror -O0 -g \
 
 # Platform-specific flags
 ifeq ($(PLATFORM),$(MACOS))
+	INCLUDES    += -I/usr/local/opt/ffmpeg/include
+	LDFLAGS     += -L/usr/local/opt/ffmpeg/lib
 	CFLAGS      += -Wno-error=visibility
 	DEV_CFLAGS  += -Wno-error=visibility
 else ifeq ($(PLATFORM),$(LINUX))
+	INCLUDES    += -I$(FFMPEG_DIR)/include
+	LDFLAGS     += -L$(FFMPEG_DIR)/lib
 	CFLAGS      += -Wno-error=unused-result
 	DEV_CFLAGS  += -Wno-error=unused-result
 endif
@@ -115,7 +125,7 @@ $(NAME): $(OBJS)
 	@echo "$(YELLOW)Linking $@...$(NC)"
 	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS) $(LIBS)
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+$(OS_BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(dir $@)
 	@echo "$(YELLOW)Compiling $<...$(NC)"
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -133,12 +143,12 @@ dev: build_check $(NAME)
 	@echo "$(GREEN)Development build complete with sanitizers enabled.$(NC)"
 
 clean:
-	@rm -rf $(BUILD_DIR)
+	@rm -rf $(OS_BUILD_DIR)
 	@rm -rf debug_files
-	@find $(BUILD_DIR) -name '*.d' -delete 2>/dev/null || true
 	@echo "$(GREEN)Cleaned build artifacts.$(NC)"
 
 fclean: clean
+	@rm -rf $(BUILD_DIR)
 	@rm -rf $(LIB_DIR)
 	@rm -rf *.dSYM
 	@rm -f $(APPLICATION)*
@@ -182,20 +192,21 @@ check_src_exists:
 	fi
 
 check_lib_exists:
-	@if [ ! -d $(LIB_DIR) ]; then \
-		mkdir -p $(LIB_DIR); \
+	@if [ ! -d $(OS_LIB_DIR) ]; then \
+		mkdir -p $(OS_LIB_DIR); \
 	fi
 
 check_build_exists:
-	@if [ ! -d $(BUILD_DIR) ]; then \
-		mkdir -p $(BUILD_DIR); \
+	@if [ ! -d $(OS_BUILD_DIR) ]; then \
+		mkdir -p $(OS_BUILD_DIR); \
 	fi
 
 # Check zlib installation
 check_zlib_exists:
 	@if [ ! -d $(ZLIB_DIR) ]; then \
 		echo "$(YELLOW)Installing zlib (static build for production)...$(NC)"; \
-		cd $(LIB_DIR) && \
+		cd $(OS_LIB_DIR) && \
+		rm -rf zlib_tmp && \
 		curl -LO https://zlib.net/zlib-1.3.1.tar.gz && \
 		tar xzf zlib-1.3.1.tar.gz && \
 		mv zlib-1.3.1 zlib_tmp && \
@@ -214,7 +225,8 @@ check_zlib_exists:
 check_png_exists: check_zlib_exists
 	@if [ ! -d $(PNG_DIR) ]; then \
 		echo "$(YELLOW)Installing libpng (static build for production)...$(NC)"; \
-		cd $(LIB_DIR) && \
+		cd $(OS_LIB_DIR) && \
+		rm -rf png_tmp && \
 		curl -LO https://download.sourceforge.net/libpng/libpng-1.6.49.tar.gz && \
 		tar xzf libpng-1.6.49.tar.gz && \
 		mv libpng-1.6.49 png_tmp && \
@@ -233,7 +245,8 @@ check_png_exists: check_zlib_exists
 check_jpeg_exists:
 	@if [ ! -d $(JPEG_DIR) ]; then \
 		echo "$(YELLOW)Installing libjpeg (static build for production)...$(NC)"; \
-		cd $(LIB_DIR) && \
+		cd $(OS_LIB_DIR) && \
+		rm -rf jpeg_tmp && \
 		curl -LO https://ijg.org/files/jpegsrc.v9f.tar.gz && \
 		tar xzf jpegsrc.v9f.tar.gz && \
 		mv jpeg-9f jpeg_tmp && \
@@ -261,8 +274,7 @@ check_ffmpeg_exists:
 			$(PKG_INSTALL) nasm; \
 		fi; \
 		echo "Download FFmpeg source code..."; \
-		git clone https://git.ffmpeg.org/ffmpeg.git $(LIB_DIR)/ffmpeg_tmp && \
-		cd $(LIB_DIR)/ffmpeg_tmp && \
+		cd $(OS_LIB_DIR)/ffmpeg_tmp && \
 		echo "Configuring FFmpeg for static build..."; \
 		./configure \
 			--prefix=$(FFMPEG_DIR) \
@@ -272,7 +284,10 @@ check_ffmpeg_exists:
 			--enable-gpl \
 			--enable-version3 \
 			--enable-static \
-			--enable-pic; \
+			--enable-pic \
+			--disable-shared \
+			--disable-doc \
+			--disable-programs && \
 		echo "Building FFmpeg..."; \
 		make -j$(N_CPU) && \
 		echo "Installing FFmpeg static library..."; \
@@ -287,12 +302,5 @@ check_ffmpeg_exists:
 		echo "$(GREEN)ffmpeg exist.$(NC)"; \
 	fi; \
 
-ifeq ($(PLATFORM),$(MACOS))
-INCLUDES += -I/usr/local/opt/ffmpeg/include
-LDFLAGS  += -L/usr/local/opt/ffmpeg/lib
-else ifeq ($(PLATFORM),$(LINUX))
-INCLUDES += -I$(FFMPEG_DIR)/include
-LDFLAGS  += -L$(FFMPEG_DIR)/lib
-endif
-
-LIBS     += -lavformat -lavcodec -lavutil -lswscale -lswresample -lz
+# rm -rf $(OS_LIB_DIR)/ffmpeg_tmp && \
+		# git clone https://git.ffmpeg.org/ffmpeg.git $(OS_LIB_DIR)/ffmpeg_tmp && \
