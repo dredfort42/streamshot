@@ -44,22 +44,48 @@ short _detect_video_stream(stream_t* stream)
 
     stream->video_stream_index = -1;
 
-    if (!stream->format_context->nb_streams)
+    if (!stream->format_context->nb_streams || !stream->format_context->streams)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) _detect_video_stream | " ERROR_NO_STREAMS_FOUND "\n");
         return RTN_ERROR;
     }
 
-    for (unsigned i = 0; i < stream->format_context->nb_streams; ++i)
-    {
-        if (stream->format_context->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
-        {
-            stream->video_stream_index = i;
-            break;
-        }
-    }
+    // for (unsigned i = 0; i < stream->format_context->nb_streams; ++i)
+    // {
+    //     if (stream->format_context->streams[i] && stream->format_context->streams[i]->codecpar)
+    //     {
+    //         // Defensive: check 8-byte alignment of codecpar pointer
+    //         void* ptr = stream->format_context->streams[i]->codecpar;
+    //         if (((uintptr_t)ptr) % 8 != 0) {
+    //             write_msg_to_fd(STDERR_FILENO, "(f) _detect_video_stream | Misaligned
+    //             AVCodecParameters pointer\n"); continue;
+    //         }
+    //         if (stream->format_context->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
+    //         {
+    //             stream->video_stream_index = i;
+    //             break;
+    //         }
+    //     }
+    // }
 
-    if (stream->video_stream_index == -1)
+    // printf(ANSI_BLUE " ->*<-" ANSI_RESET "\n");
+
+    stream->video_stream_index =
+        av_find_best_stream(stream->format_context, AVMEDIA_TYPE_VIDEO, -1, -1, NULL, 0);
+
+    if (stream->video_stream_index == AVERROR_STREAM_NOT_FOUND ||
+        stream->video_stream_index == AVERROR_DECODER_NOT_FOUND)
+    {
+        // If no video stream is found, write an error message and return an error code
+        if (stream->video_stream_index == AVERROR_STREAM_NOT_FOUND)
+            write_msg_to_fd(STDERR_FILENO,
+                            "(f) _detect_video_stream | " ERROR_NO_STREAMS_FOUND "\n");
+        else
+            write_msg_to_fd(STDERR_FILENO,
+                            "(f) _detect_video_stream | " ERROR_NO_VIDEO_STREAM_FOUND "\n");
+
+        stream->video_stream_index = -1;  // Reset to -1 to indicate no video stream found
+    }
     {
         write_msg_to_fd(STDERR_FILENO,
                         "(f) _detect_video_stream | " ERROR_NO_VIDEO_STREAM_FOUND "\n");

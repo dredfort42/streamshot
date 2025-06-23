@@ -71,17 +71,19 @@ LDFLAGS		:= -L$(ZLIB_DIR)/lib \
 			   -L$(PNG_DIR)/lib \
 			   -L$(JPEG_DIR)/lib
 
-LIBS		:= -lpng -ljpeg -lz -lm -pthread
+LIBS		:= -lpng -ljpeg -lm -pthread -lz
 
 CFLAGS      := -std=c11 -O2 -DNDEBUG \
                -Wall -Wextra -Werror \
                -fstack-protector-strong -D_FORTIFY_SOURCE=2 \
                -march=native -flto -funroll-loops \
+               -MMD -MP \
                $(INCLUDES)
 
 DEV_CFLAGS  := -std=c11 -Wall -Wextra -Wpedantic -Werror -O0 -g \
                -fsanitize=address,undefined,signed-integer-overflow,pointer-compare,pointer-subtract,alignment \
                -fno-omit-frame-pointer -fstack-protector-strong \
+               -MMD -MP \
                $(INCLUDES)
 
 # Platform-specific flags
@@ -118,13 +120,22 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	@echo "$(YELLOW)Compiling $<...$(NC)"
 	$(CC) $(CFLAGS) -c $< -o $@
 
+# --- Dependency handling: ---
+# With -MMD -MP, each .o gets a .d file listing its .c and all included .h dependencies.
+# If a .c changes, only its .o is rebuilt. If a .h changes, all .o files that depend on it are rebuilt.
+# This is the standard and correct way to ensure minimal rebuilds.
+#
+# -include includes all .d files if they exist, so header changes are tracked automatically.
+-include $(OBJS:.o=.d)
+
 dev: CFLAGS := $(DEV_CFLAGS) 
-dev: clean build_check $(NAME)
+dev: build_check $(NAME)
 	@echo "$(GREEN)Development build complete with sanitizers enabled.$(NC)"
 
 clean:
 	@rm -rf $(BUILD_DIR)
 	@rm -rf debug_files
+	@find $(BUILD_DIR) -name '*.d' -delete 2>/dev/null || true
 	@echo "$(GREEN)Cleaned build artifacts.$(NC)"
 
 fclean: clean
@@ -190,8 +201,7 @@ check_zlib_exists:
 		mv zlib-1.3.1 zlib_tmp && \
 		cd zlib_tmp && \
 		./configure --static --prefix="$(ZLIB_DIR)" && \
-		make clean && \
-		make -j2 && \
+		make -j$(N_CPU) && \
 		make install && \
 		cd .. && \
 		rm -rf zlib_tmp zlib-1.3.1.tar.gz; \
@@ -210,7 +220,7 @@ check_png_exists: check_zlib_exists
 		mv libpng-1.6.49 png_tmp && \
 		cd png_tmp && \
 		./configure --disable-shared --enable-static --with-zlib-prefix="$(ZLIB_DIR)" --prefix="$(PNG_DIR)" && \
-		make && \
+		make -j$(N_CPU) && \
 		make install; \
 		cd .. && \
 		rm -rf png_tmp libpng-1.6.49.tar.gz; \
@@ -229,7 +239,7 @@ check_jpeg_exists:
 		mv jpeg-9f jpeg_tmp && \
 		cd jpeg_tmp && \
 		./configure --disable-shared --enable-static --prefix="$(JPEG_DIR)" && \
-		make && \
+		make -j$(N_CPU) && \
 		make install; \
 		cd .. && \
 		rm -rf jpeg_tmp jpegsrc.v9f.tar.gz; \
@@ -241,23 +251,48 @@ check_jpeg_exists:
 # Check ffmpeg installation
 check_ffmpeg_exists:
 	@echo "$(YELLOW)Checking for ffmpeg...$(NC)"; \
-	if ! command -v ffmpeg >/dev/null 2>&1; then \
-		if [ "$(PLATFORM)" = "$(MACOS)" ]; then \
+	if [ "$(PLATFORM)" = "$(MACOS)" ] && ! command -v ffmpeg >/dev/null 2>&1; then \
 			echo "$(YELLOW)ffmpeg not found. Installing...$(NC)"; \
 			$(PKG_INSTALL) ffmpeg; \
-		elif [ "$(PLATFORM)" = "$(LINUX)" ]; then \
-			echo "$(YELLOW)ffmpeg not found. Installing...$(NC)"; \
-			$(PKG_INSTALL) ffmpeg libavformat-dev libavcodec-dev libavutil-dev libswscale-dev; \
-		else \
-			echo "$(RED)Please install ffmpeg manually for your OS.$(NC)"; \
-			exit 1; \
+	elif [ "$(PLATFORM)" = "$(LINUX)" ] && [ ! -d $(FFMPEG_DIR) ]; then \
+		echo "$(YELLOW)ffmpeg not found. Installing...$(NC)"; \
+		if ! command -v nasm >/dev/null 2>&1; then \
+			echo "$(YELLOW)nasm not found. Installing...$(NC)"; \
+			$(PKG_INSTALL) nasm; \
 		fi; \
+		echo "Download FFmpeg source code..."; \
+		git clone https://git.ffmpeg.org/ffmpeg.git $(LIB_DIR)/ffmpeg_tmp && \
+		cd $(LIB_DIR)/ffmpeg_tmp && \
+		echo "Configuring FFmpeg for static build..."; \
+		./configure \
+			--prefix=$(FFMPEG_DIR) \
+			--pkg-config-flags="--static" \
+			--extra-cflags="-fPIC" \
+			--extra-ldflags="-static" \
+			--enable-gpl \
+			--enable-version3 \
+			--enable-static \
+			--enable-pic; \
+		echo "Building FFmpeg..."; \
+		make -j$(N_CPU) && \
+		echo "Installing FFmpeg static library..."; \
+		make install && \
+		cd .. && \
+		rm -rf ffmpeg_tmp; \
+		echo "$(GREEN)FFmpeg static library installed successfully.$(NC)"; \
+	elif [ "$(PLATFORM)" = "$(UNSUPPORTED)" ]; then \
+		echo "$(RED)Please install ffmpeg manually for your OS.$(NC)"; \
+		exit 1; \
 	else \
-		echo "$(GREEN)ffmpeg found.$(NC)"; \
-	fi
+		echo "$(GREEN)ffmpeg exist.$(NC)"; \
+	fi; \
 
 ifeq ($(PLATFORM),$(MACOS))
 INCLUDES += -I/usr/local/opt/ffmpeg/include
 LDFLAGS  += -L/usr/local/opt/ffmpeg/lib
-LIBS     += -lavformat -lavcodec -lavutil -lswscale
+else ifeq ($(PLATFORM),$(LINUX))
+INCLUDES += -I$(FFMPEG_DIR)/include
+LDFLAGS  += -L$(FFMPEG_DIR)/lib
 endif
+
+LIBS     += -lavformat -lavcodec -lavutil -lswscale -lswresample -lz
