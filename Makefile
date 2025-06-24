@@ -90,7 +90,7 @@ endif
 
 LIBS        := -lpng \
                -ljpeg \
-               -lavformat -lavcodec -lavutil -lswscale -lswresample \
+               -lavformat -lavcodec -lavutil -lswscale \
                -lm -pthread -lz
 
 CFLAGS      := -std=c11 -O2 -DNDEBUG \
@@ -344,6 +344,11 @@ check_ffmpeg_exists:
 			--extra-ldflags="-static" \
 			--enable-gpl \
 			--enable-version3 \
+			--enable-small \
+			--disable-swscale-alpha \
+			--disable-avdevice \
+			--disable-swresample \
+			--disable-postproc \
 			--disable-shared \
 			--disable-doc \
 			--disable-programs; \
