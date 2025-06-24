@@ -1,9 +1,11 @@
+#include <stdio.h>
+
 #include "utilities.h"
 
 int normalize_file_path_test();
 int trim_flag_value_test();
 
-int main()
+int main(void)
 {
     int failed = 0;
     failed += normalize_file_path_test();

@@ -63,6 +63,14 @@ endif
 SRCS        := $(shell find $(SRC_DIR) -type f -name '*.c')
 OBJS        := $(patsubst $(SRC_DIR)/%.c,$(OS_BUILD_DIR)/%.o,$(SRCS))
 
+# Test target
+TST_NAME      := $(APPLICATION)_test
+TST_DIR       := $(CRNT_DIR)/tests
+TST_BUILD_DIR := $(CRNT_DIR)/tests/build
+TST_SRCS      := $(filter-out $(SRC_DIR)/main.c, $(SRCS)) $(shell find $(TST_DIR) -type f -name '*.c')
+TST_OBJS      := $(patsubst $(SRC_DIR)/%.c,$(TST_BUILD_DIR)/%.o,$(filter $(SRC_DIR)/%.c,$(TST_SRCS))) \
+                 $(patsubst $(TST_DIR)/%.c,$(TST_BUILD_DIR)/%.o,$(filter $(TST_DIR)/%.c,$(TST_SRCS)))
+
 # Library directories for Linux static linking
 ZLIB_DIR    := $(OS_LIB_DIR)/zlib
 PNG_DIR     := $(OS_LIB_DIR)/png
@@ -127,7 +135,7 @@ NC          := \033[0m
 # Rules
 .PHONY: all build dev clean fclean re test help
 
-all: build
+all: build test
 
 build: build_check $(NAME)
 	@echo "$(GREEN)Build complete.$(NC)"
@@ -156,16 +164,36 @@ dev: build_check $(NAME)
 clean:
 	@rm -rf $(OS_BUILD_DIR)
 	@rm -rf debug_files
+	@rm -rf $(TST_BUILD_DIR)
+	@rm -f $(NAME)
+	@rm -f $(TST_NAME)
 	@echo "$(GREEN)Cleaned build artifacts and debug files.$(NC)"
 
 fclean: clean
 	@rm -rf $(BUILD_DIR)
 	@rm -rf $(LIB_DIR)
 	@rm -rf *.dSYM
-	@rm -f $(APPLICATION)*
 	@echo "$(GREEN)Fully cleaned all artifacts and libraries.$(NC)"
 
 re: clean all
+
+test: build_check $(TST_NAME)
+	@echo "$(GREEN)Running tests...$(NC)"
+	@./$(TST_NAME)
+
+$(TST_NAME): $(TST_OBJS)
+	@echo "$(YELLOW)Linking $@...$(NC)"
+	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS) $(LIBS)
+
+$(TST_BUILD_DIR)/%.o: $(SRC_DIR)/%.c 
+	@mkdir -p $(dir $@)
+	@echo "$(YELLOW)Compiling $<...$(NC)"
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(TST_BUILD_DIR)/%.o: $(TST_DIR)/%.c
+	@mkdir -p $(dir $@)
+	@echo "$(YELLOW)Compiling $<...$(NC)"
+	$(CC) $(CFLAGS) -c $< -o $@
 
 help:
 	@echo "$(YELLOW)Available targets:$(NC)"
