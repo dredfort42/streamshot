@@ -1,15 +1,35 @@
+/*******************************************************************
+
+        ::          ::        +--------+-----------------------+
+          ::      ::          | Author | Dmitry Novikov        |
+        ::::::::::::::        | Email  | dredfort.42@gmail.com |
+      ::::  ::::::  ::::      +--------+-----------------------+
+    ::::::::::::::::::::::
+    ::  ::::::::::::::  ::    File     | tests.c
+    ::  ::          ::  ::    Created  | 2025-06-09
+          ::::  ::::          Modified | 2025-06-24
+
+    GitHub:   https://github.com/dredfort42
+    LinkedIn: https://linkedin.com/in/novikov-da
+
+*******************************************************************/
+
 #include <stdio.h>
 
 #include "utilities.h"
 
-int normalize_file_path_test();
-int trim_flag_value_test();
+int test_normalize_file_path();
+int test_trim_flag_value();
+int test_write_data_to_fd();
+int test_write_msg_to_fd();
 
 int main(void)
 {
     int failed = 0;
-    failed += normalize_file_path_test();
-    failed += trim_flag_value_test();
+    failed += test_normalize_file_path();
+    failed += test_trim_flag_value();
+    failed += test_write_data_to_fd();
+    failed += test_write_msg_to_fd();
 
     printf("\n");
     if (failed)
