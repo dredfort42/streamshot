@@ -180,6 +180,11 @@ re: clean all
 test: build_check $(TST_NAME)
 	@echo "$(GREEN)Running tests...$(NC)"
 	@./$(TST_NAME)
+	@if [ $$? -eq 0 ]; then \
+		rm -rf $(TST_BUILD_DIR); \
+		rm -f $(TST_NAME); \
+	fi
+
 
 $(TST_NAME): $(TST_OBJS)
 	@echo "$(YELLOW)Linking $@...$(NC)"

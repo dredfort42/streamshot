@@ -22,7 +22,7 @@
 void print_version(void)
 {
     printf("RTSP Stream Image Capture Tool\n");
-    printf("Version: %s\n", "1.0.0");
+    printf("Version: %s\n", "1.0.1");
     printf("Author: Dmitry Novikov <dredfort.42@gmail.com>\n");
     printf("GitHub: https://github.com/dredfort42\n");
     printf("For usage details, run with --help.\n");

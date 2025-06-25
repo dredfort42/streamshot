@@ -16,6 +16,7 @@
 
 #define _POSIX_C_SOURCE 200809L
 
+#include <ctype.h>
 #include <string.h>
 
 #include "options.h"
@@ -41,13 +42,22 @@ const char* image_format_to_string(image_format_t format)
 /* Helper function to convert string to image_format_t */
 image_format_t string_to_image_format(const char* str)
 {
-    if (!strcmp(str, "jpg"))
+    if (!str)
+        return IMAGE_FORMAT_UNKNOWN;
+
+    char lower_str[16];
+    size_t i;
+    for (i = 0; i < sizeof(lower_str) - 1 && str[i]; ++i)
+        lower_str[i] = (char)tolower((unsigned char)str[i]);
+    lower_str[i] = '\0';
+
+    if (strcmp(lower_str, "jpg") == 0)
         return IMAGE_FORMAT_JPG;
-    else if (!strcmp(str, "jpeg"))
+    else if (strcmp(lower_str, "jpeg") == 0)
         return IMAGE_FORMAT_JPEG;
-    else if (!strcmp(str, "png"))
+    else if (strcmp(lower_str, "png") == 0)
         return IMAGE_FORMAT_PNG;
-    else if (!strcmp(str, "ppm"))
+    else if (strcmp(lower_str, "ppm") == 0)
         return IMAGE_FORMAT_PPM;
     else
         return IMAGE_FORMAT_UNKNOWN;

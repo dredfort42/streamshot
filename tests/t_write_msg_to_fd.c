@@ -25,7 +25,7 @@
 #include "errors.h"
 #include "utilities.h"
 
-int test_write_msg_to_fd_valid()
+int test_write_msg_to_fd_valid(void)
 {
     char tmpfile[] = "/tmp/test_write_msg_to_fd_XXXXXX";
     int fd = mkstemp(tmpfile);
@@ -62,7 +62,7 @@ int test_write_msg_to_fd_valid()
     return 0;
 }
 
-int test_write_msg_to_fd_invalid_fd()
+int test_write_msg_to_fd_invalid_fd(void)
 {
     const char* msg = "test";
     int ret = write_msg_to_fd(-1, msg);
@@ -76,7 +76,7 @@ int test_write_msg_to_fd_invalid_fd()
     return 0;
 }
 
-int test_write_msg_to_fd_null_msg()
+int test_write_msg_to_fd_null_msg(void)
 {
     int ret = write_msg_to_fd(STDOUT_FILENO, NULL);
     if (ret != RTN_ERROR)
@@ -89,8 +89,11 @@ int test_write_msg_to_fd_null_msg()
     return 0;
 }
 
-int test_write_msg_to_fd()
+int test_write_msg_to_fd(void)
 {
-    return test_write_msg_to_fd_valid() + test_write_msg_to_fd_invalid_fd() +
-           test_write_msg_to_fd_null_msg();
+    int failed = 0;
+    failed += test_write_msg_to_fd_valid();
+    failed += test_write_msg_to_fd_invalid_fd();
+    failed += test_write_msg_to_fd_null_msg();
+    return failed;
 }

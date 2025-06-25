@@ -14,22 +14,23 @@
 
 *******************************************************************/
 
+#include "tests.h"
+
 #include <stdio.h>
 
 #include "utilities.h"
 
-int test_normalize_file_path();
-int test_trim_flag_value();
-int test_write_data_to_fd();
-int test_write_msg_to_fd();
-
-int main(void)
+int main()
 {
     int failed = 0;
     failed += test_normalize_file_path();
     failed += test_trim_flag_value();
     failed += test_write_data_to_fd();
     failed += test_write_msg_to_fd();
+    failed += test_write_data_to_file();
+    failed += test_time_now_in_microseconds();
+    failed += t_image_format_to_string();
+    failed += t_string_to_image_format();
 
     printf("\n");
     if (failed)

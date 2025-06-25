@@ -25,7 +25,7 @@
 #include "errors.h"
 #include "utilities.h"
 
-int test_write_data_to_fd_valid()
+int test_write_data_to_fd_valid(void)
 {
     char tmpfile[] = "/tmp/test_write_data_to_fd_XXXXXX";
     int fd = mkstemp(tmpfile);
@@ -62,7 +62,7 @@ int test_write_data_to_fd_valid()
     return 0;
 }
 
-int test_write_data_to_fd_invalid_fd()
+int test_write_data_to_fd_invalid_fd(void)
 {
     const char* msg = "test";
     ssize_t written = write_data_to_fd(-1, msg, strlen(msg));
@@ -76,7 +76,7 @@ int test_write_data_to_fd_invalid_fd()
     return 0;
 }
 
-int test_write_data_to_fd_null_buf()
+int test_write_data_to_fd_null_buf(void)
 {
     ssize_t written = write_data_to_fd(STDOUT_FILENO, NULL, 10);
     if (written != RTN_ERROR)
@@ -89,7 +89,7 @@ int test_write_data_to_fd_null_buf()
     return 0;
 }
 
-int test_write_data_to_fd_zero_size()
+int test_write_data_to_fd_zero_size(void)
 {
     const char* msg = "test";
     ssize_t written = write_data_to_fd(STDOUT_FILENO, msg, 0);
@@ -103,8 +103,12 @@ int test_write_data_to_fd_zero_size()
     return 0;
 }
 
-int test_write_data_to_fd()
+int test_write_data_to_fd(void)
 {
-    return test_write_data_to_fd_valid() + test_write_data_to_fd_invalid_fd() +
-           test_write_data_to_fd_null_buf() + test_write_data_to_fd_zero_size();
+    int failed = 0;
+    failed += test_write_data_to_fd_valid();
+    failed += test_write_data_to_fd_invalid_fd();
+    failed += test_write_data_to_fd_null_buf();
+    failed += test_write_data_to_fd_zero_size();
+    return failed;
 }

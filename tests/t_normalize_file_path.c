@@ -22,7 +22,7 @@
 
 #include "utilities.h"
 
-int test_normalize_file_path_valid()
+int test_normalize_file_path_valid(void)
 {
     char* input = "/path/to/file.txt";
     const char* expected = "/path/to/file.txt";
@@ -41,7 +41,7 @@ int test_normalize_file_path_valid()
     return 0;
 }
 
-int test_normalize_file_path_invalid_chars()
+int test_normalize_file_path_invalid_chars(void)
 {
     char* input = "/path/to/fi!le@#.txt";
     const char* expected = "/path/to/fi_le__.txt";
@@ -60,7 +60,7 @@ int test_normalize_file_path_invalid_chars()
     return 0;
 }
 
-int test_normalize_file_path_empty()
+int test_normalize_file_path_empty(void)
 {
     char* input = "";
     char* result = normalize_file_path(input);
@@ -76,7 +76,7 @@ int test_normalize_file_path_empty()
     return 0;
 }
 
-int test_normalize_file_path_null()
+int test_normalize_file_path_null(void)
 {
     char* result = normalize_file_path(NULL);
     if (result)
@@ -91,7 +91,7 @@ int test_normalize_file_path_null()
     return 0;
 }
 
-int test_normalize_file_path()
+int test_normalize_file_path(void)
 {
     int failed = 0;
     failed += test_normalize_file_path_valid();

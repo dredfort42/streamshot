@@ -22,7 +22,7 @@
 
 #include "utilities.h"
 
-int test_trim_flag_value_basic()
+int test_trim_flag_value_basic(void)
 {
     char* input = "  \"'example value'\"  ";
     const char* expected = "example value";
@@ -41,7 +41,7 @@ int test_trim_flag_value_basic()
     return 0;
 }
 
-int test_trim_flag_value_no_trim()
+int test_trim_flag_value_no_trim(void)
 {
     char* input = "value";
     const char* expected = "value";
@@ -60,7 +60,7 @@ int test_trim_flag_value_no_trim()
     return 0;
 }
 
-int test_trim_flag_value_only_spaces()
+int test_trim_flag_value_only_spaces(void)
 {
     char* input = "     ";
     char* result = trim_flag_value(input);
@@ -76,7 +76,7 @@ int test_trim_flag_value_only_spaces()
     return 0;
 }
 
-int test_trim_flag_value_only_quotes()
+int test_trim_flag_value_only_quotes(void)
 {
     char* input = "\"\"\"";
     char* result = trim_flag_value(input);
@@ -92,7 +92,7 @@ int test_trim_flag_value_only_quotes()
     return 0;
 }
 
-int test_trim_flag_value_backticks()
+int test_trim_flag_value_backticks(void)
 {
     char* input = "`value`";
     const char* expected = "value";
@@ -111,7 +111,7 @@ int test_trim_flag_value_backticks()
     return 0;
 }
 
-int test_trim_flag_value_mixed()
+int test_trim_flag_value_mixed(void)
 {
     char* input = "  '`value with spaces`'  ";
     const char* expected = "value with spaces";
@@ -131,7 +131,7 @@ int test_trim_flag_value_mixed()
     return 0;
 }
 
-int test_trim_flag_value_empty()
+int test_trim_flag_value_empty(void)
 {
     char* input = "";
     char* result = trim_flag_value(input);
@@ -147,7 +147,7 @@ int test_trim_flag_value_empty()
     return 0;
 }
 
-int test_trim_flag_value_null()
+int test_trim_flag_value_null(void)
 {
     char* result = trim_flag_value(NULL);
     if (result)
@@ -162,7 +162,7 @@ int test_trim_flag_value_null()
     return 0;
 }
 
-int test_trim_flag_value_one_char()
+int test_trim_flag_value_one_char(void)
 {
     char* input = " ";
     char* result = trim_flag_value(input);
@@ -178,7 +178,7 @@ int test_trim_flag_value_one_char()
     return 0;
 }
 
-int test_trim_flag_value_inner_quotes()
+int test_trim_flag_value_inner_quotes(void)
 {
     char* input = "val\"ue";
     const char* expected = "val\"ue";
@@ -197,7 +197,7 @@ int test_trim_flag_value_inner_quotes()
     return 0;
 }
 
-int test_trim_flag_value()
+int test_trim_flag_value(void)
 {
     int failed = 0;
     failed += test_trim_flag_value_basic();
