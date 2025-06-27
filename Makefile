@@ -15,7 +15,7 @@
 ######################################################################
 
 APPLICATION := streamshot
-VERSION     := 1.0.0
+VERSION     := 1.0.1
 
 MACOS       := macos
 LINUX       := linux
@@ -114,12 +114,14 @@ CFLAGS      := -std=c11 -O3 -DNDEBUG \
 			   -march=native -flto=auto -funroll-loops -fomit-frame-pointer \
 			   -ffast-math -falign-functions=32 -falign-loops=32 \
 			   -MMD -MP \
+			   -DAPP_VERSION='"$(VERSION)"' \
 			   $(INCLUDES)
 
 DEV_CFLAGS  := -std=c11 -Wall -Wextra -Wpedantic -Werror -O0 -g \
                -fsanitize=address,undefined,signed-integer-overflow,pointer-compare,pointer-subtract,alignment \
                -fno-omit-frame-pointer -fstack-protector-strong \
                -MMD -MP \
+			   -DAPP_VERSION='"dev_$(VERSION)"' \
                $(INCLUDES)
 
 # Platform-specific flags
@@ -166,7 +168,7 @@ $(OS_BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 -include $(OBJS:.o=.d)
 
 dev: CFLAGS := $(DEV_CFLAGS) 
-dev: build_check $(NAME)
+dev: build_check clean $(NAME)
 	@echo "$(GREEN)Development build complete with sanitizers enabled.$(NC)"
 
 clean:

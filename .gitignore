@@ -38,6 +38,7 @@ srv_*
 *.su
 *.idb
 *.pdb
+debug*
 
 # Kernel module files (if applicable)
 *.ko
