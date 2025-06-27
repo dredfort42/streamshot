@@ -100,13 +100,21 @@ LIBS        := -lpng \
                -ljpeg \
                -lavformat -lavcodec -lavutil -lswscale \
                -lm -pthread -lz
+			   
+# CFLAGS      := -std=c11 -O2 -DNDEBUG \
+#                -Wall -Wextra -Werror \
+#                -fstack-protector-strong -D_FORTIFY_SOURCE=2 \
+#                -march=native -flto -funroll-loops \
+#                -MMD -MP \
+#                $(INCLUDES)
 
-CFLAGS      := -std=c11 -O2 -DNDEBUG \
-               -Wall -Wextra -Werror \
-               -fstack-protector-strong -D_FORTIFY_SOURCE=2 \
-               -march=native -flto -funroll-loops \
-               -MMD -MP \
-               $(INCLUDES)
+CFLAGS      := -std=c11 -O3 -DNDEBUG \
+			   -Wall -Wextra -Werror \
+			   -fstack-protector-strong -D_FORTIFY_SOURCE=2 \
+			   -march=native -flto=auto -funroll-loops -fomit-frame-pointer \
+			   -ffast-math -falign-functions=32 -falign-loops=32 \
+			   -MMD -MP \
+			   $(INCLUDES)
 
 DEV_CFLAGS  := -std=c11 -Wall -Wextra -Wpedantic -Werror -O0 -g \
                -fsanitize=address,undefined,signed-integer-overflow,pointer-compare,pointer-subtract,alignment \
