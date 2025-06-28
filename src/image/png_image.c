@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | png_image.c
     ::  ::          ::  ::    Created  | 2025-06-20
-          ::::  ::::          Modified | 2025-06-20
+          ::::  ::::          Modified | 2025-06-28
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -43,7 +43,8 @@
  */
 image_t* get_png_image(const uint8_t* data, size_t size, int width, int height, short quality)
 {
-    if (!data || size == 0 || width <= 0 || height <= 0 || quality < 0 || quality > 100)
+    if (!data || size != (size_t)(width * height * RGB_BYTES_PER_PIXEL) || width <= 0 ||
+        height <= 0 || quality < 0 || quality > 100)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) get_png_image | " ERROR_INVALID_ARGUMENTS "\n");
         return NULL;

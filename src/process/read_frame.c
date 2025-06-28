@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | read_frame.c
     ::  ::          ::  ::    Created  | 2025-06-19
-          ::::  ::::          Modified | 2025-06-20
+          ::::  ::::          Modified | 2025-06-28
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -31,7 +31,7 @@
  * @param process Pointer to the process structure containing the image frame and related data.
  * @param options Pointer to the options structure containing debug settings and directory path.
  */
-void _save_debug_frame(process_t* process, const options_t* options)
+static void _save_debug_frame(process_t* process, const options_t* options)
 {
     if (!process || !options || !options->debug_dir || !process->image_frame ||
         !process->image_frame->data[0] || !process->image_size)

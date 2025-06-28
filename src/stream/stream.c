@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | stream.c
     ::  ::          ::  ::    Created  | 2025-06-14
-          ::::  ::::          Modified | 2025-06-19
+          ::::  ::::          Modified | 2025-06-28
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -36,7 +36,7 @@ short _init_sws_context(stream_t* stream, const options_t* options);
  *
  * @return Pointer to the newly allocated stream_t structure, or NULL if memory allocation fails.
  */
-stream_t* _init_stream(void)
+static stream_t* _init_stream(void)
 {
     stream_t* stream = (stream_t*)malloc(sizeof(stream_t));
     if (!stream)

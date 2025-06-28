@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | parse_args.c
     ::  ::          ::  ::    Created  | 2025-06-07
-          ::::  ::::          Modified | 2025-06-20
+          ::::  ::::          Modified | 2025-06-28
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -29,6 +29,30 @@ typedef struct argument_s
 } _argument_t;
 
 /**
+ * @brief Frees the memory allocated for an _argument_t structure.
+ *
+ * This function releases the memory associated with the given _argument_t pointer,
+ * including its 'key' field if it was dynamically allocated. The 'value' field is
+ * not freed, as it may point directly to memory managed elsewhere (such as argv).
+ * After freeing, the local pointer is set to NULL, but this does not affect the
+ * caller's pointer.
+ *
+ * @param argument Pointer to the _argument_t structure to be freed.
+ */
+static void _free_argument(_argument_t* argument)
+{
+    if (argument)
+    {
+        if (argument->key)
+            free(argument->key);
+
+        // Do not free argument->value, as it may point to argv directly
+        free(argument);
+        argument = NULL;
+    }
+}
+
+/**
  * @brief Parses a command-line argument at the specified index and returns it as an _argument_t
  * structure.
  *
@@ -46,7 +70,7 @@ typedef struct argument_s
  *
  * @note The returned _argument_t structure must be freed by the caller to avoid memory leaks.
  */
-_argument_t* _get_argument(int argc, char* argv[], int* index)
+static _argument_t* _get_argument(int argc, char* argv[], int* index)
 {
     if (!index || *index < 1 || *index >= argc)
     {
@@ -70,15 +94,33 @@ _argument_t* _get_argument(int argc, char* argv[], int* index)
     char* eq = strchr(argv[*index], '=');
     if (eq)
     {
-        *eq = '\0';
-        argument->key = argv[*index];
+        size_t key_len = eq - argv[*index];
+        argument->key = (char*)malloc(key_len + 1);
+        if (!argument->key)
+        {
+            write_msg_to_fd(STDERR_FILENO,
+                            "(f) create_argument | " ERROR_FAILED_TO_ALLOCATE_MEMORY);
+            goto error;
+        }
+
+        strncpy(argument->key, argv[*index], key_len);
+        argument->key[key_len] = '\0';
         argument->value = eq + 1;
+
         if (!argument->value || strlen(argument->value) == 0)
             goto error;
     }
     else
     {
-        argument->key = argv[*index];
+        argument->key = (char*)malloc(strlen(argv[*index]) + 1);
+        if (!argument->key)
+        {
+            write_msg_to_fd(STDERR_FILENO,
+                            "(f) create_argument | " ERROR_FAILED_TO_ALLOCATE_MEMORY);
+            goto error;
+        }
+
+        strcpy(argument->key, argv[*index]);
         if (strcmp(argument->key, "-v") != 0 && strcmp(argument->key, "--version") != 0 &&
             strcmp(argument->key, "-h") != 0 && strcmp(argument->key, "--help") != 0 &&
             strcmp(argument->key, "-d") != 0 && strcmp(argument->key, "--debug") != 0)
@@ -94,7 +136,7 @@ _argument_t* _get_argument(int argc, char* argv[], int* index)
 
 error:
     write_msg_to_fd(STDERR_FILENO, "(f) create_argument | " ERROR_INVALID_ARGUMENTS);
-    free(argument);
+    _free_argument(argument);
     return NULL;
 }
 
@@ -157,13 +199,13 @@ short parse_args(int argc, char* argv[], options_t* options)
         if (MATCH("-v", "--version"))
         {
             options->version = 1;
-            free(argument);
+            _free_argument(argument);
             return RTN_SUCCESS;
         }
         else if (MATCH("-h", "--help"))
         {
             options->help = 1;
-            free(argument);
+            _free_argument(argument);
             return RTN_SUCCESS;
         }
         else if (MATCH("-i", "--input"))
@@ -213,11 +255,11 @@ short parse_args(int argc, char* argv[], options_t* options)
         else
         {
             write_msg_to_fd(STDERR_FILENO, "(f) parse_args | " ERROR_INVALID_ARGUMENTS "\n");
-            free(argument);
+            _free_argument(argument);
             return RTN_ERROR;
         }
 
-        free(argument);
+        _free_argument(argument);
         i++;
     }
 

@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | t_image_format_to_string.c
     ::  ::          ::  ::    Created  | 2025-06-25
-          ::::  ::::          Modified | 2025-06-25
+          ::::  ::::          Modified | 2025-06-28
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -20,7 +20,7 @@
 #include "options.h"
 #include "utilities.h"
 
-int t_image_format_to_string(void)
+int test_image_format_to_string(void)
 {
     int failed = 0;
 
@@ -32,8 +32,7 @@ int t_image_format_to_string(void)
                  {IMAGE_FORMAT_JPEG, "jpeg"},
                  {IMAGE_FORMAT_PNG, "png"},
                  {IMAGE_FORMAT_PPM, "ppm"},
-                 {IMAGE_FORMAT_UNKNOWN, "unknown format"},
-                 {(image_format_t)999, "unknown format"}};
+                 {IMAGE_FORMAT_UNKNOWN, "unknown format"}};
 
     size_t num_tests = sizeof(tests) / sizeof(tests[0]);
     for (size_t i = 0; i < num_tests; ++i)

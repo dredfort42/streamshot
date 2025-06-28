@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | tests.c
     ::  ::          ::  ::    Created  | 2025-06-09
-          ::::  ::::          Modified | 2025-06-24
+          ::::  ::::          Modified | 2025-06-28
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -29,8 +29,13 @@ int main()
     failed += test_write_msg_to_fd();
     failed += test_write_data_to_file();
     failed += test_time_now_in_microseconds();
-    failed += t_image_format_to_string();
-    failed += t_string_to_image_format();
+    failed += test_image_format_to_string();
+    failed += test_string_to_image_format();
+    failed += test_convert_image();
+    failed += test_jpg_image();
+    failed += test_png_image();
+    failed += test_ppm_image();
+    failed += test_parse_args();
 
     printf("\n");
     if (failed)

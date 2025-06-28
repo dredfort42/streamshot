@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | t_string_to_image_format.c
     ::  ::          ::  ::    Created  | 2025-06-25
-          ::::  ::::          Modified | 2025-06-25
+          ::::  ::::          Modified | 2025-06-28
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -20,7 +20,7 @@
 #include "options.h"
 #include "utilities.h"
 
-int t_string_to_image_format(void)
+int test_string_to_image_format(void)
 {
     int failed = 0;
 
