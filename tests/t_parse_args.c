@@ -14,6 +14,8 @@
 
 *******************************************************************/
 
+#define _POSIX_C_SOURCE 200809L
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,11 +30,31 @@ int _test_flag(int argc, char* test_name, char* argv[], int (*check_function)(op
     options_t* opts = (options_t*)malloc(sizeof(options_t));
     if (!opts)
     {
-        printf("[" ANSI_RED "KO" ANSI_RESET
-               "] (f) parse_args: %s test failed | memory allocation error\n",
-               test_name);
+        write_msg_to_fd(STDERR_FILENO, "(f) _init_options | " ERROR_FAILED_TO_ALLOCATE_MEMORY "\n");
         return 1;
     }
+
+    opts->rtsp_url = NULL;
+    opts->timeout_sec = DEFAULT_TIMEOUT_SEC;
+    opts->output_file_path = NULL;
+    opts->output_file_fd = -1;
+    opts->exposure_sec = DEFAULT_EXPOSURE_SEC;
+    opts->output_format = DEFAULT_OUTPUT_FORMAT;
+    opts->scale_factor = DEFAULT_SCALE_FACTOR;
+    opts->resize_height = 0;
+    opts->resize_width = 0;
+    opts->image_quality = DEFAULT_IMAGE_QUALITY;
+    opts->debug = 0;
+    opts->debug_step = DEFAULT_DEBUG_STEP;
+    opts->debug_dir = strdup(DEFAULT_DEBUG_DIR);
+    if (!opts->debug_dir)
+    {
+        write_msg_to_fd(STDERR_FILENO, "(f) _init_options | " ERROR_FAILED_TO_ALLOCATE_MEMORY "\n");
+        free(opts);
+        return 1;
+    }
+    opts->help = 0;
+    opts->version = 0;
 
     short ret = parse_args(argc, argv, opts);
     if (ret != 0 && ret != expected_return_code)
@@ -267,17 +289,40 @@ int check_timeout_and_exposure(options_t* opts)
 
 int check_no_timeout_and_exposure(options_t* opts)
 {
-    if (!opts || opts->timeout_sec != 0 || opts->exposure_sec != 0)
+    if (!opts || opts->timeout_sec != DEFAULT_TIMEOUT_SEC ||
+        opts->exposure_sec != DEFAULT_EXPOSURE_SEC)
     {
         printf(
             "[" ANSI_RED "KO" ANSI_RESET
             "] (f) parse_args: no timeout/exposure test failed | timeout_sec got %d, expected %d; "
             "exposure_sec got %d, expected %d\n",
-            opts->timeout_sec, 0, opts->exposure_sec, 0);
+            opts->timeout_sec, DEFAULT_TIMEOUT_SEC, opts->exposure_sec, DEFAULT_EXPOSURE_SEC);
         return 1;
     }
 
     return 0;
+}
+
+int check_invalid_type_timeout_and_exposure(options_t* opts)
+{
+    int failed = 0;
+    if (!opts || opts->timeout_sec)
+    {
+        printf("[" ANSI_RED "KO" ANSI_RESET
+               "] (f) parse_args: timeout test failed | expected timeout_sec to be %d, got %d\n",
+               0, opts->timeout_sec);
+        failed++;
+    }
+
+    if (!opts || opts->exposure_sec)
+    {
+        printf("[" ANSI_RED "KO" ANSI_RESET
+               "] (f) parse_args: exposure test failed | expected exposure_sec to be %d, got %d\n",
+               0, opts->exposure_sec);
+        failed++;
+    }
+
+    return failed;
 }
 
 int test_timeout_and_exposure(void)
@@ -318,7 +363,7 @@ int test_timeout_and_exposure(void)
 
     char* argv_invalid_timeout_and_exposure[] = {"prog", "-t", "invalid", "-e", "invalid"};
     failed += _test_flag(5, "invalid timeout/exposure", argv_invalid_timeout_and_exposure,
-                         check_no_timeout_and_exposure, RTN_ERROR);
+                         check_invalid_type_timeout_and_exposure, RTN_ERROR);
 
     char* argv_no_timeout_and_exposure_debug[] = {"prog", "-d"};
     failed += _test_flag(2, "no timeout and exposure", argv_no_timeout_and_exposure_debug,
@@ -637,19 +682,19 @@ int check_no_debug_flags(options_t* opts)
         failed++;
     }
 
-    if (!opts || opts->debug_step)
+    if (!opts || opts->debug_step != DEFAULT_DEBUG_STEP)
     {
         printf("[" ANSI_RED "KO" ANSI_RESET
-               "] (f) parse_args: debug step test failed | expected debug_step to be 0 got %d\n",
-               opts->debug_step);
+               "] (f) parse_args: debug step test failed | expected debug_step to be %d got %d\n",
+               DEFAULT_DEBUG_STEP, opts->debug_step);
         failed++;
     }
 
-    if (!opts || opts->debug_dir)
+    if (!opts || strcmp(opts->debug_dir, DEFAULT_DEBUG_DIR))
     {
         printf("[" ANSI_RED "KO" ANSI_RESET
-               "] (f) parse_args: debug dir test failed | expected debug_dir to be NULL, got %s\n",
-               opts->debug_dir);
+               "] (f) parse_args: debug dir test failed | expected debug_dir to be %s, got %s\n",
+               DEFAULT_DEBUG_DIR, opts->debug_dir);
         failed++;
     }
 
@@ -668,19 +713,19 @@ int check_debug_flag_only(options_t* opts)
         failed++;
     }
 
-    if (!opts || opts->debug_step)
+    if (!opts || opts->debug_step != DEFAULT_DEBUG_STEP)
     {
         printf("[" ANSI_RED "KO" ANSI_RESET
-               "] (f) parse_args: debug step test failed | expected debug_step to be 0 got %d\n",
-               opts->debug_step);
+               "] (f) parse_args: debug step test failed | expected debug_step to be %d got %d\n",
+               DEFAULT_DEBUG_STEP, opts->debug_step);
         failed++;
     }
 
-    if (!opts || opts->debug_dir)
+    if (!opts || !opts->debug_dir || strcmp(opts->debug_dir, DEFAULT_DEBUG_DIR))
     {
         printf("[" ANSI_RED "KO" ANSI_RESET
-               "] (f) parse_args: debug dir test failed | expected debug_dir to be NULL, got %s\n",
-               opts->debug_dir);
+               "] (f) parse_args: debug dir test failed | expected debug_dir to be %s, got %s\n",
+               DEFAULT_DEBUG_DIR, opts->debug_dir ? opts->debug_dir : "NULL");
         failed++;
     }
 
@@ -723,22 +768,25 @@ int test_debug_flags(void)
 
 int check_invalid_flag(options_t* opts)
 {
-    if (!opts || opts->version || opts->help || opts->rtsp_url || opts->output_file_path ||
-        opts->output_file_fd || opts->timeout_sec || opts->exposure_sec || opts->output_format ||
-        opts->scale_factor || opts->resize_height || opts->resize_width || opts->image_quality ||
-        opts->debug || opts->debug_step || opts->debug_dir)
+    if (!opts || opts->rtsp_url != NULL || opts->timeout_sec != DEFAULT_TIMEOUT_SEC ||
+        opts->output_file_path != NULL || opts->output_file_fd != -1 ||
+        opts->exposure_sec != DEFAULT_EXPOSURE_SEC ||
+        opts->output_format != DEFAULT_OUTPUT_FORMAT ||
+        opts->scale_factor != DEFAULT_SCALE_FACTOR || opts->resize_height != 0 ||
+        opts->resize_width != 0 || opts->image_quality != DEFAULT_IMAGE_QUALITY ||
+        opts->debug != 0 || opts->debug_step != DEFAULT_DEBUG_STEP ||
+        strcmp(opts->debug_dir, DEFAULT_DEBUG_DIR))
     {
         printf("[" ANSI_RED "KO" ANSI_RESET
-               "] (f) parse_args: invalid flag test failed | expected no options to be set got: \n"
+               "] (f) parse_args: invalid flag test failed | expected no options to be set, got: \n"
                "version: %d, help: %d, rtsp_url: %s, output_file_path: %s, output_file_fd: %d, "
-               "timeout_sec: %d, exposure_sec: %d, output_format: %d, scale_factor: %f, "
-               "resize_height: %d, resize_width: %d, image_quality: %d, debug: %d, "
-               "debug_step: %d, debug_dir: %s\n",
+               "scale_factor: %f, "
+               "resize_height: %d, resize_width: %d, image_quality: %d, "
+               "debug: %d, debug_step: %d, debug_dir: %s\n",
                opts->version, opts->help, opts->rtsp_url ? opts->rtsp_url : "NULL",
                opts->output_file_path ? opts->output_file_path : "NULL", opts->output_file_fd,
-               opts->timeout_sec, opts->exposure_sec, opts->output_format, opts->scale_factor,
-               opts->resize_height, opts->resize_width, opts->image_quality, opts->debug,
-               opts->debug_step, opts->debug_dir ? opts->debug_dir : "NULL");
+               opts->scale_factor, opts->resize_height, opts->resize_width, opts->image_quality,
+               opts->debug, opts->debug_step, opts->debug_dir ? opts->debug_dir : "NULL");
         return 1;
     }
 
@@ -749,11 +797,7 @@ int test_invalid_flag(void)
 {
     char* argv[] = {"prog", "--unknown"};
     if (_test_flag(2, "invalid flag", argv, check_invalid_flag, RTN_ERROR))
-    {
-        printf("[" ANSI_RED "KO" ANSI_RESET
-               "] (f) parse_args: invalid flag test failed | expected 0 return code\n");
         return 1;
-    }
 
     printf("[" ANSI_GREEN "OK" ANSI_RESET "] (f) parse_args: invalid flag test passed\n");
     return 0;

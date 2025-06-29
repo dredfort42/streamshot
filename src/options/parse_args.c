@@ -211,13 +211,13 @@ short parse_args(int argc, char* argv[], options_t* options)
         }
         else if (MATCH("-i", "--input"))
             options->rtsp_url = trim_flag_value(value);
-        else if (MATCH("-t", "--timeout"))
+        else if (MATCH("-t", "--timeout") && value && strlen(value) > 0)
             options->timeout_sec = atoi(value);
         else if (MATCH("-o", "--output-file"))
             options->output_file_path = trim_flag_value(value);
-        else if (MATCH("-O", "--output-fd"))
+        else if (MATCH("-O", "--output-fd") && value && strlen(value) > 0)
             options->output_file_fd = atoi(value);
-        else if (MATCH("-e", "--exposure"))
+        else if (MATCH("-e", "--exposure") && value && strlen(value) > 0)
             options->exposure_sec = atoi(value);
         else if (MATCH("-f", "--output-format"))
         {
@@ -225,7 +225,7 @@ short parse_args(int argc, char* argv[], options_t* options)
             options->output_format = string_to_image_format(format_arg);
             free(format_arg);
         }
-        else if (MATCH("-s", "--scale"))
+        else if (MATCH("-s", "--scale") && value && strlen(value) > 0)
         {
             float scale = atof(value);
             options->scale_factor = scale;
@@ -235,21 +235,21 @@ short parse_args(int argc, char* argv[], options_t* options)
                 options->resize_width = -1;   // Disable width resize if scale is set.
             }
         }
-        else if (MATCH("-h", "--resize-height"))
+        else if (MATCH("-h", "--resize-height") && value && strlen(value) > 0)
         {
             if (options->resize_height != -1)
                 options->resize_height = atoi(value);
         }
-        else if (MATCH("-w", "--resize-width"))
+        else if (MATCH("-w", "--resize-width") && value && strlen(value) > 0)
         {
             if (options->resize_width != -1)
                 options->resize_width = atoi(value);
         }
-        else if (MATCH("-q", "--image-quality"))
+        else if (MATCH("-q", "--image-quality") && value && strlen(value) > 0)
             options->image_quality = atoi(value);
         else if (MATCH("-d", "--debug"))
             options->debug = 1;
-        else if (MATCH("--debug-step", "--debug-step"))
+        else if (MATCH("--debug-step", "--debug-step") && value && strlen(value) > 0)
             options->debug_step = atoi(value);
         else if (MATCH("--debug-dir", "--debug-dir"))
             options->debug_dir = trim_flag_value(value);
