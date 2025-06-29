@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | tests.h
     ::  ::          ::  ::    Created  | 2025-06-25
-          ::::  ::::          Modified | 2025-06-28
+          ::::  ::::          Modified | 2025-06-29
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -30,5 +30,6 @@ int test_jpg_image(void);
 int test_png_image(void);
 int test_ppm_image(void);
 int test_parse_args(void);
+int test_validate_options(void);
 
 #endif  // TESTS_H

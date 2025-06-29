@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | get_raw_image.c
     ::  ::          ::  ::    Created  | 2025-06-19
-          ::::  ::::          Modified | 2025-06-28
+          ::::  ::::          Modified | 2025-06-29
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -99,12 +99,12 @@ image_t* get_raw_image(options_t* options)
     if (!process)
         goto error;
 
+    if (_calculate_limits(stream, options))
+        goto error;
+
     if (options->debug)
         printf(ANSI_BLUE "Debug:" ANSI_RESET " Starting to read %u frames from RTSP stream...\n",
                stream->number_of_frames_to_read);
-
-    if (_calculate_limits(stream, options))
-        goto error;
 
     while (process->received_frames < stream->number_of_frames_to_read &&
            time_now_in_microseconds() < stream->stop_reading_at &&

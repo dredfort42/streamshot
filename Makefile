@@ -7,7 +7,7 @@
 #    ::::::::::::::::::::::                                          #
 #    ::  ::::::::::::::  ::    File     | Makefile                   #
 #    ::  ::          ::  ::    Created  | 2025-06-05                 #
-#          ::::  ::::          Modified | 2025-06-23                 #
+#          ::::  ::::          Modified | 2025-06-29                 #
 #                                                                    #
 #    GitHub:   https://github.com/dredfort42                         #
 #    LinkedIn: https://linkedin.com/in/novikov-da                    #
@@ -189,12 +189,13 @@ re: clean all
 
 test: build_check $(TST_NAME)
 	@echo "$(GREEN)Running tests...$(NC)"
-	@./$(TST_NAME)
+	@./$(TST_NAME) 2>/dev/null
 	@if [ $$? -eq 0 ]; then \
 		rm -rf $(TST_BUILD_DIR); \
 		rm -f $(TST_NAME); \
+	else \
+		rm -f $(NAME); \
 	fi
-
 
 $(TST_NAME): $(TST_OBJS)
 	@echo "$(YELLOW)Linking $@...$(NC)"

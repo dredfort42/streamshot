@@ -7,13 +7,14 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | parse_args.c
     ::  ::          ::  ::    Created  | 2025-06-07
-          ::::  ::::          Modified | 2025-06-28
+          ::::  ::::          Modified | 2025-06-29
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
 
 *******************************************************************/
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -72,16 +73,16 @@ static void _free_argument(_argument_t* argument)
  */
 static _argument_t* _get_argument(int argc, char* argv[], int* index)
 {
-    if (!index || *index < 1 || *index >= argc)
+    if (argc < 2 || !argv || !index || *index < 1 || *index >= argc)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) create_argument | " ERROR_INVALID_ARGUMENTS);
+        write_msg_to_fd(STDERR_FILENO, "(f) _get_argument | " ERROR_INVALID_ARGUMENTS "\n");
         return NULL;
     }
 
     _argument_t* argument = (_argument_t*)malloc(sizeof(_argument_t));
     if (!argument)
     {
-        write_msg_to_fd(STDERR_FILENO, "(f) create_argument | " ERROR_FAILED_TO_ALLOCATE_MEMORY);
+        write_msg_to_fd(STDERR_FILENO, "(f) _get_argument | " ERROR_FAILED_TO_ALLOCATE_MEMORY "\n");
         goto error;
     }
 
@@ -99,7 +100,7 @@ static _argument_t* _get_argument(int argc, char* argv[], int* index)
         if (!argument->key)
         {
             write_msg_to_fd(STDERR_FILENO,
-                            "(f) create_argument | " ERROR_FAILED_TO_ALLOCATE_MEMORY);
+                            "(f) _get_argument | " ERROR_FAILED_TO_ALLOCATE_MEMORY "\n");
             goto error;
         }
 
@@ -116,7 +117,7 @@ static _argument_t* _get_argument(int argc, char* argv[], int* index)
         if (!argument->key)
         {
             write_msg_to_fd(STDERR_FILENO,
-                            "(f) create_argument | " ERROR_FAILED_TO_ALLOCATE_MEMORY);
+                            "(f) _get_argument | " ERROR_FAILED_TO_ALLOCATE_MEMORY "\n");
             goto error;
         }
 
@@ -135,7 +136,7 @@ static _argument_t* _get_argument(int argc, char* argv[], int* index)
     return argument;
 
 error:
-    write_msg_to_fd(STDERR_FILENO, "(f) create_argument | " ERROR_INVALID_ARGUMENTS);
+    write_msg_to_fd(STDERR_FILENO, "(f) _get_argument | " ERROR_INVALID_ARGUMENTS "\n");
     _free_argument(argument);
     return NULL;
 }
@@ -178,7 +179,7 @@ error:
  */
 short parse_args(int argc, char* argv[], options_t* options)
 {
-    if (argc < 2 || !options)
+    if (argc < 2 || !argv || !options)
     {
         write_msg_to_fd(STDERR_FILENO, "(f) parse_args | " ERROR_INVALID_ARGUMENTS "\n");
         return RTN_ERROR;
@@ -254,7 +255,11 @@ short parse_args(int argc, char* argv[], options_t* options)
             options->debug_dir = trim_flag_value(value);
         else
         {
-            write_msg_to_fd(STDERR_FILENO, "(f) parse_args | " ERROR_INVALID_ARGUMENTS "\n");
+            char err_msg[256];
+            snprintf(err_msg, sizeof(err_msg),
+                     "(f) parse_args | " ERROR_INVALID_ARGUMENTS " (unknown argument: %s)\n",
+                     key ? key : "(null)");
+            write_msg_to_fd(STDERR_FILENO, err_msg);
             _free_argument(argument);
             return RTN_ERROR;
         }

@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | options.c
     ::  ::          ::  ::    Created  | 2025-06-05
-          ::::  ::::          Modified | 2025-06-20
+          ::::  ::::          Modified | 2025-06-29
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -18,7 +18,6 @@
 
 #include "options.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -96,17 +95,19 @@ options_t* get_options(int argc, char* argv[])
         goto error;
 
     if (options->debug)
-        printf(ANSI_BLUE "Debug:" ANSI_RESET " ARGS parsed successfully.\n");
+        write_msg_to_fd(STDOUT_FILENO,
+                        ANSI_BLUE "Debug:" ANSI_RESET " ARGS parsed successfully.\n");
 
     if (validate_options(options) == RTN_ERROR)
         goto error;
 
     if (options->debug)
-        printf(ANSI_BLUE "Debug:" ANSI_RESET " Options validated successfully.\n");
+        write_msg_to_fd(STDOUT_FILENO,
+                        ANSI_BLUE "Debug:" ANSI_RESET " Options validated successfully.\n");
 
     if (options->debug)
     {
-        printf(ANSI_BLUE "Debug:" ANSI_RESET " Printing options:\n");
+        write_msg_to_fd(STDOUT_FILENO, ANSI_BLUE "Debug:" ANSI_RESET " Printing options:\n");
         print_options(options);
     }
 

@@ -36,6 +36,7 @@ int main()
     failed += test_png_image();
     failed += test_ppm_image();
     failed += test_parse_args();
+    failed += test_validate_options();
 
     printf("\n");
     if (failed)
