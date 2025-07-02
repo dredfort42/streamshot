@@ -8,6 +8,7 @@ Thumbs.db
 *.swp
 *~
 .devcontainer/
+srv_*
 
 # Build artifacts
 *.o
@@ -37,6 +38,7 @@ Thumbs.db
 *.su
 *.idb
 *.pdb
+debug*
 
 # Kernel module files (if applicable)
 *.ko

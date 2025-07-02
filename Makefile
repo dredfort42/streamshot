@@ -7,7 +7,7 @@
 #    ::::::::::::::::::::::                                          #
 #    ::  ::::::::::::::  ::    File     | Makefile                   #
 #    ::  ::          ::  ::    Created  | 2025-06-05                 #
-#          ::::  ::::          Modified | 2025-06-23                 #
+#          ::::  ::::          Modified | 2025-06-29                 #
 #                                                                    #
 #    GitHub:   https://github.com/dredfort42                         #
 #    LinkedIn: https://linkedin.com/in/novikov-da                    #
@@ -15,7 +15,7 @@
 ######################################################################
 
 APPLICATION := streamshot
-VERSION     := 1.0.0
+VERSION     := 1.0.1
 
 MACOS       := macos
 LINUX       := linux
@@ -63,6 +63,14 @@ endif
 SRCS        := $(shell find $(SRC_DIR) -type f -name '*.c')
 OBJS        := $(patsubst $(SRC_DIR)/%.c,$(OS_BUILD_DIR)/%.o,$(SRCS))
 
+# Test target
+TST_NAME      := $(APPLICATION)_test
+TST_DIR       := $(CRNT_DIR)/tests
+TST_BUILD_DIR := $(CRNT_DIR)/tests/build
+TST_SRCS      := $(filter-out $(SRC_DIR)/main.c, $(SRCS)) $(shell find $(TST_DIR) -type f -name '*.c')
+TST_OBJS      := $(patsubst $(SRC_DIR)/%.c,$(TST_BUILD_DIR)/%.o,$(filter $(SRC_DIR)/%.c,$(TST_SRCS))) \
+                 $(patsubst $(TST_DIR)/%.c,$(TST_BUILD_DIR)/%.o,$(filter $(TST_DIR)/%.c,$(TST_SRCS)))
+
 # Library directories for Linux static linking
 ZLIB_DIR    := $(OS_LIB_DIR)/zlib
 PNG_DIR     := $(OS_LIB_DIR)/png
@@ -92,18 +100,28 @@ LIBS        := -lpng \
                -ljpeg \
                -lavformat -lavcodec -lavutil -lswscale \
                -lm -pthread -lz
+			   
+# CFLAGS      := -std=c11 -O2 -DNDEBUG \
+#                -Wall -Wextra -Werror \
+#                -fstack-protector-strong -D_FORTIFY_SOURCE=2 \
+#                -march=native -flto -funroll-loops \
+#                -MMD -MP \
+#                $(INCLUDES)
 
-CFLAGS      := -std=c11 -O2 -DNDEBUG \
-               -Wall -Wextra -Werror \
-               -fstack-protector-strong -D_FORTIFY_SOURCE=2 \
-               -march=native -flto -funroll-loops \
-               -MMD -MP \
-               $(INCLUDES)
+CFLAGS      := -std=c11 -O3 -DNDEBUG \
+			   -Wall -Wextra -Werror \
+			   -fstack-protector-strong -D_FORTIFY_SOURCE=2 \
+			   -march=native -flto=auto -funroll-loops -fomit-frame-pointer \
+			   -ffast-math -falign-functions=32 -falign-loops=32 \
+			   -MMD -MP \
+			   -DAPP_VERSION='"$(VERSION)"' \
+			   $(INCLUDES)
 
 DEV_CFLAGS  := -std=c11 -Wall -Wextra -Wpedantic -Werror -O0 -g \
                -fsanitize=address,undefined,signed-integer-overflow,pointer-compare,pointer-subtract,alignment \
                -fno-omit-frame-pointer -fstack-protector-strong \
                -MMD -MP \
+			   -DAPP_VERSION='"dev_$(VERSION)"' \
                $(INCLUDES)
 
 # Platform-specific flags
@@ -127,7 +145,7 @@ NC          := \033[0m
 # Rules
 .PHONY: all build dev clean fclean re test help
 
-all: build
+all: build test
 
 build: build_check $(NAME)
 	@echo "$(GREEN)Build complete.$(NC)"
@@ -150,22 +168,48 @@ $(OS_BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 -include $(OBJS:.o=.d)
 
 dev: CFLAGS := $(DEV_CFLAGS) 
-dev: build_check $(NAME)
+dev: build_check clean $(NAME)
 	@echo "$(GREEN)Development build complete with sanitizers enabled.$(NC)"
 
 clean:
 	@rm -rf $(OS_BUILD_DIR)
 	@rm -rf debug_files
+	@rm -rf $(TST_BUILD_DIR)
+	@rm -f $(NAME)
+	@rm -f $(TST_NAME)
 	@echo "$(GREEN)Cleaned build artifacts and debug files.$(NC)"
 
 fclean: clean
 	@rm -rf $(BUILD_DIR)
 	@rm -rf $(LIB_DIR)
 	@rm -rf *.dSYM
-	@rm -f $(APPLICATION)*
 	@echo "$(GREEN)Fully cleaned all artifacts and libraries.$(NC)"
 
 re: clean all
+
+test: build_check $(TST_NAME)
+	@echo "$(GREEN)Running tests...$(NC)"
+	@./$(TST_NAME) 2>/dev/null
+	@if [ $$? -eq 0 ]; then \
+		rm -rf $(TST_BUILD_DIR); \
+		rm -f $(TST_NAME); \
+	else \
+		rm -f $(NAME); \
+	fi
+
+$(TST_NAME): $(TST_OBJS)
+	@echo "$(YELLOW)Linking $@...$(NC)"
+	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS) $(LIBS)
+
+$(TST_BUILD_DIR)/%.o: $(SRC_DIR)/%.c 
+	@mkdir -p $(dir $@)
+	@echo "$(YELLOW)Compiling $<...$(NC)"
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(TST_BUILD_DIR)/%.o: $(TST_DIR)/%.c
+	@mkdir -p $(dir $@)
+	@echo "$(YELLOW)Compiling $<...$(NC)"
+	$(CC) $(CFLAGS) -c $< -o $@
 
 help:
 	@echo "$(YELLOW)Available targets:$(NC)"

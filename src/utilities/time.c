@@ -23,7 +23,7 @@
 /**
  * @brief Get the current time in microseconds since the Unix Epoch.
  *
- * Uses gettimeofday() to obtain the current time and        returns the total number
+ * Uses gettimeofday(void) to obtain the current time and        returns the total number
  * of microseconds elapsed since January 1, 1970 (UTC).
  *
  * @return The current time in microseconds as a long long integer on success,

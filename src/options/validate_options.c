@@ -7,7 +7,7 @@
     ::::::::::::::::::::::
     ::  ::::::::::::::  ::    File     | validate_options.c
     ::  ::          ::  ::    Created  | 2025-06-09
-          ::::  ::::          Modified | 2025-06-20
+          ::::  ::::          Modified | 2025-06-28
 
     GitHub:   https://github.com/dredfort42
     LinkedIn: https://linkedin.com/in/novikov-da
@@ -22,7 +22,7 @@
 #include "options.h"
 #include "utilities.h"
 
-short _validate_rtsp_url(const char* rtsp_url)
+static short _validate_rtsp_url(const char* rtsp_url)
 {
     if (!rtsp_url || strlen(rtsp_url) < 8 || strncmp(rtsp_url, "rtsp://", 7) != 0)
     {
@@ -33,7 +33,7 @@ short _validate_rtsp_url(const char* rtsp_url)
     return RTN_SUCCESS;
 }
 
-short _validate_timeout_sec(int timeout_sec)
+static short _validate_timeout_sec(int timeout_sec)
 {
     if (timeout_sec < 1 || timeout_sec > MAX_TIMEOUT_SEC)
     {
@@ -44,7 +44,7 @@ short _validate_timeout_sec(int timeout_sec)
     return RTN_SUCCESS;
 }
 
-short _validate_output_file_path(const char* output_file_path)
+static short _validate_output_file_path(const char* output_file_path)
 {
     if (output_file_path && strlen(output_file_path) < 3)
     {
@@ -56,7 +56,7 @@ short _validate_output_file_path(const char* output_file_path)
     return RTN_SUCCESS;
 }
 
-short _validate_output_file_fd(int output_file_fd)
+static short _validate_output_file_fd(int output_file_fd)
 {
     if (output_file_fd != -1 && output_file_fd < MIN_OUTPUT_FD)
     {
@@ -68,7 +68,7 @@ short _validate_output_file_fd(int output_file_fd)
     return RTN_SUCCESS;
 }
 
-short _validate_exposure_sec(int exposure_sec)
+static short _validate_exposure_sec(int exposure_sec)
 {
     if (exposure_sec < 0 || exposure_sec > MAX_EXPOSURE_SEC)
     {
@@ -79,7 +79,7 @@ short _validate_exposure_sec(int exposure_sec)
     return RTN_SUCCESS;
 }
 
-short _validate_output_format(image_format_t output_format)
+static short _validate_output_format(image_format_t output_format)
 {
     if (output_format == IMAGE_FORMAT_UNKNOWN)
     {
@@ -91,7 +91,7 @@ short _validate_output_format(image_format_t output_format)
     return RTN_SUCCESS;
 }
 
-short _validate_scale_factor(float scale_factor)
+static short _validate_scale_factor(float scale_factor)
 {
     if (scale_factor < MIN_SCALE_FACTOR || scale_factor > MAX_SCALE_FACTOR)
     {
@@ -103,7 +103,7 @@ short _validate_scale_factor(float scale_factor)
     return RTN_SUCCESS;
 }
 
-short _validate_resize_height(int resize_height)
+static short _validate_resize_height(int resize_height)
 {
     if (resize_height && (resize_height < MIN_RESIZE_HEIGHT || resize_height > MAX_RESIZE_HEIGHT) &&
         resize_height != -1)
@@ -116,7 +116,7 @@ short _validate_resize_height(int resize_height)
     return RTN_SUCCESS;
 }
 
-short _validate_resize_width(int resize_width)
+static short _validate_resize_width(int resize_width)
 {
     if (resize_width && (resize_width < MIN_RESIZE_WIDTH || resize_width > MAX_RESIZE_WIDTH) &&
         resize_width != -1)
@@ -129,7 +129,7 @@ short _validate_resize_width(int resize_width)
     return RTN_SUCCESS;
 }
 
-short _validate_image_quality(int image_quality)
+static short _validate_image_quality(int image_quality)
 {
     if (image_quality < MIN_IMAGE_QUALITY || image_quality > MAX_IMAGE_QUALITY)
     {
@@ -141,7 +141,7 @@ short _validate_image_quality(int image_quality)
     return RTN_SUCCESS;
 }
 
-short _validate_debug_step(int debug_step)
+static short _validate_debug_step(int debug_step)
 {
     if (debug_step < 1)
     {
@@ -152,7 +152,7 @@ short _validate_debug_step(int debug_step)
     return RTN_SUCCESS;
 }
 
-short _validate_debug_dir(const char* debug_dir)
+static short _validate_debug_dir(const char* debug_dir)
 {
     if (!debug_dir || strlen(debug_dir) < 3)
         goto error;
