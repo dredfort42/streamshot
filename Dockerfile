@@ -32,7 +32,7 @@ COPY ./tests ./tests
 RUN make
 
 # Start your project (replace with your actual start command)
-CMD ["./streamshot", "-i", "rtsp://root:pass@81.27.244.138:8554/ch0_unicast_firststream", "-e", "10", "-f", "jpg", "-o", "/app/saved_files/test.jpg"]
+CMD ["./streamshot", "-i", "rtsp://log:pass@192.168.0.100:8554/ch0_unicast_firststream", "-e", "10", "-f", "jpg", "-o", "/app/saved_files/test.jpg"]
 
 # To build the Docker image, run:
 # docker build -t streamshot .
