@@ -1,0 +1,26 @@
+# Multi-stage build for Debian Linux production binary
+FROM debian:12-slim AS builder
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    nasm \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set work directory
+WORKDIR /app
+
+# Copy project files
+COPY ./Makefile ./Makefile
+COPY ./include ./include
+COPY ./src ./src
+COPY ./tests ./tests
+
+# Build project
+RUN make
+
+# Extract stage - copy binary to host filesystem
+FROM scratch AS extract
+COPY --from=builder /app/streamshot /streamshot

@@ -143,7 +143,7 @@ BLUE        := \033[0;34m
 NC          := \033[0m
 
 # Rules
-.PHONY: all build dev clean fclean re test help
+.PHONY: all build dev clean fclean re test help docker-build-debian docker-build-alpine docker-clean
 
 all: build test
 
@@ -220,6 +220,11 @@ help:
 	@echo "  fclean  - Remove all build artifacts and libraries"
 	@echo "  re      - Clean and rebuild"
 	@echo "  test    - Build and run tests"
+	@echo ""
+	@echo "$(YELLOW)Docker Production Builds:$(NC)"
+	@echo "  docker-build-debian  - Build Debian Linux production binary using Docker"
+	@echo "  docker-clean         - Clean Docker build artifacts"
+	@echo ""
 	@echo "  help    - Show this help message"
 
 # Check for existence of directories
@@ -270,7 +275,7 @@ check_zlib_exists:
 		fi; \
 		cd zlib_tmp && \
 		echo "$(BLUE)Configuring zlib for static build...$(NC)" && \
-		./configure --static --prefix="$(ZLIB_DIR)" && \
+		CFLAGS="-fPIC" ./configure --static --prefix="$(ZLIB_DIR)" && \
 		echo "$(BLUE)Building zlib...$(NC)" && \
 		make -j$(N_CPU) && \
 		if [ $$? -ne 0 ]; then \
@@ -305,7 +310,10 @@ check_png_exists: check_zlib_exists
 		fi; \
 		cd png_tmp && \
 		echo "$(BLUE)Configuring libpng for static build...$(NC)" && \
-		./configure --disable-shared --enable-static --with-zlib-prefix="$(ZLIB_DIR)" --prefix="$(PNG_DIR)" && \
+		PKG_CONFIG_PATH="$(ZLIB_DIR)/lib/pkgconfig" \
+		LDFLAGS="-L$(ZLIB_DIR)/lib" \
+		CPPFLAGS="-I$(ZLIB_DIR)/include" \
+		./configure --disable-shared --enable-static --prefix="$(PNG_DIR)" && \
 		echo "$(BLUE)Building libpng...$(NC)" && \
 		make -j$(N_CPU) && \
 		if [ $$? -ne 0 ]; then \
@@ -313,7 +321,7 @@ check_png_exists: check_zlib_exists
 			exit 1; \
 		fi; \
 		echo "$(BLUE)Installing libpng static library...$(NC)" && \
-		make install; \
+		make install && \
 		if [ $$? -ne 0 ]; then \
 			echo "$(RED)Error: Failed to install libpng.$(NC)"; \
 			rm -rf $(PNG_DIR); \
@@ -382,10 +390,11 @@ check_ffmpeg_exists:
 		fi; \
 		cd ffmpeg_tmp; \
 		echo "$(BLUE)Configuring ffmpeg for static build...$(NC)"; \
+		PKG_CONFIG_PATH="$(ZLIB_DIR)/lib/pkgconfig:$(PNG_DIR)/lib/pkgconfig:$(JPEG_DIR)/lib/pkgconfig" \
 		./configure \
 			--prefix=$(FFMPEG_DIR) \
-			--extra-cflags="-fPIC" \
-			--extra-ldflags="-static" \
+			--extra-cflags="-fPIC -I$(ZLIB_DIR)/include -I$(PNG_DIR)/include -I$(JPEG_DIR)/include" \
+			--extra-ldflags="-static -L$(ZLIB_DIR)/lib -L$(PNG_DIR)/lib -L$(JPEG_DIR)/lib" \
 			--enable-gpl \
 			--enable-version3 \
 			--enable-small \
@@ -402,8 +411,8 @@ check_ffmpeg_exists:
 			echo "$(RED)Error: Failed to make ffmpeg.$(NC)"; \
 			exit 1; \
 		fi; \
-		echo "$(BLUE)Installing ffmpeg static library...$(NC)"; \
-		make install; \
+		echo "$(BLUE)Installing ffmpeg static library...$(NC)" && \
+		make install && \
 		if [ $$? -ne 0 ]; then \
 			echo "$(RED)Error: Failed to install ffmpeg.$(NC)"; \
 			rm -rf $(FFMPEG_DIR); \
@@ -415,3 +424,44 @@ check_ffmpeg_exists:
 	else \
 		echo "$(GREEN)ffmpeg exists.$(NC)"; \
 	fi
+
+# Docker build rules
+BIN_DIR     := $(CRNT_DIR)/bin
+DOCKER_IMAGE := streamshot-builder
+
+# Build Debian production binary using Docker
+docker-build-debian:
+	@echo "$(YELLOW)Building Debian Linux production binary using Docker...$(NC)"
+	@mkdir -p $(BIN_DIR)
+	@docker build --target extract --output $(BIN_DIR) \
+		-f Dockerfile.debian \
+		-t $(DOCKER_IMAGE):debian .
+	@if [ -f $(BIN_DIR)/streamshot ]; then \
+		mv $(BIN_DIR)/streamshot $(BIN_DIR)/$(APPLICATION)_debian_v$(VERSION); \
+		echo "$(GREEN)Debian binary saved as $(BIN_DIR)/$(APPLICATION)_debian_v$(VERSION)$(NC)"; \
+	else \
+		echo "$(RED)Error: Failed to build Debian binary$(NC)"; \
+		exit 1; \
+	fi
+
+# Build Alpine production binary using Docker
+docker-build-alpine:
+	@echo "$(YELLOW)Building Alpine Linux production binary using Docker...$(NC)"
+	@mkdir -p $(BIN_DIR)
+	@docker build --target extract --output $(BIN_DIR) \
+		-f Dockerfile.alpine \
+		-t $(DOCKER_IMAGE):alpine .
+	@if [ -f $(BIN_DIR)/streamshot ]; then \
+		mv $(BIN_DIR)/streamshot $(BIN_DIR)/$(APPLICATION)_alpine_v$(VERSION); \
+		echo "$(GREEN)Alpine binary saved as $(BIN_DIR)/$(APPLICATION)_alpine_v$(VERSION)$(NC)"; \
+	else \
+		echo "$(RED)Error: Failed to build Alpine binary$(NC)"; \
+		exit 1; \
+	fi
+
+# Clean Docker build artifacts
+docker-clean:
+	@echo "$(YELLOW)Cleaning Docker build artifacts...$(NC)"
+	@rm -rf $(BIN_DIR)
+	@docker rmi $(DOCKER_IMAGE):debian 2>/dev/null || true
+	@echo "$(GREEN)Docker artifacts cleaned.$(NC)"
