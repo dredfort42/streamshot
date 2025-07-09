@@ -100,13 +100,6 @@ LIBS        := -lpng \
                -ljpeg \
                -lavformat -lavcodec -lavutil -lswscale \
                -lm -pthread -lz
-			   
-# CFLAGS      := -std=c11 -O2 -DNDEBUG \
-#                -Wall -Wextra -Werror \
-#                -fstack-protector-strong -D_FORTIFY_SOURCE=2 \
-#                -march=native -flto -funroll-loops \
-#                -MMD -MP \
-#                $(INCLUDES)
 
 CFLAGS      := -std=c11 -O3 -DNDEBUG \
 			   -Wall -Wextra -Werror \
@@ -143,7 +136,7 @@ BLUE        := \033[0;34m
 NC          := \033[0m
 
 # Rules
-.PHONY: all build dev clean fclean re test help docker-build-debian docker-build-alpine docker-clean
+.PHONY: all build dev clean fclean re test help
 
 all: build test
 
@@ -424,44 +417,3 @@ check_ffmpeg_exists:
 	else \
 		echo "$(GREEN)ffmpeg exists.$(NC)"; \
 	fi
-
-# Docker build rules
-BIN_DIR     := $(CRNT_DIR)/bin
-DOCKER_IMAGE := streamshot-builder
-
-# Build Debian production binary using Docker
-docker-build-debian:
-	@echo "$(YELLOW)Building Debian Linux production binary using Docker...$(NC)"
-	@mkdir -p $(BIN_DIR)
-	@docker build --target extract --output $(BIN_DIR) \
-		-f Dockerfile.debian \
-		-t $(DOCKER_IMAGE):debian .
-	@if [ -f $(BIN_DIR)/streamshot ]; then \
-		mv $(BIN_DIR)/streamshot $(BIN_DIR)/$(APPLICATION)_debian_v$(VERSION); \
-		echo "$(GREEN)Debian binary saved as $(BIN_DIR)/$(APPLICATION)_debian_v$(VERSION)$(NC)"; \
-	else \
-		echo "$(RED)Error: Failed to build Debian binary$(NC)"; \
-		exit 1; \
-	fi
-
-# Build Alpine production binary using Docker
-docker-build-alpine:
-	@echo "$(YELLOW)Building Alpine Linux production binary using Docker...$(NC)"
-	@mkdir -p $(BIN_DIR)
-	@docker build --target extract --output $(BIN_DIR) \
-		-f Dockerfile.alpine \
-		-t $(DOCKER_IMAGE):alpine .
-	@if [ -f $(BIN_DIR)/streamshot ]; then \
-		mv $(BIN_DIR)/streamshot $(BIN_DIR)/$(APPLICATION)_alpine_v$(VERSION); \
-		echo "$(GREEN)Alpine binary saved as $(BIN_DIR)/$(APPLICATION)_alpine_v$(VERSION)$(NC)"; \
-	else \
-		echo "$(RED)Error: Failed to build Alpine binary$(NC)"; \
-		exit 1; \
-	fi
-
-# Clean Docker build artifacts
-docker-clean:
-	@echo "$(YELLOW)Cleaning Docker build artifacts...$(NC)"
-	@rm -rf $(BIN_DIR)
-	@docker rmi $(DOCKER_IMAGE):debian 2>/dev/null || true
-	@echo "$(GREEN)Docker artifacts cleaned.$(NC)"
